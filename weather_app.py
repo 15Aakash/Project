@@ -98,8 +98,8 @@ def main():
     city = st.sidebar.text_input("Enter the city name", "London")
 
     # API keys (loaded from .env)
-    weather_api_key = os.getenv("OPENWEATHER_API_KEY")
-    openai_api_key = os.getenv("OPENAI_API_KEY")
+    weather_api_key = st.secrets.get("OPENWEATHER_API_KEY", os.getenv("OPENWEATHER_API_KEY"))
+    openai_api_key = st.secrets.get("OPENAI_API_KEY", os.getenv("OPENAI_API_KEY"))
 
     if not weather_api_key:
         st.sidebar.error("OPENWEATHER_API_KEY missing. Add it to your .env file.")
