@@ -5,148 +5,151 @@ import streamlit as st
 import requests
 from datetime import datetime
 
-# Load environment variables from .env (must be in same folder or project root)
+# Load environment variables from .env (LOCAL only)
+# On Streamlit Cloud, you should use st.secrets instead (handled below)
 load_dotenv()
 
 
-# Function to get weather data from OpenWeatherMap API
+# ---------- Helpers to read keys (works locally + Streamlit Cloud) ----------
+def get_secret(name: str):
+    # Local: .env -> os.getenv
+    # Cloud: Streamlit Secrets -> st.secrets
+    return os.getenv(name) or st.secrets.get(name, None)
+
+
+# ---------- OpenWeather API ----------
 def get_weather_data(city, weather_api_key):
-    base_url = "http://api.openweathermap.org/data/2.5/weather?"
-    complete_url = base_url + "appid=" + weather_api_key + "&q=" + city
-    response = requests.get(complete_url)
+    base_url = "https://api.openweathermap.org/data/2.5/weather?"
+    complete_url = f"{base_url}appid={weather_api_key}&q={city}"
+    response = requests.get(complete_url, timeout=15)
     return response.json()
 
 
-# Mock function to generate a weather description (no OpenAI call yet)
-def generate_weather_description(data, openai_api_key):
-    # Mock response for development and testing
-    # (openai_api_key is kept for future LLM integration)
+def get_weekly_forecast(weather_api_key, lat, lon):
+    base_url = "https://api.openweathermap.org/data/2.5/forecast?"
+    complete_url = f"{base_url}lat={lat}&lon={lon}&appid={weather_api_key}"
+    response = requests.get(complete_url, timeout=15)
+    return response.json()
+
+
+# ---------- Weather description (mock for now, no OpenAI call yet) ----------
+def generate_weather_description(data):
     temperature = data["main"]["temp"] - 273.15
     description = data["weather"][0]["description"]
     return (
         f"The current weather in your city is: {description} "
-        f"with a temperature of {temperature:.1f} ̊C."
+        f"with a temperature of {temperature:.1f} °C."
     )
 
 
-# Function to get weekly forecast data from OpenWeatherMap API
-def get_weekly_forecast(weather_api_key, lat, lon):
-    base_url = "http://api.openweathermap.org/data/2.5/forecast?"
-    complete_url = f"{base_url}lat={lat}&lon={lon}&appid={weather_api_key}"
-    response = requests.get(complete_url)
-    return response.json()
-
-
-# Function to display weekly weather forecast
+# ---------- UI: Display forecast ----------
 def display_weekly_forecast(data):
     try:
         if "list" not in data:
             st.error("No forecast data available!")
             return
 
-        st.write("=================================================================================")
-        st.write("### Weekly weather Forecast")
-        displayed_dates = set()  # To keep track of dates for which forecast has been displayed
+        st.write("### Weekly Weather Forecast")
+        displayed_dates = set()
 
         c1, c2, c3, c4 = st.columns(4)
-        with c1:
-            st.metric("", "Day")
-        with c2:
-            st.metric("", "Desc")
-        with c3:
-            st.metric("", "Min_temp")
-        with c4:
-            st.metric("", "Max_temp")
+        c1.metric("", "Day")
+        c2.metric("", "Desc")
+        c3.metric("", "Min_temp")
+        c4.metric("", "Max_temp")
 
-        for day in data["list"]:
-            date = datetime.fromtimestamp(day["dt"]).strftime("%A, %B %d")
+        for item in data["list"]:
+            date = datetime.fromtimestamp(item["dt"]).strftime("%A, %B %d")
 
-            # Check if the date has already been displayed
-            if date not in displayed_dates:
-                displayed_dates.add(date)
+            # show one row per date
+            if date in displayed_dates:
+                continue
+            displayed_dates.add(date)
 
-                min_temp = day["main"]["temp_min"] - 273.15  # Convert Kelvin to Celsius
-                max_temp = day["main"]["temp_max"] - 273.15
-                description = day["weather"][0]["description"]
+            min_temp = item["main"]["temp_min"] - 273.15
+            max_temp = item["main"]["temp_max"] - 273.15
+            description = item["weather"][0]["description"]
 
-                with c1:
-                    st.write(f"{date}")
-                with c2:
-                    st.write(f"{description.capitalize()}")
-                with c3:
-                    st.write(f"{min_temp:.1f} ̊C")
-                with c4:
-                    st.write(f"{max_temp:.1f} ̊C")
+            with c1:
+                st.write(date)
+            with c2:
+                st.write(description.capitalize())
+            with c3:
+                st.write(f"{min_temp:.1f} °C")
+            with c4:
+                st.write(f"{max_temp:.1f} °C")
 
     except Exception as e:
         st.error("Error in displaying weekly forecast: " + str(e))
 
 
-# Main function to run the streamlit app
+# ---------- Main App ----------
 def main():
-    # Sidebar configuration
+    st.set_page_config(page_title="Weather Forecasting App", layout="wide")
+
+    # Sidebar
     try:
         st.sidebar.image("Logo.jpg", width=120)
     except Exception:
-        # If you don't have default_logo.jpg, you can remove this line or add the file
-        try:
-            st.sidebar.image("default_logo.jpg", width=120)
-        except Exception:
-            pass
+        pass
 
-    st.sidebar.title("Weather Forecasting with LLM")
+    st.sidebar.title("Weather Forecasting")
     city = st.sidebar.text_input("Enter the city name", "London")
 
-    # API keys (loaded from .env)
-    weather_api_key = os.getenv("OPENWEATHER_API_KEY")
-    openai_api_key = os.getenv("OPENAI_API_KEY")
+    # Read keys (Local .env OR Streamlit Secrets)
+    weather_api_key = get_secret("OPENWEATHER_API_KEY")
+
+    # OpenAI key is OPTIONAL for now (since we are not calling OpenAI yet)
+    # openai_api_key = get_secret("OPENAI_API_KEY")
 
     if not weather_api_key:
-        st.sidebar.error("OPENWEATHER_API_KEY missing. Add it to your .env file.")
+        st.sidebar.error(
+            "OPENWEATHER_API_KEY missing.\n\n"
+            "✅ Local: create a .env file with OPENWEATHER_API_KEY=...\n"
+            "✅ Streamlit Cloud: add it in App Settings → Secrets."
+        )
         st.stop()
 
-    if not openai_api_key:
-        st.sidebar.error("OPENAI_API_KEY missing. Add it to your .env file.")
-        st.stop()
-
-    # Button to fetch and display weather data
+    # Button
     submit = st.sidebar.button("Get Weather")
 
     if submit:
-        st.title("Weather Updates for " + city + " is:")
+        st.title(f"Weather Updates for {city}")
+
         with st.spinner("Fetching weather data..."):
             weather_data = get_weather_data(city, weather_api_key)
 
-            # Check if the city is found and display weather data
-            # OpenWeather sometimes returns cod as int or str, so handle both
-            cod = weather_data.get("cod")
-            if cod != 404 and cod != "404":
-                col1, col2 = st.columns(2)
-                with col1:
-                    st.metric("Temperature", f"{weather_data['main']['temp'] - 273.15:.2f} ̊C")
-                    st.metric("Humidity", f"{weather_data['main']['humidity']}%")
-                with col2:
-                    st.metric("Pressure", f"{weather_data['main']['pressure']} hPa")
-                    st.metric("Wind Speed", f"{weather_data['wind']['speed']} m/s")
+        cod = weather_data.get("cod")
 
-                lat = weather_data["coord"]["lat"]
-                lon = weather_data["coord"]["lon"]
+        if cod == 404 or cod == "404":
+            st.error("City not found or an error occurred!")
+            return
 
-                # Generate and display a friendly weather description (mock)
-                weather_description = generate_weather_description(weather_data, openai_api_key)
-                st.write(weather_description)
+        # Show current weather
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric("Temperature", f"{weather_data['main']['temp'] - 273.15:.2f} °C")
+            st.metric("Humidity", f"{weather_data['main']['humidity']}%")
+        with col2:
+            st.metric("Pressure", f"{weather_data['main']['pressure']} hPa")
+            st.metric("Wind Speed", f"{weather_data['wind']['speed']} m/s")
 
-                # Call function to get weekly forecast
-                forecast_data = get_weekly_forecast(weather_api_key, lat, lon)
+        # Friendly description (mock)
+        st.write(generate_weather_description(weather_data))
 
-                forecast_cod = forecast_data.get("cod")
-                if forecast_cod != "404" and forecast_cod != 404:
-                    display_weekly_forecast(forecast_data)
-                else:
-                    st.error("Error fetching weekly forecast data!")
-            else:
-                # Display an error message if the city is not found
-                st.error("City not found or an error occurred!")
+        # Weekly forecast
+        lat = weather_data["coord"]["lat"]
+        lon = weather_data["coord"]["lon"]
+
+        with st.spinner("Fetching weekly forecast..."):
+            forecast_data = get_weekly_forecast(weather_api_key, lat, lon)
+
+        forecast_cod = forecast_data.get("cod")
+        if forecast_cod == 404 or forecast_cod == "404":
+            st.error("Error fetching weekly forecast data!")
+            return
+
+        display_weekly_forecast(forecast_data)
 
 
 if __name__ == "__main__":
