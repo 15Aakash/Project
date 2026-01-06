@@ -1,14 +1,20 @@
 # Weather Forecasting Application
 
-This is a Weather Forecasting web application built using Python and Streamlit.
-It allows users to check real-time weather details and weekly forecasts by entering a city name.
+This is a Weather Forecasting web application built using **Python** and **Streamlit**.  
+It allows users to check real-time weather details and a **7-day weather forecast** by entering a city name.
+
+
+---
+## Live Demo
+[https://project-7zbyttgb38dxx9zsdwhgvn.streamlit.app](https://project-7zbyttgb38dxx9zsdwhgvn.streamlit.app/)
 
 ---
 
 ## Features
 - Search weather by city name
 - Displays temperature, humidity, pressure, and wind speed
-- Shows weekly weather forecast
+- Shows 7-day temperature trend graph
+- Shows weekly weather forecast (min & max temperature)
 - Simple and interactive Streamlit interface
 
 ---
@@ -18,6 +24,7 @@ It allows users to check real-time weather details and weekly forecasts by enter
 - Streamlit
 - OpenWeatherMap API
 - Requests
+- Pandas
 - python-dotenv
 
 ---
