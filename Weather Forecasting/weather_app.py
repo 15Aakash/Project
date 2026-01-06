@@ -1,175 +1,166 @@
 import os
-from datetime import datetime
-
-import requests
-import streamlit as st
 from dotenv import load_dotenv
 
-# Load .env locally (Streamlit Cloud will use st.secrets instead)
+import streamlit as st
+import requests
+import pandas as pd
+from datetime import datetime
+
+# Load environment variables from .env (local only)
 load_dotenv()
 
+# ---------------------- API FUNCTIONS ---------------------- #
 
-# ---------- API helpers ----------
-def get_weather_data(city: str, api_key: str) -> dict:
-    url = "https://api.openweathermap.org/data/2.5/weather"
-    params = {"q": city, "appid": api_key}
-    return requests.get(url, params=params, timeout=20).json()
+def get_weather_data(city, weather_api_key):
+    url = f"https://api.openweathermap.org/data/2.5/weather?appid={weather_api_key}&q={city}"
+    return requests.get(url).json()
 
+def get_weekly_forecast(weather_api_key, lat, lon):
+    url = f"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={weather_api_key}"
+    return requests.get(url).json()
 
-def get_forecast_data(lat: float, lon: float, api_key: str) -> dict:
-    # 5 day / 3 hour forecast
-    url = "https://api.openweathermap.org/data/2.5/forecast"
-    params = {"lat": lat, "lon": lon, "appid": api_key}
-    return requests.get(url, params=params, timeout=20).json()
-
-
-def k_to_c(k: float) -> float:
-    return k - 273.15
+def generate_weather_description(data):
+    temperature = data["main"]["temp"] - 273.15
+    description = data["weather"][0]["description"]
+    return f"The current weather in your city is: {description} with a temperature of {temperature:.1f} °C."
 
 
-def generate_weather_description(data: dict) -> str:
-    temp_c = k_to_c(data["main"]["temp"])
-    desc = data["weather"][0]["description"]
-    return f"The current weather in your city is: {desc} with a temperature of {temp_c:.1f} °C."
+# ---------------------- GRAPH ---------------------- #
+# OpenWeather "forecast" endpoint gives data in 3-hour intervals.
+# We pick ONE point per day and plot 7 days.
+
+def display_temperature_graph(forecast_data, days=7):
+    if "list" not in forecast_data:
+        st.error("No forecast data available for graph.")
+        return
+
+    points = []
+    seen_dates = set()
+
+    for item in forecast_data["list"]:
+        dt = datetime.fromtimestamp(item["dt"])
+        date_key = dt.date()
+
+        if date_key not in seen_dates:
+            seen_dates.add(date_key)
+            points.append({
+                "Date": dt.strftime("%a, %b %d"),
+                "Temp (°C)": round(item["main"]["temp"] - 273.15, 2)
+            })
+
+        if len(points) == days:
+            break
+
+    df = pd.DataFrame(points)
+    st.subheader(f"Temperature Trend (Next {days} Days)")
+    st.line_chart(df.set_index("Date"))
 
 
-# ---------- UI helpers ----------
-def show_logo():
-    """
-    Try multiple paths so it works both locally and on Streamlit Cloud.
-    Your file is inside Weather Forecasting/Logo.jpg
-    """
-    possible_paths = [
-        "Logo.jpg",
-        "logo.jpg",
-        "Weather Forecasting/Logo.jpg",
-        "Weather Forecasting/logo.jpg",
-    ]
-    for p in possible_paths:
-        if os.path.exists(p):
-            st.sidebar.image(p, width=140)
+# ---------------------- OLD STYLE TABLE (YOUR OUTPUT) ---------------------- #
+
+def display_weekly_forecast(data, days=7):
+    try:
+        if "list" not in data:
+            st.error("No forecast data available!")
             return
 
+        st.write("=================================================================================")
+        st.write("### Weekly Weather Forecast")
 
-def display_weekly_forecast_table(forecast: dict):
-    if "list" not in forecast:
-        st.error("No forecast data available!")
-        return
+        displayed_dates = set()
 
-    st.subheader("Weekly Weather Forecast")
-
-    c1, c2, c3, c4 = st.columns(4)
-    with c1:
-        st.markdown("**Day**")
-    with c2:
-        st.markdown("**Desc**")
-    with c3:
-        st.markdown("**Min_temp**")
-    with c4:
-        st.markdown("**Max_temp**")
-
-    displayed_dates = set()
-
-    for item in forecast["list"]:
-        date_str = datetime.fromtimestamp(item["dt"]).strftime("%A, %B %d")
-        if date_str in displayed_dates:
-            continue
-        displayed_dates.add(date_str)
-
-        min_temp = k_to_c(item["main"]["temp_min"])
-        max_temp = k_to_c(item["main"]["temp_max"])
-        desc = item["weather"][0]["description"].capitalize()
-
+        c1, c2, c3, c4 = st.columns(4)
         with c1:
-            st.write(date_str)
+            st.metric("", "Day")
         with c2:
-            st.write(desc)
+            st.metric("", "Desc")
         with c3:
-            st.write(f"{min_temp:.1f} °C")
+            st.metric("", "Min Temp")
         with c4:
-            st.write(f"{max_temp:.1f} °C")
+            st.metric("", "Max Temp")
+
+        count = 0
+        for item in data["list"]:
+            date = datetime.fromtimestamp(item["dt"]).strftime("%A, %B %d")
+
+            if date not in displayed_dates:
+                displayed_dates.add(date)
+
+                min_temp = item["main"]["temp_min"] - 273.15
+                max_temp = item["main"]["temp_max"] - 273.15
+                desc = item["weather"][0]["description"]
+
+                with c1:
+                    st.write(date)
+                with c2:
+                    st.write(desc.capitalize())
+                with c3:
+                    st.write(f"{min_temp:.1f} °C")
+                with c4:
+                    st.write(f"{max_temp:.1f} °C")
+
+                count += 1
+                if count == days:
+                    break
+
+    except Exception as e:
+        st.error("Error in displaying weekly forecast: " + str(e))
 
 
-def display_temperature_graph(forecast: dict):
-    """
-    Graph (line chart) using the 5-day / 3-hour forecast:
-    x-axis: datetime
-    y-axis: temperature in °C
-    """
-    if "list" not in forecast:
-        return
+# ---------------------- MAIN APP ---------------------- #
 
-    times = []
-    temps = []
-
-    for item in forecast["list"]:
-        dt = datetime.fromtimestamp(item["dt"])
-        temp_c = k_to_c(item["main"]["temp"])
-        times.append(dt)
-        temps.append(temp_c)
-
-    st.subheader("Temperature Trend (Next 5 Days)")
-    st.line_chart({"Temperature (°C)": temps}, x=times)
-
-
-# ---------- Main app ----------
 def main():
     st.set_page_config(page_title="Weather Forecasting", layout="wide")
 
-    # Sidebar
-    show_logo()
-    st.sidebar.title("Weather Forecasting")
-    city = st.sidebar.text_input("Enter city name", "London")
-    submit = st.sidebar.button("Get Weather")
+    # Sidebar logo
+    try:
+        st.sidebar.image("Logo.jpg", width=120)
+    except Exception:
+        pass
 
-    # Read keys from .env (local) OR Streamlit secrets (cloud)
-    weather_api_key = os.getenv("OPENWEATHER_API_KEY") or st.secrets.get("OPENWEATHER_API_KEY", None)
+    st.sidebar.title("Weather Forecasting with LLM")
+    city = st.sidebar.text_input("Enter the city name", "London")
+
+    # ✅ API key from .env OR Streamlit Secrets
+    weather_api_key = os.getenv("OPENWEATHER_API_KEY") or st.secrets.get("OPENWEATHER_API_KEY")
 
     if not weather_api_key:
-        st.sidebar.error("OPENWEATHER_API_KEY missing. Add it to .env (local) or Streamlit Secrets (cloud).")
+        st.sidebar.error("OPENWEATHER_API_KEY missing. Add it to .env (local) or Secrets (cloud).")
         st.stop()
 
+    submit = st.sidebar.button("Get Weather")
+
     if submit:
-        st.title(f"Weather Updates for {city}")
+        st.title("Weather Updates for " + city)
 
         with st.spinner("Fetching weather data..."):
-            weather = get_weather_data(city, weather_api_key)
+            weather_data = get_weather_data(city, weather_api_key)
 
-        cod = weather.get("cod")
-        # OpenWeather returns cod sometimes as int or str
-        if cod in (404, "404"):
-            st.error("City not found or API error!")
-            st.write(weather)  # helpful for debugging
-            return
+        if str(weather_data.get("cod")) != "200":
+            st.error(f"Error fetching weather: {weather_data.get('message', 'Unknown error')}")
+            st.stop()
 
-        # If API key invalid -> 401
-        if cod in (401, "401"):
-            st.error("Invalid API key (401). Check Streamlit Secrets / .env key value.")
-            st.write(weather)
-            return
-
-        # Metrics
+        # Metrics (same style as your old output)
         col1, col2 = st.columns(2)
         with col1:
-            st.metric("Temperature", f"{k_to_c(weather['main']['temp']):.2f} °C")
-            st.metric("Humidity", f"{weather['main']['humidity']}%")
+            st.metric("Temperature", f"{weather_data['main']['temp'] - 273.15:.2f} °C")
+            st.metric("Humidity", f"{weather_data['main']['humidity']}%")
         with col2:
-            st.metric("Wind Speed", f"{weather['wind']['speed']} m/s")
-            st.metric("Pressure", f"{weather['main']['pressure']} hPa")
+            st.metric("Pressure", f"{weather_data['main']['pressure']} hPa")
+            st.metric("Wind Speed", f"{weather_data['wind']['speed']} m/s")
 
-        st.write(generate_weather_description(weather))
+        st.write(generate_weather_description(weather_data))
 
-        lat = weather["coord"]["lat"]
-        lon = weather["coord"]["lon"]
+        lat = weather_data["coord"]["lat"]
+        lon = weather_data["coord"]["lon"]
 
-        with st.spinner("Fetching forecast..."):
-            forecast = get_forecast_data(lat, lon, weather_api_key)
+        forecast_data = get_weekly_forecast(weather_api_key, lat, lon)
 
-        # Graph first
-        display_temperature_graph(forecast)
+        # ✅ GRAPH first
+        display_temperature_graph(forecast_data, days=7)
 
-        # Weekly table
-        display_weekly_forecast_table(forecast)
+        # ✅ THEN your old weekly layout
+        display_weekly_forecast(forecast_data, days=7)
 
 
 if __name__ == "__main__":
