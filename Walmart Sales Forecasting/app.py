@@ -4,6 +4,7 @@ import numpy as np
 from prophet import Prophet
 import matplotlib.pyplot as plt
 from sklearn.metrics import mean_absolute_error
+from pathlib import Path
 
 st.set_page_config(page_title="Walmart Sales Forecasting", layout="centered")
 
@@ -16,7 +17,8 @@ if uploaded_file is not None:
     data = pd.read_csv(uploaded_file)
     st.success("Uploaded dataset loaded successfully!")
 else:
-    data = pd.read_csv("Walmart_Store_sales.csv")
+    DATA_PATH = Path(__file__).parent / "Walmart_Store_sales.csv"
+    data = pd.read_csv(DATA_PATH)
     st.info("Using default Walmart dataset.")
 
 st.subheader("Dataset Preview")
