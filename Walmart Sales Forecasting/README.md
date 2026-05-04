@@ -29,7 +29,7 @@ This project is an end-to-end time series forecasting application built using Pr
 
 ## 🌐 Live App
 
-👉 [Click here to view the app](YOUR_STREAMLIT_LINK)
+👉 [Click here to view the app](https://project-hfbafrvyxezbu5gi4o82d6.streamlit.app/)
 
 ## 📂 Dataset
 
