@@ -15,6 +15,22 @@ st.set_page_config(
 st.title("📊 Walmart Sales Forecasting Dashboard")
 st.write("Forecast Walmart weekly sales using Prophet with seasonality and holiday effects.")
 
+st.sidebar.header("📁 Dataset")
+
+st.sidebar.markdown("""
+### 📌 Dataset Requirements
+
+Your CSV must contain:
+
+- `Date` column
+- `Weekly_Sales` column
+
+Optional:
+- `Store` column
+
+The data should be weekly or follow a consistent time interval.
+""")
+
 uploaded_file = st.sidebar.file_uploader("Upload CSV file", type=["csv"])
 
 if uploaded_file is not None:
@@ -32,6 +48,8 @@ if not all(col in data.columns for col in required_columns):
     st.stop()
 
 data["Date"] = pd.to_datetime(data["Date"], dayfirst=True, errors="coerce")
+data["Weekly_Sales"] = pd.to_numeric(data["Weekly_Sales"], errors="coerce")
+
 data = data.dropna(subset=["Date", "Weekly_Sales"])
 
 st.sidebar.header("⚙️ Controls")
@@ -120,7 +138,9 @@ st.pyplot(fig2)
 
 st.subheader("📋 Future Forecast Data")
 
-future_forecast = forecast.tail(forecast_weeks)[["ds", "yhat", "yhat_lower", "yhat_upper"]]
+future_forecast = forecast.tail(forecast_weeks)[
+    ["ds", "yhat", "yhat_lower", "yhat_upper"]
+]
 
 st.dataframe(future_forecast)
 
@@ -139,4 +159,6 @@ st.write("""
 This application uses Prophet to forecast Walmart weekly sales.
 The model includes yearly seasonality, weekly seasonality, and US holiday effects.
 Users can upload new data, select a store, adjust the forecast horizon, and download forecast results.
+
+For uploaded datasets, the CSV file must contain at least `Date` and `Weekly_Sales` columns.
 """)
