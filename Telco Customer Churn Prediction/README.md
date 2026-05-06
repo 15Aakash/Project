@@ -5,7 +5,7 @@ An end-to-end supervised machine learning project for predicting customer churn 
 ---
 
 ## 🚀 Live Demo
-🔗 Streamlit App: (http://localhost:8501/)
+👉 [Click here to view the app](http://localhost:8501/)
 
 ---
 
