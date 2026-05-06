@@ -6,7 +6,7 @@ It allows users to check real-time weather details and a **7-day weather forecas
 
 ---
 ## Live Demo
-[https://project-7zbyttgb38dxx9zsdwhgvn.streamlit.app](https://project-7zbyttgb38dxx9zsdwhgvn.streamlit.app/)
+👉 [Click here to view the app](https://project-7zbyttgb38dxx9zsdwhgvn.streamlit.app/)
 
 ---
 
