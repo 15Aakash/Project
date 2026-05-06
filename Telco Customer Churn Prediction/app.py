@@ -73,7 +73,7 @@ if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
     st.sidebar.success("Uploaded dataset loaded!")
 else:
-    DATA_PATH = Path(__file__).parent / "WA_Fn-UseC_-Telco-Customer-Churn.csv"
+    DATA_PATH = Path(__file__).parent / "Telco Customer Churn.csv"
     df = pd.read_csv(DATA_PATH)
     st.sidebar.info("Using default churn dataset.")
 
