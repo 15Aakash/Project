@@ -19,90 +19,123 @@ st.set_page_config(
 
 st.markdown("""
 <style>
+
+/* MAIN */
 .main {
     background-color: #0E1117;
     color: white;
 }
 
+/* SIDEBAR */
 [data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #111827 0%, #0f172a 100%);
-    padding: 20px;
+    background: linear-gradient(180deg,#0f172a,#020617);
+    padding: 28px;
+    width: 340px !important;
 }
 
+/* SIDEBAR TEXT */
 [data-testid="stSidebar"] * {
-    color: #F8FAFC !important;
+    color: white !important;
 }
 
+/* SIDEBAR TITLE */
+.sidebar-title {
+    font-size: 34px;
+    font-weight: 800;
+    margin-bottom: 35px;
+    line-height: 1.4;
+}
+
+/* FILE UPLOADER */
+[data-testid="stFileUploader"] {
+    background-color: #172033;
+    border: 1px solid #334155;
+    border-radius: 18px;
+    padding: 18px;
+    margin-bottom: 22px;
+}
+
+/* UPLOAD BUTTON */
+[data-testid="stFileUploader"] button {
+    background: linear-gradient(135deg,#2563eb,#7c3aed);
+    color: white !important;
+    border-radius: 10px;
+    border: none;
+    font-weight: bold;
+}
+
+/* INFO BOX */
+.stAlert {
+    border-radius: 15px;
+    margin-top: 15px;
+}
+
+/* MULTISELECT */
+.stMultiSelect div[data-baseweb="select"] {
+    background-color: #172033 !important;
+    border: 1px solid #334155 !important;
+    border-radius: 15px !important;
+    min-height: 60px;
+}
+
+/* SLIDER */
+.stSlider {
+    padding-top: 20px;
+    padding-bottom: 25px;
+}
+
+/* KPI CARDS */
+.kpi-card {
+    background: linear-gradient(135deg,#2563eb,#7c3aed);
+    padding: 25px;
+    border-radius: 20px;
+    color: white;
+    text-align: center;
+    box-shadow: 0px 4px 18px rgba(0,0,0,0.4);
+}
+
+/* METRICS */
+[data-testid="metric-container"] {
+    background: #111827;
+    border: 1px solid #334155;
+    border-radius: 16px;
+    padding: 18px;
+}
+
+/* BUTTONS */
+.stButton button {
+    background: linear-gradient(135deg,#2563eb,#7c3aed);
+    color: white;
+    border-radius: 12px;
+    border: none;
+    font-weight: bold;
+    padding: 10px 22px;
+}
+
+.stDownloadButton button {
+    background: linear-gradient(135deg,#059669,#10b981);
+    color: white;
+    border-radius: 12px;
+    border: none;
+    font-weight: bold;
+    padding: 10px 22px;
+}
+
+/* HEADINGS */
 h1 {
-    color: #FFFFFF;
-    font-weight: 700;
+    color: white;
+    font-weight: 800;
 }
 
 h2, h3 {
     color: #E2E8F0;
 }
 
-.kpi-card {
-    background: linear-gradient(135deg,#2563eb,#7c3aed);
-    padding: 25px;
-    border-radius: 18px;
-    color: white;
-    text-align: center;
-    box-shadow: 0px 4px 15px rgba(0,0,0,0.35);
-}
-
-.stMultiSelect div[data-baseweb="select"] {
-    background-color: #1E293B;
-    border-radius: 12px;
-    border: 1px solid #334155;
-}
-
-[data-testid="stFileUploader"] {
-    background-color: #1E293B;
-    padding: 15px;
-    border-radius: 15px;
-    border: 1px solid #334155;
-}
-
-[data-testid="metric-container"] {
-    background: #111827;
-    border: 1px solid #334155;
-    padding: 15px;
-    border-radius: 15px;
-}
-
-.stButton button {
-    background: linear-gradient(135deg,#2563eb,#7c3aed);
-    color: white;
-    border-radius: 10px;
-    border: none;
-    padding: 10px 20px;
-    font-weight: bold;
-}
-
-.stDownloadButton button {
-    background: linear-gradient(135deg,#059669,#10b981);
-    color: white;
-    border-radius: 10px;
-    border: none;
-    padding: 10px 20px;
-    font-weight: bold;
-}
-
-.stAlert {
-    border-radius: 12px;
-}
-
+/* REMOVE TOP GAP */
 .block-container {
     padding-top: 2rem;
 }
 
-.sidebar-title {
-    font-size: 26px;
-    font-weight: bold;
-    color: white;
-    margin-bottom: 20px;
-}
 </style>
 """, unsafe_allow_html=True)
 
@@ -112,7 +145,7 @@ st.markdown(
 )
 
 st.sidebar.markdown(
-    '<div class="sidebar-title">⚙️ Dashboard Controls</div>',
+    '<div class="sidebar-title">⚙ Dashboard Controls</div>',
     unsafe_allow_html=True
 )
 
@@ -227,6 +260,7 @@ for i in range(1, 11):
     wcss.append(kmeans_temp.inertia_)
 
 fig_elbow = go.Figure()
+
 fig_elbow.add_trace(go.Scatter(
     x=list(range(1, 11)),
     y=wcss,
@@ -343,6 +377,7 @@ st.subheader("💡 Business Insights")
 
 for cluster in sorted(df["Cluster"].unique()):
     cluster_size = df[df["Cluster"] == cluster].shape[0]
+
     st.markdown(f"""
     ### Cluster {cluster}
 
