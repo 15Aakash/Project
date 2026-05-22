@@ -43,5 +43,9 @@ class InterviewCoachAgent:
         return generate_interview_questions(resume_text, job_description)
     
 class CareerCoachAgent:
-    def chat(self, resume_text, user_question):
-        return career_chatbot_response(resume_text, user_question)
+    def chat(self, resume_text, chat_history, user_question):
+        return career_chatbot_response(
+            resume_text,
+            chat_history,
+            user_question
+        )
