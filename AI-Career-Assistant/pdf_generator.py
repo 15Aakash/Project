@@ -3,7 +3,6 @@ import tempfile
 
 
 def clean_text(text):
-
     replacements = {
         "•": "-",
         "–": "-",
@@ -17,71 +16,57 @@ def clean_text(text):
     for old, new in replacements.items():
         text = text.replace(old, new)
 
-    text = text.encode("latin-1", "ignore").decode("latin-1")
-
-    return text
-
-
-class PDF(FPDF):
-
-    def header(self):
-        self.set_font("Arial", "B", 18)
-        self.set_text_color(30, 30, 30)
-        self.cell(0, 12, self.title_text, ln=True, align="C")
-        self.ln(8)
-
-    def footer(self):
-        self.set_y(-15)
-        self.set_font("Arial", "I", 9)
-        self.set_text_color(120, 120, 120)
-        self.cell(
-            0,
-            10,
-            f"Page {self.page_no()}",
-            align="C"
-        )
+    return text.encode("latin-1", "ignore").decode("latin-1")
 
 
 def create_pdf(title, content, filename):
-
-    pdf = PDF()
-
-    pdf.title_text = clean_text(title)
-
-    pdf.set_auto_page_break(auto=True, margin=20)
-
+    pdf = FPDF()
+    pdf.set_auto_page_break(auto=True, margin=18)
+    pdf.set_margins(left=20, top=18, right=20)
     pdf.add_page()
 
-    pdf.set_left_margin(18)
-    pdf.set_right_margin(18)
-
-    pdf.set_font("Arial", size=12)
-
+    title = clean_text(title)
     content = clean_text(content)
 
-    paragraphs = content.split("\n")
+    # Title only ONCE, not repeated on every page
+    pdf.set_font("Arial", "B", 16)
+    pdf.cell(0, 10, title, ln=True, align="C")
+    pdf.ln(8)
 
-    for para in paragraphs:
+    pdf.set_font("Arial", "", 11)
 
-        para = para.strip()
+    lines = content.split("\n")
 
-        if not para:
-            pdf.ln(6)
+    for line in lines:
+        line = line.strip()
+
+        # Avoid repeating title if content also starts with same title
+        if line.lower() == title.lower():
             continue
 
-        pdf.multi_cell(
-            0,
-            8,
-            para
-        )
+        if not line:
+            pdf.ln(4)
+            continue
 
-        pdf.ln(2)
+        if line.endswith(":"):
+            pdf.set_font("Arial", "B", 11)
+            pdf.multi_cell(0, 7, line)
+            pdf.set_font("Arial", "", 11)
+        else:
+            pdf.multi_cell(0, 7, line, align="J")
 
-    temp_file = tempfile.NamedTemporaryFile(
-        delete=False,
-        suffix=".pdf"
-    )
+        pdf.ln(1)
 
+    # Page numbers only
+    total_pages = pdf.page_no()
+    for page in range(1, total_pages + 1):
+        pdf.page = page
+        pdf.set_y(-15)
+        pdf.set_font("Arial", "I", 9)
+        pdf.set_text_color(120, 120, 120)
+        pdf.cell(0, 10, f"Page {page}", align="C")
+
+    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
     pdf.output(temp_file.name)
 
     return temp_file.name
