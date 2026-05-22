@@ -408,7 +408,7 @@ elif page == "💬 Recruiter Outreach":
             )
 
             pdf_path = create_pdf(
-                "LinkedIn Recruiter Outreach Message",
+                "",
                 edited_recruiter_message,
                 "recruiter_outreach_message.pdf"
             )
@@ -453,7 +453,7 @@ elif page == "📝 Resume Tailor":
             )
 
             pdf_path = create_pdf(
-                "Tailored Resume Improvements",
+                "",
                 edited_tailored_resume,
                 "tailored_resume_improvements.pdf"
             )
