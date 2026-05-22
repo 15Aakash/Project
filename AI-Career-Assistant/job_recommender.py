@@ -35,6 +35,12 @@ Format:
 
 Recommend 5 roles.
 
+For every role:
+- missing_skills must contain at least 2 items
+- learning_plan must contain at least 2 items
+- match_score must be a number between 0 and 100
+- Do not leave any list empty
+
 Resume:
 {resume_text}
 """
