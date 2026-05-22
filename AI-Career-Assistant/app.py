@@ -1,4 +1,5 @@
 import streamlit as st
+import plotly.express as px
 
 from resume_parser import extract_resume_text
 from job_analyzer import analyze_job_match
@@ -45,9 +46,12 @@ st.sidebar.write("✅ Recruiter Message Generator")
 st.sidebar.write("✅ Resume Tailoring Agent")
 st.sidebar.write("✅ Application Tracker")
 st.sidebar.write("✅ AI Interview Coach")
+st.sidebar.write("✅ Analytics Dashboard")
 
 st.markdown('<div class="main-title">AI Career Assistant</div>', unsafe_allow_html=True)
-st.write("A modern AI-powered job application assistant for resume matching, ATS optimization, and interview preparation.")
+st.write(
+    "A modern AI-powered job application assistant for resume matching, ATS optimization, and interview preparation."
+)
 
 st.markdown("---")
 
@@ -108,6 +112,7 @@ with tabs[0]:
 
     if st.session_state.analysis is None:
         st.info("Upload your resume, paste a job description, and click Analyze Job.")
+
     else:
         analysis = st.session_state.analysis
 
@@ -169,6 +174,7 @@ with tabs[1]:
 
     if st.session_state.resume_text == "" or job_description.strip() == "":
         st.info("Analyze a job first to generate a cover letter.")
+
     else:
         if st.button("Generate Cover Letter", use_container_width=True):
             with st.spinner("Generating cover letter..."):
@@ -192,6 +198,7 @@ with tabs[2]:
 
     if st.session_state.resume_text == "" or job_description.strip() == "":
         st.info("Analyze a job first to generate a recruiter message.")
+
     else:
         if st.button("Generate Recruiter Message", use_container_width=True):
             with st.spinner("Generating recruiter message..."):
@@ -215,6 +222,7 @@ with tabs[3]:
 
     if st.session_state.resume_text == "" or job_description.strip() == "":
         st.info("Analyze a job first to generate tailored resume improvements.")
+
     else:
         if st.button("Generate Resume Improvements", use_container_width=True):
             with st.spinner("Generating tailored resume improvements..."):
@@ -223,7 +231,11 @@ with tabs[3]:
                     job_description
                 )
 
-            st.text_area("Tailored Resume Improvements", tailored_resume, height=450)
+            st.text_area(
+                "Tailored Resume Improvements",
+                tailored_resume,
+                height=450
+            )
 
             st.download_button(
                 label="Download Resume Improvements",
@@ -238,6 +250,7 @@ with tabs[4]:
 
     if st.session_state.resume_text == "" or job_description.strip() == "":
         st.info("Analyze a job first to generate interview questions.")
+
     else:
         if st.button("Generate Interview Questions", use_container_width=True):
             with st.spinner("Generating interview questions..."):
@@ -246,7 +259,11 @@ with tabs[4]:
                     job_description
                 )
 
-            st.text_area("Interview Preparation", interview_questions, height=500)
+            st.text_area(
+                "Interview Preparation",
+                interview_questions,
+                height=500
+            )
 
             st.download_button(
                 label="Download Interview Questions",
@@ -280,5 +297,33 @@ with tabs[5]:
     applications = load_applications()
 
     if not applications.empty:
+        st.markdown("---")
+        st.subheader("📊 Application Analytics")
+
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            st.metric("Total Applications", len(applications))
+
+        with col2:
+            applied_count = len(applications[applications["status"] == "Applied"])
+            st.metric("Applied", applied_count)
+
+        with col3:
+            interview_count = len(applications[applications["status"] == "Interview"])
+            st.metric("Interviews", interview_count)
+
+        status_counts = applications["status"].value_counts().reset_index()
+        status_counts.columns = ["Status", "Count"]
+
+        fig = px.pie(
+            status_counts,
+            names="Status",
+            values="Count",
+            title="Applications by Status"
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+
         st.subheader("Saved Applications")
         st.dataframe(applications, use_container_width=True)
