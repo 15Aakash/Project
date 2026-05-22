@@ -622,23 +622,21 @@ elif page == "📌 Tracker":
                "Please fill: " + ", ".join(missing_fields)
          )
 
-    else:
+       else:
 
-       saved = save_application(
-          company,
-          role,
-          job_link,
-          status,
-          notes
+            saved = save_application(
+            company,
+            role,
+            job_link,
+            status,
+            notes
         )
 
-      if saved:
-         st.success("Application saved successfully!")
+        if saved:
+            st.success("Application saved successfully!")
 
-      else:
-         st.warning(
-             "This application is already saved."
-        )
+        else:
+            st.warning("This application is already saved.")
 
     applications = load_applications()
 
