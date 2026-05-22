@@ -5,6 +5,7 @@ from recruiter_message import generate_recruiter_message
 from resume_tailor import generate_tailored_resume_points
 from interview_coach import generate_interview_questions
 from job_recommender import recommend_jobs
+from career_chatbot import career_chatbot_response
 
 
 class ResumeAgent:
@@ -40,3 +41,7 @@ class ResumeTailorAgent:
 class InterviewCoachAgent:
     def generate(self, resume_text, job_description):
         return generate_interview_questions(resume_text, job_description)
+    
+class CareerCoachAgent:
+    def chat(self, resume_text, user_question):
+        return career_chatbot_response(resume_text, user_question)
