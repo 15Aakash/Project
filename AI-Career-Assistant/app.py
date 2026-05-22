@@ -9,6 +9,7 @@ from recruiter_message import generate_recruiter_message
 from resume_tailor import generate_tailored_resume_points
 from tracker import save_application, load_applications
 from interview_coach import generate_interview_questions
+from job_recommender import recommend_jobs
 
 st.set_page_config(
     page_title="AI Career Assistant",
@@ -16,41 +17,19 @@ st.set_page_config(
     page_icon="🤖"
 )
 
-st.markdown("""
-<style>
-.main-title {
-    font-size: 42px;
-    font-weight: 800;
-}
-.card {
-    background-color: #f8f9fb;
-    padding: 22px;
-    border-radius: 16px;
-    border: 1px solid #e6e8eb;
-    margin-bottom: 15px;
-}
-.metric-card {
-    background-color: #eef6ff;
-    padding: 20px;
-    border-radius: 16px;
-    border: 1px solid #cfe6ff;
-}
-</style>
-""", unsafe_allow_html=True)
-
 st.sidebar.title("🤖 AI Career Assistant")
 st.sidebar.write("### Features")
 st.sidebar.write("✅ Resume Parser")
 st.sidebar.write("✅ ATS Match Score")
+st.sidebar.write("✅ Job Recommendation Engine")
 st.sidebar.write("✅ Cover Letter Generator")
 st.sidebar.write("✅ Recruiter Message Generator")
 st.sidebar.write("✅ Resume Tailoring Agent")
 st.sidebar.write("✅ Application Tracker")
 st.sidebar.write("✅ AI Interview Coach")
 st.sidebar.write("✅ Analytics Dashboard")
-st.sidebar.write("✅ Match Score Gauge")
 
-st.markdown('<div class="main-title">AI Career Assistant</div>', unsafe_allow_html=True)
+st.markdown("<h1>AI Career Assistant</h1>", unsafe_allow_html=True)
 st.write(
     "A modern AI-powered job application assistant for resume matching, ATS optimization, and interview preparation."
 )
@@ -101,6 +80,7 @@ if analyze_button:
 
 tabs = st.tabs([
     "📊 Match Dashboard",
+    "🎯 Job Recommendations",
     "✍️ Cover Letter",
     "💬 Recruiter Message",
     "📝 Resume Tailor",
@@ -197,6 +177,44 @@ with tabs[0]:
 
 with tabs[1]:
 
+    st.header("🎯 AI Job Recommendation Engine")
+
+    if st.session_state.resume_text == "":
+        st.info("Upload your resume and click Analyze Job first.")
+
+    else:
+        if st.button("Generate Job Recommendations", use_container_width=True):
+
+            with st.spinner("Finding best matching roles..."):
+                recommendations = recommend_jobs(
+                    st.session_state.resume_text
+                )
+
+            for item in recommendations["recommended_roles"]:
+
+                st.markdown("---")
+
+                st.subheader(item["role"])
+
+                st.metric("Role Match Score", item["match_score"])
+
+                st.write("**Why this is a good fit:**")
+                st.write(item["why_good_fit"])
+
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    st.write("**Missing Skills:**")
+                    for skill in item["missing_skills"]:
+                        st.warning(skill)
+
+                with col2:
+                    st.write("**Learning Plan:**")
+                    for step in item["learning_plan"]:
+                        st.info(step)
+
+with tabs[2]:
+
     st.header("✍️ Tailored Cover Letter")
 
     if st.session_state.resume_text == "" or job_description.strip() == "":
@@ -219,7 +237,7 @@ with tabs[1]:
                 mime="text/plain"
             )
 
-with tabs[2]:
+with tabs[3]:
 
     st.header("💬 LinkedIn Recruiter Message")
 
@@ -243,7 +261,7 @@ with tabs[2]:
                 mime="text/plain"
             )
 
-with tabs[3]:
+with tabs[4]:
 
     st.header("📝 Resume Tailoring Agent")
 
@@ -271,7 +289,7 @@ with tabs[3]:
                 mime="text/plain"
             )
 
-with tabs[4]:
+with tabs[5]:
 
     st.header("🎤 AI Interview Coach")
 
@@ -299,7 +317,7 @@ with tabs[4]:
                 mime="text/plain"
             )
 
-with tabs[5]:
+with tabs[6]:
 
     st.header("📌 Application Tracker")
 
