@@ -15,14 +15,18 @@ def generate_recruiter_message(resume_text, job_description):
     prompt = f"""
 You are a professional career assistant.
 
-Write a short LinkedIn recruiter message for this job.
+Write a short LinkedIn outreach message from the candidate to a recruiter or hiring manager.
 
-Rules:
-- Under 120 words
-- Friendly and professional
-- Mention relevant skills from resume
-- Ask politely about the opportunity
-- Do not exaggerate
+Important:
+- The candidate is applying or showing interest.
+- Do NOT write as if the recruiter is contacting the candidate.
+- Start with: Hi [Recruiter Name],
+- Keep it under 120 words.
+- Mention relevant skills from the resume.
+- Mention interest in the role/company.
+- Ask politely to connect or discuss the opportunity.
+- End with: Best regards, Aakash Kathirvel
+- Do not invent experience.
 
 Resume:
 {resume_text}
