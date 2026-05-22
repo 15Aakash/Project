@@ -50,19 +50,21 @@ def create_pdf(title, content, filename):
     title = clean_text(title)
     content = clean_text(content)
 
-    # Main Title
-    pdf.set_font("Arial", "B", 18)
-    pdf.set_text_color(25, 25, 25)
+    # Add title only if title is not empty
+    if title.strip() != "":
 
-    pdf.cell(
-        0,
-        12,
-        title,
-        ln=True,
-        align="C"
-    )
+        pdf.set_font("Arial", "B", 18)
+        pdf.set_text_color(25, 25, 25)
 
-    pdf.ln(10)
+        pdf.cell(
+            0,
+            12,
+            title,
+            ln=True,
+            align="C"
+        )
+
+        pdf.ln(10)
 
     pdf.set_font("Arial", "", 11)
     pdf.set_text_color(40, 40, 40)
@@ -73,14 +75,13 @@ def create_pdf(title, content, filename):
 
         line = line.strip()
 
-        if line.lower() == title.lower():
+        if title.strip() != "" and line.lower() == title.lower():
             continue
 
         if not line:
             pdf.ln(5)
             continue
 
-        # Section Headings
         if line.endswith(":"):
 
             pdf.ln(3)
