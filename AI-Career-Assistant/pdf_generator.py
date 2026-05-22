@@ -3,19 +3,23 @@ import tempfile
 
 
 def clean_text(text):
+
     replacements = {
         "•": "-",
         "–": "-",
         "—": "-",
         "’": "'",
         "“": '"',
-        "”": '"'
+        "”": '"',
+        "\t": " "
     }
 
     for old, new in replacements.items():
         text = text.replace(old, new)
 
-    return text.encode("latin-1", "ignore").decode("latin-1")
+    text = text.encode("latin-1", "ignore").decode("latin-1")
+
+    return text
 
 
 def create_pdf(title, content, filename):
@@ -26,7 +30,7 @@ def create_pdf(title, content, filename):
     pdf.set_auto_page_break(auto=True, margin=15)
 
     pdf.set_font("Arial", "B", 16)
-    pdf.cell(0, 10, clean_text(title), ln=True)
+    pdf.cell(190, 10, clean_text(title), new_x="LMARGIN", new_y="NEXT")
 
     pdf.ln(5)
 
@@ -38,10 +42,21 @@ def create_pdf(title, content, filename):
 
     for line in lines:
 
-        if line.strip() == "":
-            pdf.ln(4)
-        else:
-            pdf.multi_cell(0, 8, line)
+        line = line.strip()
+
+        if not line:
+            pdf.ln(5)
+            continue
+
+        try:
+            pdf.multi_cell(
+                190,
+                8,
+                line
+            )
+
+        except:
+            continue
 
     temp_file = tempfile.NamedTemporaryFile(
         delete=False,
