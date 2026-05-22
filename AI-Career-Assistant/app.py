@@ -1,6 +1,7 @@
 import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
+from pdf_generator import create_pdf
 
 from agents import (
     ResumeAgent,
@@ -14,6 +15,8 @@ from agents import (
 )
 
 from tracker import save_application, load_applications
+from pdf_generator import create_pdf
+
 
 st.set_page_config(
     page_title="AI Career Assistant",
@@ -33,6 +36,7 @@ st.sidebar.write("✅ Interview Coach Agent")
 st.sidebar.write("✅ AI Career Coach with Memory")
 st.sidebar.write("✅ Application Tracker")
 st.sidebar.write("✅ Analytics Dashboard")
+st.sidebar.write("✅ PDF Export")
 
 st.markdown("""
 <h1 style='font-size:48px;'>
@@ -213,6 +217,44 @@ if page == "📊 Match Dashboard":
         st.subheader("🧠 Reason")
         st.write(analysis["reason"])
 
+        ats_report = f"""
+AI Job Match Report
+
+Match Score: {score}%
+Decision: {analysis["final_decision"]}
+ATS Readiness: {readiness}
+Missing Skills Count: {len(analysis["missing_skills"])}
+
+Strong Matching Skills:
+{chr(10).join(["- " + skill for skill in analysis["strong_skills"]])}
+
+Missing Skills:
+{chr(10).join(["- " + skill for skill in analysis["missing_skills"]])}
+
+ATS Keywords To Add:
+{chr(10).join(["- " + keyword for keyword in analysis["keywords_to_add"]])}
+
+Resume Improvements:
+{chr(10).join(["- " + improvement for improvement in analysis["resume_improvements"]])}
+
+Reason:
+{analysis["reason"]}
+"""
+
+        pdf_path = create_pdf(
+            "AI Job Match Report",
+            ats_report,
+            "ats_report.pdf"
+        )
+
+        with open(pdf_path, "rb") as pdf_file:
+            st.download_button(
+                label="Download ATS Report as PDF",
+                data=pdf_file,
+                file_name="ats_report.pdf",
+                mime="application/pdf"
+            )
+
         with st.expander("View Extracted Resume Text"):
             st.text_area(
                 "Resume Content",
@@ -237,6 +279,8 @@ elif page == "🎯 Job Recommendations":
 
         if st.session_state.recommendations is not None:
 
+            recommendation_text = ""
+
             for item in st.session_state.recommendations["recommended_roles"]:
 
                 st.markdown("---")
@@ -257,6 +301,36 @@ elif page == "🎯 Job Recommendations":
                     st.write("### Learning Plan:")
                     for step in item["learning_plan"]:
                         st.info(step)
+
+                recommendation_text += f"""
+Role: {item["role"]}
+Match Score: {item["match_score"]}
+
+Why Good Fit:
+{item["why_good_fit"]}
+
+Missing Skills:
+{chr(10).join(["- " + skill for skill in item["missing_skills"]])}
+
+Learning Plan:
+{chr(10).join(["- " + step for step in item["learning_plan"]])}
+
+----------------------------------------
+"""
+
+            pdf_path = create_pdf(
+                "AI Job Recommendations",
+                recommendation_text,
+                "job_recommendations.pdf"
+            )
+
+            with open(pdf_path, "rb") as pdf_file:
+                st.download_button(
+                    label="Download Job Recommendations as PDF",
+                    data=pdf_file,
+                    file_name="job_recommendations.pdf",
+                    mime="application/pdf"
+                )
 
 elif page == "✍️ Cover Letter":
 
@@ -282,11 +356,25 @@ elif page == "✍️ Cover Letter":
             )
 
             st.download_button(
-                label="Download Cover Letter",
+                label="Download Cover Letter as TXT",
                 data=st.session_state.cover_letter,
                 file_name="cover_letter.txt",
                 mime="text/plain"
             )
+
+            pdf_path = create_pdf(
+                "Tailored Cover Letter",
+                st.session_state.cover_letter,
+                "cover_letter.pdf"
+            )
+
+            with open(pdf_path, "rb") as pdf_file:
+                st.download_button(
+                    label="Download Cover Letter as PDF",
+                    data=pdf_file,
+                    file_name="cover_letter.pdf",
+                    mime="application/pdf"
+                )
 
 elif page == "💬 Recruiter Message":
 
@@ -312,11 +400,25 @@ elif page == "💬 Recruiter Message":
             )
 
             st.download_button(
-                label="Download Recruiter Message",
+                label="Download Recruiter Message as TXT",
                 data=st.session_state.recruiter_message,
                 file_name="recruiter_message.txt",
                 mime="text/plain"
             )
+
+            pdf_path = create_pdf(
+                "LinkedIn Recruiter Message",
+                st.session_state.recruiter_message,
+                "recruiter_message.pdf"
+            )
+
+            with open(pdf_path, "rb") as pdf_file:
+                st.download_button(
+                    label="Download Recruiter Message as PDF",
+                    data=pdf_file,
+                    file_name="recruiter_message.pdf",
+                    mime="application/pdf"
+                )
 
 elif page == "📝 Resume Tailor":
 
@@ -342,11 +444,25 @@ elif page == "📝 Resume Tailor":
             )
 
             st.download_button(
-                label="Download Resume Improvements",
+                label="Download Resume Improvements as TXT",
                 data=st.session_state.tailored_resume,
                 file_name="tailored_resume_improvements.txt",
                 mime="text/plain"
             )
+
+            pdf_path = create_pdf(
+                "Tailored Resume Improvements",
+                st.session_state.tailored_resume,
+                "tailored_resume_improvements.pdf"
+            )
+
+            with open(pdf_path, "rb") as pdf_file:
+                st.download_button(
+                    label="Download Resume Improvements as PDF",
+                    data=pdf_file,
+                    file_name="tailored_resume_improvements.pdf",
+                    mime="application/pdf"
+                )
 
 elif page == "🎤 Interview Coach":
 
@@ -372,11 +488,25 @@ elif page == "🎤 Interview Coach":
             )
 
             st.download_button(
-                label="Download Interview Questions",
+                label="Download Interview Questions as TXT",
                 data=st.session_state.interview_questions,
                 file_name="interview_questions.txt",
                 mime="text/plain"
             )
+
+            pdf_path = create_pdf(
+                "Interview Preparation Questions",
+                st.session_state.interview_questions,
+                "interview_questions.pdf"
+            )
+
+            with open(pdf_path, "rb") as pdf_file:
+                st.download_button(
+                    label="Download Interview Questions as PDF",
+                    data=pdf_file,
+                    file_name="interview_questions.pdf",
+                    mime="application/pdf"
+                )
 
 elif page == "💬 AI Career Coach":
 
@@ -423,9 +553,28 @@ elif page == "💬 AI Career Coach":
             st.markdown("---")
             st.subheader("Conversation")
 
+            chat_text = ""
+
             for chat in reversed(st.session_state.coach_history):
                 st.chat_message("user").write(chat["question"])
                 st.chat_message("assistant").write(chat["answer"])
+
+                chat_text += f"User: {chat['question']}\n"
+                chat_text += f"Assistant: {chat['answer']}\n\n"
+
+            pdf_path = create_pdf(
+                "AI Career Coach Conversation",
+                chat_text,
+                "career_coach_conversation.pdf"
+            )
+
+            with open(pdf_path, "rb") as pdf_file:
+                st.download_button(
+                    label="Download Career Coach Conversation as PDF",
+                    data=pdf_file,
+                    file_name="career_coach_conversation.pdf",
+                    mime="application/pdf"
+                )
 
 elif page == "📌 Tracker":
 
