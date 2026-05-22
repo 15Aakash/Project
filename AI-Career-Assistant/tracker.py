@@ -6,6 +6,7 @@ FILE_NAME = "applications.csv"
 
 
 def save_application(company, role, job_link, status, notes):
+
     new_data = pd.DataFrame([{
         "date": date.today(),
         "company": company,
@@ -16,6 +17,7 @@ def save_application(company, role, job_link, status, notes):
     }])
 
     if os.path.exists(FILE_NAME):
+
         data = pd.read_csv(FILE_NAME)
 
         duplicate = data[
@@ -33,11 +35,24 @@ def save_application(company, role, job_link, status, notes):
         data = new_data
 
     data.to_csv(FILE_NAME, index=False)
+
     return True
 
 
 def load_applications():
+
     if os.path.exists(FILE_NAME):
         return pd.read_csv(FILE_NAME)
-    else:
-        return pd.DataFrame()
+
+    return pd.DataFrame()
+
+
+def delete_application(index):
+
+    if os.path.exists(FILE_NAME):
+
+        data = pd.read_csv(FILE_NAME)
+
+        data = data.drop(index)
+
+        data.to_csv(FILE_NAME, index=False)
