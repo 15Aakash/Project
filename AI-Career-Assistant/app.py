@@ -10,13 +10,34 @@ from interview_coach import generate_interview_questions
 
 st.set_page_config(
     page_title="AI Career Assistant",
-    layout="wide"
+    layout="wide",
+    page_icon="🤖"
 )
 
-st.title("AI Career Assistant")
+st.markdown("""
+<style>
+.main-title {
+    font-size: 42px;
+    font-weight: 800;
+}
+.card {
+    background-color: #f8f9fb;
+    padding: 22px;
+    border-radius: 16px;
+    border: 1px solid #e6e8eb;
+    margin-bottom: 15px;
+}
+.metric-card {
+    background-color: #eef6ff;
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px solid #cfe6ff;
+}
+</style>
+""", unsafe_allow_html=True)
 
-st.sidebar.title("AI Career Assistant")
-st.sidebar.write("Features:")
+st.sidebar.title("🤖 AI Career Assistant")
+st.sidebar.write("### Features")
 st.sidebar.write("✅ Resume Parser")
 st.sidebar.write("✅ ATS Match Score")
 st.sidebar.write("✅ Cover Letter Generator")
@@ -25,21 +46,34 @@ st.sidebar.write("✅ Resume Tailoring Agent")
 st.sidebar.write("✅ Application Tracker")
 st.sidebar.write("✅ AI Interview Coach")
 
-st.write(
-    "AI-powered assistant for resume analysis, ATS job matching, and job application content generation."
-)
+st.markdown('<div class="main-title">AI Career Assistant</div>', unsafe_allow_html=True)
+st.write("A modern AI-powered job application assistant for resume matching, ATS optimization, and interview preparation.")
 
-resume_file = st.file_uploader(
-    "Upload your resume",
-    type=["pdf", "docx"]
-)
+st.markdown("---")
 
-job_description = st.text_area(
-    "Paste the job description here",
-    height=250
-)
+col1, col2 = st.columns([1, 2])
 
-if st.button("Analyze Job"):
+with col1:
+    resume_file = st.file_uploader(
+        "Upload Resume",
+        type=["pdf", "docx"]
+    )
+
+with col2:
+    job_description = st.text_area(
+        "Paste Job Description",
+        height=180
+    )
+
+analyze_button = st.button("🚀 Analyze Job", use_container_width=True)
+
+if "resume_text" not in st.session_state:
+    st.session_state.resume_text = ""
+
+if "analysis" not in st.session_state:
+    st.session_state.analysis = None
+
+if analyze_button:
 
     if resume_file is None:
         st.warning("Please upload your resume first.")
@@ -49,178 +83,202 @@ if st.button("Analyze Job"):
 
     else:
         with st.spinner("Reading resume..."):
-            resume_text = extract_resume_text(resume_file)
-
-        st.success("Resume successfully read!")
-
-        with st.expander("View Extracted Resume Text"):
-            st.text_area(
-                "Resume Content",
-                resume_text,
-                height=300
-            )
+            st.session_state.resume_text = extract_resume_text(resume_file)
 
         with st.spinner("Analyzing ATS match..."):
-            analysis = analyze_job_match(
-                resume_text,
+            st.session_state.analysis = analyze_job_match(
+                st.session_state.resume_text,
                 job_description
             )
 
-        st.markdown("---")
-        st.header("AI Job Match Dashboard")
+        st.success("Analysis completed successfully!")
 
-        st.metric("Match Score", analysis["match_score"])
+tabs = st.tabs([
+    "📊 Match Dashboard",
+    "✍️ Cover Letter",
+    "💬 Recruiter Message",
+    "📝 Resume Tailor",
+    "🎤 Interview Coach",
+    "📌 Tracker"
+])
+
+with tabs[0]:
+
+    st.header("📊 AI Job Match Dashboard")
+
+    if st.session_state.analysis is None:
+        st.info("Upload your resume, paste a job description, and click Analyze Job.")
+    else:
+        analysis = st.session_state.analysis
+
+        score_text = str(analysis["match_score"]).replace("%", "").replace("/100", "").strip()
+
+        try:
+            score = int(score_text)
+        except:
+            score = 0
+
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            st.metric("Match Score", f"{score}%")
+
+        with col2:
+            st.metric("Decision", analysis["final_decision"])
+
+        with col3:
+            st.metric("Missing Skills", len(analysis["missing_skills"]))
+
+        st.progress(score / 100)
+
+        st.markdown("---")
 
         col1, col2 = st.columns(2)
 
         with col1:
-            st.subheader("Strong Matching Skills")
+            st.subheader("✅ Strong Matching Skills")
             for skill in analysis["strong_skills"]:
                 st.success(skill)
 
         with col2:
-            st.subheader("Missing Skills")
+            st.subheader("⚠️ Missing Skills")
             for skill in analysis["missing_skills"]:
                 st.error(skill)
 
-        st.subheader("ATS Keywords To Add")
+        st.subheader("🎯 ATS Keywords To Add")
         for keyword in analysis["keywords_to_add"]:
             st.info(keyword)
 
-        st.subheader("Resume Improvements")
+        st.subheader("🛠 Resume Improvements")
         for improvement in analysis["resume_improvements"]:
             st.warning(improvement)
 
-        st.subheader("Final Decision")
-        decision = analysis["final_decision"]
-
-        if decision.upper() == "APPLY":
-            st.success(decision)
-        else:
-            st.error(decision)
-
-        st.subheader("Reason")
+        st.subheader("🧠 Reason")
         st.write(analysis["reason"])
 
-        st.markdown("---")
-
-        with st.spinner("Generating cover letter..."):
-            cover_letter = generate_cover_letter(
-                resume_text,
-                job_description
+        with st.expander("View Extracted Resume Text"):
+            st.text_area(
+                "Resume Content",
+                st.session_state.resume_text,
+                height=300
             )
 
-        st.header("Tailored Cover Letter")
+with tabs[1]:
 
-        st.text_area(
-            "Cover Letter",
-            cover_letter,
-            height=300
-        )
+    st.header("✍️ Tailored Cover Letter")
 
-        st.download_button(
-            label="Download Cover Letter",
-            data=cover_letter,
-            file_name="cover_letter.txt",
-            mime="text/plain"
-        )
+    if st.session_state.resume_text == "" or job_description.strip() == "":
+        st.info("Analyze a job first to generate a cover letter.")
+    else:
+        if st.button("Generate Cover Letter", use_container_width=True):
+            with st.spinner("Generating cover letter..."):
+                cover_letter = generate_cover_letter(
+                    st.session_state.resume_text,
+                    job_description
+                )
 
-        st.markdown("---")
+            st.text_area("Cover Letter", cover_letter, height=350)
 
-        with st.spinner("Generating recruiter message..."):
-            recruiter_message = generate_recruiter_message(
-                resume_text,
-                job_description
+            st.download_button(
+                label="Download Cover Letter",
+                data=cover_letter,
+                file_name="cover_letter.txt",
+                mime="text/plain"
             )
 
-        st.header("LinkedIn Recruiter Message")
+with tabs[2]:
 
-        st.text_area(
-            "Recruiter Message",
-            recruiter_message,
-            height=200
-        )
+    st.header("💬 LinkedIn Recruiter Message")
 
-        st.download_button(
-            label="Download Recruiter Message",
-            data=recruiter_message,
-            file_name="recruiter_message.txt",
-            mime="text/plain"
-        )
+    if st.session_state.resume_text == "" or job_description.strip() == "":
+        st.info("Analyze a job first to generate a recruiter message.")
+    else:
+        if st.button("Generate Recruiter Message", use_container_width=True):
+            with st.spinner("Generating recruiter message..."):
+                recruiter_message = generate_recruiter_message(
+                    st.session_state.resume_text,
+                    job_description
+                )
 
-        st.markdown("---")
+            st.text_area("Recruiter Message", recruiter_message, height=250)
 
-        with st.spinner("Generating tailored resume improvements..."):
-            tailored_resume = generate_tailored_resume_points(
-                resume_text,
-                job_description
+            st.download_button(
+                label="Download Recruiter Message",
+                data=recruiter_message,
+                file_name="recruiter_message.txt",
+                mime="text/plain"
             )
 
-        st.header("Tailored Resume Improvements")
+with tabs[3]:
 
-        st.text_area(
-            "Resume Improvements",
-            tailored_resume,
-            height=400
-        )
+    st.header("📝 Resume Tailoring Agent")
 
-        st.download_button(
-            label="Download Tailored Resume Improvements",
-            data=tailored_resume,
-            file_name="tailored_resume_improvements.txt",
-            mime="text/plain"
-        )
+    if st.session_state.resume_text == "" or job_description.strip() == "":
+        st.info("Analyze a job first to generate tailored resume improvements.")
+    else:
+        if st.button("Generate Resume Improvements", use_container_width=True):
+            with st.spinner("Generating tailored resume improvements..."):
+                tailored_resume = generate_tailored_resume_points(
+                    st.session_state.resume_text,
+                    job_description
+                )
 
-st.markdown("---")
-st.header("Application Tracker")
+            st.text_area("Tailored Resume Improvements", tailored_resume, height=450)
 
-company = st.text_input("Company Name")
-role = st.text_input("Role Title")
-job_link = st.text_input("Job Link")
-
-status = st.selectbox(
-    "Application Status",
-    ["Interested", "Applied", "Interview", "Rejected", "Offer"]
-)
-
-notes = st.text_area("Notes")
-
-if st.button("Save Application"):
-    save_application(company, role, job_link, status, notes)
-    st.success("Application saved successfully!")
-
-applications = load_applications()
-
-if not applications.empty:
-    st.subheader("Saved Applications")
-    st.dataframe(applications)
-
-st.markdown("---")
-st.header("AI Interview Coach")
-
-if resume_file is not None and job_description.strip() != "":
-
-    if st.button("Generate Interview Questions"):
-
-        resume_text = extract_resume_text(resume_file)
-
-        with st.spinner("Generating interview questions..."):
-            interview_questions = generate_interview_questions(
-                resume_text,
-                job_description
+            st.download_button(
+                label="Download Resume Improvements",
+                data=tailored_resume,
+                file_name="tailored_resume_improvements.txt",
+                mime="text/plain"
             )
 
-        st.text_area(
-            "Interview Preparation",
-            interview_questions,
-            height=500
-        )
+with tabs[4]:
 
-        st.download_button(
-            label="Download Interview Questions",
-            data=interview_questions,
-            file_name="interview_questions.txt",
-            mime="text/plain"
+    st.header("🎤 AI Interview Coach")
+
+    if st.session_state.resume_text == "" or job_description.strip() == "":
+        st.info("Analyze a job first to generate interview questions.")
+    else:
+        if st.button("Generate Interview Questions", use_container_width=True):
+            with st.spinner("Generating interview questions..."):
+                interview_questions = generate_interview_questions(
+                    st.session_state.resume_text,
+                    job_description
+                )
+
+            st.text_area("Interview Preparation", interview_questions, height=500)
+
+            st.download_button(
+                label="Download Interview Questions",
+                data=interview_questions,
+                file_name="interview_questions.txt",
+                mime="text/plain"
+            )
+
+with tabs[5]:
+
+    st.header("📌 Application Tracker")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        company = st.text_input("Company Name")
+        role = st.text_input("Role Title")
+        job_link = st.text_input("Job Link")
+
+    with col2:
+        status = st.selectbox(
+            "Application Status",
+            ["Interested", "Applied", "Interview", "Rejected", "Offer"]
         )
-else:
-    st.info("Upload your resume and paste a job description to use the AI Interview Coach.")
+        notes = st.text_area("Notes")
+
+    if st.button("Save Application", use_container_width=True):
+        save_application(company, role, job_link, status, notes)
+        st.success("Application saved successfully!")
+
+    applications = load_applications()
+
+    if not applications.empty:
+        st.subheader("Saved Applications")
+        st.dataframe(applications, use_container_width=True)
