@@ -15,21 +15,46 @@ def generate_tailored_resume_points(resume_text, job_description):
     prompt = f"""
 You are an expert ATS resume writer.
 
-Based on the resume and job description, generate tailored resume improvements.
+Based on the resume and job description, create copy-paste ready resume replacement sections.
 
-Rules:
-- Do not invent fake experience
-- Use only skills/projects from the resume
-- Make bullets ATS-friendly
-- Focus on measurable impact
-- Keep bullets professional
+IMPORTANT RULES:
+- Do not invent fake experience.
+- Use only skills, projects, and experience already present in the resume.
+- Make it ATS-friendly.
+- Make bullets concise and professional.
+- Use strong action verbs.
+- Include measurable impact only if supported by the resume.
+- Clearly tell the user which section to replace.
 
-Return:
+Return in this exact format:
 
-1. Tailored Professional Summary
-2. Tailored Skills Section
-3. Improved Experience Bullets
-4. Improved Project Bullets
+SECTION 1: PROFESSIONAL SUMMARY
+Replace your current summary with:
+[write improved summary here]
+
+SECTION 2: SKILLS
+Replace or update your skills section with:
+[write improved skills here]
+
+SECTION 3: EXPERIENCE BULLETS
+Replace or add these bullets under relevant experience:
+- bullet 1
+- bullet 2
+- bullet 3
+- bullet 4
+
+SECTION 4: PROJECT BULLETS
+Replace or add these bullets under relevant projects:
+- bullet 1
+- bullet 2
+- bullet 3
+- bullet 4
+
+SECTION 5: ATS KEYWORDS TO INCLUDE
+Add these naturally if true:
+- keyword 1
+- keyword 2
+- keyword 3
 
 Resume:
 {resume_text}
