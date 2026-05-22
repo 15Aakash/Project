@@ -1,5 +1,6 @@
 import streamlit as st
 import plotly.express as px
+import plotly.graph_objects as go
 
 from resume_parser import extract_resume_text
 from job_analyzer import analyze_job_match
@@ -47,6 +48,7 @@ st.sidebar.write("✅ Resume Tailoring Agent")
 st.sidebar.write("✅ Application Tracker")
 st.sidebar.write("✅ AI Interview Coach")
 st.sidebar.write("✅ Analytics Dashboard")
+st.sidebar.write("✅ Match Score Gauge")
 
 st.markdown('<div class="main-title">AI Career Assistant</div>', unsafe_allow_html=True)
 st.write(
@@ -123,7 +125,14 @@ with tabs[0]:
         except:
             score = 0
 
-        col1, col2, col3 = st.columns(3)
+        if score >= 75:
+            readiness = "High"
+        elif score >= 50:
+            readiness = "Medium"
+        else:
+            readiness = "Low"
+
+        col1, col2, col3, col4 = st.columns(4)
 
         with col1:
             st.metric("Match Score", f"{score}%")
@@ -134,7 +143,25 @@ with tabs[0]:
         with col3:
             st.metric("Missing Skills", len(analysis["missing_skills"]))
 
-        st.progress(score / 100)
+        with col4:
+            st.metric("ATS Readiness", readiness)
+
+        fig_gauge = go.Figure(go.Indicator(
+            mode="gauge+number",
+            value=score,
+            title={"text": "ATS Match Score"},
+            gauge={
+                "axis": {"range": [0, 100]},
+                "bar": {"color": "royalblue"},
+                "steps": [
+                    {"range": [0, 50], "color": "#ffcccc"},
+                    {"range": [50, 75], "color": "#fff2cc"},
+                    {"range": [75, 100], "color": "#d9ead3"}
+                ],
+            }
+        ))
+
+        st.plotly_chart(fig_gauge, use_container_width=True)
 
         st.markdown("---")
 
