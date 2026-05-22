@@ -9,7 +9,8 @@ from agents import (
     CoverLetterAgent,
     RecruiterAgent,
     ResumeTailorAgent,
-    InterviewCoachAgent
+    InterviewCoachAgent,
+    CareerCoachAgent
 )
 
 from tracker import save_application, load_applications
@@ -30,6 +31,7 @@ st.sidebar.write("✅ Cover Letter Agent")
 st.sidebar.write("✅ Recruiter Message Agent")
 st.sidebar.write("✅ Resume Tailoring Agent")
 st.sidebar.write("✅ Interview Coach Agent")
+st.sidebar.write("✅ AI Career Coach")
 st.sidebar.write("✅ Application Tracker")
 st.sidebar.write("✅ Analytics Dashboard")
 
@@ -52,6 +54,7 @@ cover_letter_agent = CoverLetterAgent()
 recruiter_agent = RecruiterAgent()
 resume_tailor_agent = ResumeTailorAgent()
 interview_agent = InterviewCoachAgent()
+career_coach_agent = CareerCoachAgent()
 
 col1, col2 = st.columns([1, 2])
 
@@ -77,6 +80,9 @@ if "resume_text" not in st.session_state:
 
 if "analysis" not in st.session_state:
     st.session_state.analysis = None
+
+if "coach_history" not in st.session_state:
+    st.session_state.coach_history = []
 
 if analyze_button:
 
@@ -107,6 +113,7 @@ tabs = st.tabs([
     "💬 Recruiter Message",
     "📝 Resume Tailor",
     "🎤 Interview Coach",
+    "💬 AI Career Coach",
     "📌 Tracker"
 ])
 
@@ -346,6 +353,50 @@ with tabs[5]:
 
 with tabs[6]:
 
+    st.header("💬 AI Career Coach")
+
+    if st.session_state.resume_text == "":
+        st.info("Upload your resume and click Analyze Job first.")
+
+    else:
+        st.write(
+            "Ask career questions based on your resume, skills, and target roles."
+        )
+
+        user_question = st.text_input(
+            "Ask your career question",
+            placeholder="Example: What jobs suit me based on my resume?"
+        )
+
+        if st.button("Ask Career Coach", use_container_width=True):
+
+            if user_question.strip() == "":
+                st.warning("Please type a question.")
+
+            else:
+                with st.spinner("Career Coach Agent is thinking..."):
+                    coach_answer = career_coach_agent.chat(
+                        st.session_state.resume_text,
+                        user_question
+                    )
+
+                st.session_state.coach_history.append(
+                    {
+                        "question": user_question,
+                        "answer": coach_answer
+                    }
+                )
+
+        if st.session_state.coach_history:
+            st.markdown("---")
+            st.subheader("Conversation")
+
+            for chat in reversed(st.session_state.coach_history):
+                st.chat_message("user").write(chat["question"])
+                st.chat_message("assistant").write(chat["answer"])
+
+with tabs[7]:
+
     st.header("📌 Application Tracker")
 
     col1, col2 = st.columns(2)
@@ -403,4 +454,3 @@ with tabs[6]:
 
         st.subheader("Saved Applications")
         st.dataframe(applications, use_container_width=True)
-        
