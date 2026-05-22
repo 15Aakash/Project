@@ -1,7 +1,6 @@
 import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
-from pdf_generator import create_pdf
 
 from agents import (
     ResumeAgent,
@@ -30,7 +29,7 @@ st.sidebar.write("✅ Resume Parser Agent")
 st.sidebar.write("✅ ATS Match Agent")
 st.sidebar.write("✅ Job Recommendation Agent")
 st.sidebar.write("✅ Cover Letter Agent")
-st.sidebar.write("✅ Recruiter Message Agent")
+st.sidebar.write("✅ Recruiter Outreach Agent")
 st.sidebar.write("✅ Resume Tailoring Agent")
 st.sidebar.write("✅ Interview Coach Agent")
 st.sidebar.write("✅ AI Career Coach with Memory")
@@ -125,7 +124,7 @@ page = st.radio(
         "📊 Match Dashboard",
         "🎯 Job Recommendations",
         "✍️ Cover Letter",
-        "💬 Recruiter Message",
+        "💬 Recruiter Outreach",
         "📝 Resume Tailor",
         "🎤 Interview Coach",
         "💬 AI Career Coach",
@@ -349,74 +348,76 @@ elif page == "✍️ Cover Letter":
                 )
 
         if st.session_state.cover_letter:
-            st.text_area(
-                "Cover Letter",
+
+            edited_cover_letter = st.text_area(
+                "Edit Cover Letter Before Download",
                 st.session_state.cover_letter,
                 height=350
             )
 
             st.download_button(
-                label="Download Cover Letter as TXT",
-                data=st.session_state.cover_letter,
+                label="Download Edited Cover Letter as TXT",
+                data=edited_cover_letter,
                 file_name="cover_letter.txt",
                 mime="text/plain"
             )
 
             pdf_path = create_pdf(
                 "Tailored Cover Letter",
-                st.session_state.cover_letter,
+                edited_cover_letter,
                 "cover_letter.pdf"
             )
 
             with open(pdf_path, "rb") as pdf_file:
                 st.download_button(
-                    label="Download Cover Letter as PDF",
+                    label="Download Edited Cover Letter as PDF",
                     data=pdf_file,
                     file_name="cover_letter.pdf",
                     mime="application/pdf"
                 )
 
-elif page == "💬 Recruiter Message":
+elif page == "💬 Recruiter Outreach":
 
-    st.header("💬 LinkedIn Recruiter Message")
+    st.header("💬 LinkedIn Recruiter Outreach Message")
 
     if st.session_state.resume_text == "" or job_description.strip() == "":
-        st.info("Analyze a job first to generate a recruiter message.")
+        st.info("Analyze a job first to generate a recruiter outreach message.")
 
     else:
-        if st.button("Generate Recruiter Message", use_container_width=True):
+        if st.button("Generate Recruiter Outreach Message", use_container_width=True):
 
-            with st.spinner("Recruiter Agent is generating your message..."):
+            with st.spinner("Recruiter Outreach Agent is generating your message..."):
                 st.session_state.recruiter_message = recruiter_agent.generate(
                     st.session_state.resume_text,
                     job_description
                 )
 
         if st.session_state.recruiter_message:
-            st.text_area(
-                "Recruiter Message",
+
+            edited_recruiter_message = st.text_area(
+                "Edit Recruiter Outreach Message Before Download",
                 st.session_state.recruiter_message,
                 height=250
             )
 
             st.download_button(
-                label="Download Recruiter Message as TXT",
-                data=st.session_state.recruiter_message,
-                file_name="recruiter_message.txt",
+                label="Download Edited Recruiter Outreach as TXT",
+                data=edited_recruiter_message,
+                file_name="recruiter_outreach_message.txt",
                 mime="text/plain"
             )
 
             pdf_path = create_pdf(
-                "LinkedIn Recruiter Message",
-                st.session_state.recruiter_message,
-                "recruiter_message.pdf"
+                "LinkedIn Recruiter Outreach Message",
+                edited_recruiter_message,
+                "recruiter_outreach_message.pdf"
             )
 
             with open(pdf_path, "rb") as pdf_file:
                 st.download_button(
-                    label="Download Recruiter Message as PDF",
+                    label="Download Edited Recruiter Outreach as PDF",
                     data=pdf_file,
-                    file_name="recruiter_message.pdf",
+                    file_name="recruiter_outreach_message.pdf",
                     mime="application/pdf"
                 )
 
@@ -437,28 +438,29 @@ elif page == "📝 Resume Tailor":
                 )
 
         if st.session_state.tailored_resume:
-            st.text_area(
-                "Tailored Resume Improvements",
+
+            edited_tailored_resume = st.text_area(
+                "Edit Resume Improvements Before Download",
                 st.session_state.tailored_resume,
                 height=450
             )
 
             st.download_button(
-                label="Download Resume Improvements as TXT",
-                data=st.session_state.tailored_resume,
+                label="Download Edited Resume Improvements as TXT",
+                data=edited_tailored_resume,
                 file_name="tailored_resume_improvements.txt",
                 mime="text/plain"
             )
 
             pdf_path = create_pdf(
                 "Tailored Resume Improvements",
-                st.session_state.tailored_resume,
+                edited_tailored_resume,
                 "tailored_resume_improvements.pdf"
             )
 
             with open(pdf_path, "rb") as pdf_file:
                 st.download_button(
-                    label="Download Resume Improvements as PDF",
+                    label="Download Edited Resume Improvements as PDF",
                     data=pdf_file,
                     file_name="tailored_resume_improvements.pdf",
                     mime="application/pdf"
@@ -481,28 +483,29 @@ elif page == "🎤 Interview Coach":
                 )
 
         if st.session_state.interview_questions:
-            st.text_area(
-                "Interview Preparation",
+
+            edited_interview_questions = st.text_area(
+                "Edit Interview Preparation Before Download",
                 st.session_state.interview_questions,
                 height=500
             )
 
             st.download_button(
-                label="Download Interview Questions as TXT",
-                data=st.session_state.interview_questions,
+                label="Download Edited Interview Questions as TXT",
+                data=edited_interview_questions,
                 file_name="interview_questions.txt",
                 mime="text/plain"
             )
 
             pdf_path = create_pdf(
                 "Interview Preparation Questions",
-                st.session_state.interview_questions,
+                edited_interview_questions,
                 "interview_questions.pdf"
             )
 
             with open(pdf_path, "rb") as pdf_file:
                 st.download_button(
-                    label="Download Interview Questions as PDF",
+                    label="Download Edited Interview Questions as PDF",
                     data=pdf_file,
                     file_name="interview_questions.pdf",
                     mime="application/pdf"
