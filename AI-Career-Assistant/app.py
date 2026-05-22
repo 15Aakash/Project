@@ -15,7 +15,6 @@ from agents import (
 
 from tracker import save_application, load_applications
 
-
 st.set_page_config(
     page_title="AI Career Assistant",
     layout="wide",
@@ -56,6 +55,30 @@ resume_tailor_agent = ResumeTailorAgent()
 interview_agent = InterviewCoachAgent()
 career_coach_agent = CareerCoachAgent()
 
+if "resume_text" not in st.session_state:
+    st.session_state.resume_text = ""
+
+if "analysis" not in st.session_state:
+    st.session_state.analysis = None
+
+if "coach_history" not in st.session_state:
+    st.session_state.coach_history = []
+
+if "recommendations" not in st.session_state:
+    st.session_state.recommendations = None
+
+if "cover_letter" not in st.session_state:
+    st.session_state.cover_letter = ""
+
+if "recruiter_message" not in st.session_state:
+    st.session_state.recruiter_message = ""
+
+if "tailored_resume" not in st.session_state:
+    st.session_state.tailored_resume = ""
+
+if "interview_questions" not in st.session_state:
+    st.session_state.interview_questions = ""
+
 col1, col2 = st.columns([1, 2])
 
 with col1:
@@ -70,21 +93,7 @@ with col2:
         height=180
     )
 
-analyze_button = st.button(
-    "🚀 Analyze Job",
-    use_container_width=True
-)
-
-if "resume_text" not in st.session_state:
-    st.session_state.resume_text = ""
-
-if "analysis" not in st.session_state:
-    st.session_state.analysis = None
-
-if "coach_history" not in st.session_state:
-    st.session_state.coach_history = []
-
-if analyze_button:
+if st.button("🚀 Analyze Job", use_container_width=True):
 
     if resume_file is None:
         st.warning("Please upload your resume first.")
@@ -94,9 +103,7 @@ if analyze_button:
 
     else:
         with st.spinner("Resume Agent is reading your resume..."):
-            st.session_state.resume_text = resume_agent.parse_resume(
-                resume_file
-            )
+            st.session_state.resume_text = resume_agent.parse_resume(resume_file)
 
         with st.spinner("ATS Agent is analyzing job match..."):
             st.session_state.analysis = ats_agent.analyze(
@@ -106,18 +113,24 @@ if analyze_button:
 
         st.success("Multi-agent analysis completed successfully!")
 
-tabs = st.tabs([
-    "📊 Match Dashboard",
-    "🎯 Job Recommendations",
-    "✍️ Cover Letter",
-    "💬 Recruiter Message",
-    "📝 Resume Tailor",
-    "🎤 Interview Coach",
-    "💬 AI Career Coach",
-    "📌 Tracker"
-])
+st.markdown("---")
 
-with tabs[0]:
+page = st.radio(
+    "Navigation",
+    [
+        "📊 Match Dashboard",
+        "🎯 Job Recommendations",
+        "✍️ Cover Letter",
+        "💬 Recruiter Message",
+        "📝 Resume Tailor",
+        "🎤 Interview Coach",
+        "💬 AI Career Coach",
+        "📌 Tracker"
+    ],
+    horizontal=True
+)
+
+if page == "📊 Match Dashboard":
 
     st.header("📊 AI Job Match Dashboard")
 
@@ -207,7 +220,7 @@ with tabs[0]:
                 height=300
             )
 
-with tabs[1]:
+elif page == "🎯 Job Recommendations":
 
     st.header("🎯 AI Job Recommendation Engine")
 
@@ -218,11 +231,13 @@ with tabs[1]:
         if st.button("Generate Job Recommendations", use_container_width=True):
 
             with st.spinner("Recommendation Agent is finding best matching roles..."):
-                recommendations = recommendation_agent.recommend(
+                st.session_state.recommendations = recommendation_agent.recommend(
                     st.session_state.resume_text
                 )
 
-            for item in recommendations["recommended_roles"]:
+        if st.session_state.recommendations is not None:
+
+            for item in st.session_state.recommendations["recommended_roles"]:
 
                 st.markdown("---")
                 st.subheader(item["role"])
@@ -243,7 +258,7 @@ with tabs[1]:
                     for step in item["learning_plan"]:
                         st.info(step)
 
-with tabs[2]:
+elif page == "✍️ Cover Letter":
 
     st.header("✍️ Tailored Cover Letter")
 
@@ -254,21 +269,26 @@ with tabs[2]:
         if st.button("Generate Cover Letter", use_container_width=True):
 
             with st.spinner("Cover Letter Agent is writing your letter..."):
-                cover_letter = cover_letter_agent.generate(
+                st.session_state.cover_letter = cover_letter_agent.generate(
                     st.session_state.resume_text,
                     job_description
                 )
 
-            st.text_area("Cover Letter", cover_letter, height=350)
+        if st.session_state.cover_letter:
+            st.text_area(
+                "Cover Letter",
+                st.session_state.cover_letter,
+                height=350
+            )
 
             st.download_button(
                 label="Download Cover Letter",
-                data=cover_letter,
+                data=st.session_state.cover_letter,
                 file_name="cover_letter.txt",
                 mime="text/plain"
             )
 
-with tabs[3]:
+elif page == "💬 Recruiter Message":
 
     st.header("💬 LinkedIn Recruiter Message")
 
@@ -279,21 +299,26 @@ with tabs[3]:
         if st.button("Generate Recruiter Message", use_container_width=True):
 
             with st.spinner("Recruiter Agent is generating your message..."):
-                recruiter_message = recruiter_agent.generate(
+                st.session_state.recruiter_message = recruiter_agent.generate(
                     st.session_state.resume_text,
                     job_description
                 )
 
-            st.text_area("Recruiter Message", recruiter_message, height=250)
+        if st.session_state.recruiter_message:
+            st.text_area(
+                "Recruiter Message",
+                st.session_state.recruiter_message,
+                height=250
+            )
 
             st.download_button(
                 label="Download Recruiter Message",
-                data=recruiter_message,
+                data=st.session_state.recruiter_message,
                 file_name="recruiter_message.txt",
                 mime="text/plain"
             )
 
-with tabs[4]:
+elif page == "📝 Resume Tailor":
 
     st.header("📝 Resume Tailoring Agent")
 
@@ -304,25 +329,26 @@ with tabs[4]:
         if st.button("Generate Resume Improvements", use_container_width=True):
 
             with st.spinner("Resume Tailor Agent is optimizing your resume..."):
-                tailored_resume = resume_tailor_agent.generate(
+                st.session_state.tailored_resume = resume_tailor_agent.generate(
                     st.session_state.resume_text,
                     job_description
                 )
 
+        if st.session_state.tailored_resume:
             st.text_area(
                 "Tailored Resume Improvements",
-                tailored_resume,
+                st.session_state.tailored_resume,
                 height=450
             )
 
             st.download_button(
                 label="Download Resume Improvements",
-                data=tailored_resume,
+                data=st.session_state.tailored_resume,
                 file_name="tailored_resume_improvements.txt",
                 mime="text/plain"
             )
 
-with tabs[5]:
+elif page == "🎤 Interview Coach":
 
     st.header("🎤 AI Interview Coach")
 
@@ -333,25 +359,26 @@ with tabs[5]:
         if st.button("Generate Interview Questions", use_container_width=True):
 
             with st.spinner("Interview Coach Agent is preparing questions..."):
-                interview_questions = interview_agent.generate(
+                st.session_state.interview_questions = interview_agent.generate(
                     st.session_state.resume_text,
                     job_description
                 )
 
+        if st.session_state.interview_questions:
             st.text_area(
                 "Interview Preparation",
-                interview_questions,
+                st.session_state.interview_questions,
                 height=500
             )
 
             st.download_button(
                 label="Download Interview Questions",
-                data=interview_questions,
+                data=st.session_state.interview_questions,
                 file_name="interview_questions.txt",
                 mime="text/plain"
             )
 
-with tabs[6]:
+elif page == "💬 AI Career Coach":
 
     st.header("💬 AI Career Coach")
 
@@ -400,7 +427,7 @@ with tabs[6]:
                 st.chat_message("user").write(chat["question"])
                 st.chat_message("assistant").write(chat["answer"])
 
-with tabs[7]:
+elif page == "📌 Tracker":
 
     st.header("📌 Application Tracker")
 
