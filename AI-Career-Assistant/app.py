@@ -363,7 +363,7 @@ elif page == "✍️ Cover Letter":
             )
 
             pdf_path = create_pdf(
-                "Tailored Cover Letter",
+                "",
                 edited_cover_letter,
                 "cover_letter.pdf"
             )
