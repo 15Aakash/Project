@@ -408,7 +408,7 @@ elif page == "💬 Recruiter Outreach":
             )
 
             pdf_path = create_pdf(
-                "",
+                "LinkedIn Recruiter Outreach Message",
                 edited_recruiter_message,
                 "recruiter_outreach_message.pdf"
             )
@@ -453,7 +453,7 @@ elif page == "📝 Resume Tailor":
             )
 
             pdf_path = create_pdf(
-                "",
+                "Tailored Resume Improvements",
                 edited_tailored_resume,
                 "tailored_resume_improvements.pdf"
             )
@@ -595,37 +595,91 @@ elif page == "📌 Tracker":
             "Application Status",
             ["Interested", "Applied", "Interview", "Rejected", "Offer"]
         )
+
         notes = st.text_area("Notes")
 
     if st.button("Save Application", use_container_width=True):
-        save_application(company, role, job_link, status, notes)
-        st.success("Application saved successfully!")
+
+        if (
+            company.strip() == ""
+            or role.strip() == ""
+            or job_link.strip() == ""
+        ):
+
+            st.warning(
+                "Please fill Company Name, Role Title, and Job Link."
+            )
+
+        else:
+
+            saved = save_application(
+                company,
+                role,
+                job_link,
+                status,
+                notes
+            )
+
+            if saved:
+                st.success("Application saved successfully!")
+
+            else:
+                st.warning(
+                    "This application is already saved."
+                )
 
     applications = load_applications()
 
     if not applications.empty:
+
         st.markdown("---")
-        st.subheader("📊 Application Analytics")
+
+        st.header("📊 Application Analytics")
 
         col1, col2, col3 = st.columns(3)
 
         with col1:
-            st.metric("Total Applications", len(applications))
+            st.metric(
+                "Total Applications",
+                len(applications)
+            )
 
         with col2:
+
             applied_count = len(
-                applications[applications["status"] == "Applied"]
+                applications[
+                    applications["status"] == "Applied"
+                ]
             )
-            st.metric("Applied", applied_count)
+
+            st.metric(
+                "Applied",
+                applied_count
+            )
 
         with col3:
-            interview_count = len(
-                applications[applications["status"] == "Interview"]
-            )
-            st.metric("Interviews", interview_count)
 
-        status_counts = applications["status"].value_counts().reset_index()
-        status_counts.columns = ["Status", "Count"]
+            interview_count = len(
+                applications[
+                    applications["status"] == "Interview"
+                ]
+            )
+
+            st.metric(
+                "Interviews",
+                interview_count
+            )
+
+        status_counts = (
+            applications["status"]
+            .value_counts()
+            .reset_index()
+        )
+
+        status_counts.columns = [
+            "Status",
+            "Count"
+        ]
 
         fig = px.pie(
             status_counts,
@@ -634,7 +688,25 @@ elif page == "📌 Tracker":
             title="Applications by Status"
         )
 
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(
+            fig,
+            use_container_width=True
+        )
 
         st.subheader("Saved Applications")
-        st.dataframe(applications, use_container_width=True)
+
+        st.dataframe(
+            applications,
+            use_container_width=True
+        )
+
+        csv_data = applications.to_csv(
+            index=False
+        ).encode("utf-8")
+
+        st.download_button(
+            label="📥 Download Applications CSV",
+            data=csv_data,
+            file_name="applications.csv",
+            mime="text/csv"
+        )
