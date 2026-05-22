@@ -10,22 +10,34 @@ client = OpenAI(
 )
 
 
-def career_chatbot_response(resume_text, user_question):
+def career_chatbot_response(resume_text, chat_history, user_question):
+
+    history_text = ""
+
+    for chat in chat_history:
+        history_text += f"User: {chat['question']}\n"
+        history_text += f"Assistant: {chat['answer']}\n\n"
+
     prompt = f"""
 You are an AI Career Coach.
 
-Use the resume below to answer the user's career question.
+Use the resume and previous conversation to answer the user's question.
 
 Rules:
 - Be practical
 - Give clear steps
 - Do not exaggerate
-- Keep answer helpful and career-focused
+- Keep the answer career-focused
+- Explain in simple language
+- Use previous conversation context when useful
 
 Resume:
 {resume_text}
 
-User Question:
+Previous Conversation:
+{history_text}
+
+Current User Question:
 {user_question}
 """
 
