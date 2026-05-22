@@ -13,7 +13,12 @@ from agents import (
     CareerCoachAgent
 )
 
-from tracker import save_application, load_applications
+from tracker import (
+    save_application,
+    load_applications,
+    delete_application
+)
+
 from pdf_generator import create_pdf
 
 
@@ -699,6 +704,26 @@ elif page == "📌 Tracker":
             applications,
             use_container_width=True
         )
+
+        st.markdown("### Delete Applications")
+
+        for idx, row in applications.iterrows():
+
+            col1, col2 = st.columns([6, 1])
+
+            with col1:
+                st.write(
+                    f"{row['company']} | {row['role']} | {row['status']}"
+                )
+
+            with col2:
+                if st.button(
+                    "Delete",
+                    key=f"delete_{idx}"
+                ):
+                    delete_application(idx)
+                    st.success("Application deleted successfully!")
+                    st.rerun()
 
         csv_data = applications.to_csv(
             index=False
