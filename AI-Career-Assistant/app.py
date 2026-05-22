@@ -31,7 +31,7 @@ st.sidebar.write("✅ Cover Letter Agent")
 st.sidebar.write("✅ Recruiter Message Agent")
 st.sidebar.write("✅ Resume Tailoring Agent")
 st.sidebar.write("✅ Interview Coach Agent")
-st.sidebar.write("✅ AI Career Coach")
+st.sidebar.write("✅ AI Career Coach with Memory")
 st.sidebar.write("✅ Application Tracker")
 st.sidebar.write("✅ Analytics Dashboard")
 
@@ -360,8 +360,12 @@ with tabs[6]:
 
     else:
         st.write(
-            "Ask career questions based on your resume, skills, and target roles."
+            "Ask career questions based on your resume, skills, and previous conversation."
         )
+
+        if st.button("Clear Chat History", use_container_width=True):
+            st.session_state.coach_history = []
+            st.success("Chat history cleared.")
 
         user_question = st.text_input(
             "Ask your career question",
@@ -374,9 +378,10 @@ with tabs[6]:
                 st.warning("Please type a question.")
 
             else:
-                with st.spinner("Career Coach Agent is thinking..."):
+                with st.spinner("Career Coach Agent is thinking with memory..."):
                     coach_answer = career_coach_agent.chat(
                         st.session_state.resume_text,
+                        st.session_state.coach_history,
                         user_question
                     )
 
