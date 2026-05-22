@@ -16,12 +16,24 @@ def save_application(company, role, job_link, status, notes):
     }])
 
     if os.path.exists(FILE_NAME):
-        old_data = pd.read_csv(FILE_NAME)
-        data = pd.concat([old_data, new_data], ignore_index=True)
+        data = pd.read_csv(FILE_NAME)
+
+        duplicate = data[
+            (data["company"].str.lower() == company.lower()) &
+            (data["role"].str.lower() == role.lower()) &
+            (data["job_link"].str.lower() == job_link.lower())
+        ]
+
+        if not duplicate.empty:
+            return False
+
+        data = pd.concat([data, new_data], ignore_index=True)
+
     else:
         data = new_data
 
     data.to_csv(FILE_NAME, index=False)
+    return True
 
 
 def load_applications():
