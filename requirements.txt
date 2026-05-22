@@ -11,3 +11,4 @@ openai
 PyMuPDF
 python-docx
 plotly
+fpdf2
