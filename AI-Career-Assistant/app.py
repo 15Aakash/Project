@@ -603,42 +603,7 @@ elif page == "📌 Tracker":
 
         notes = st.text_area("Notes")
 
-    if st.button("Save Application", use_container_width=True):
-
-       missing_fields = []
-
-       if company.strip() == "":
-           missing_fields.append("Company Name")
-
-       if role.strip() == "":
-           missing_fields.append("Role Title")
-
-       if job_link.strip() == "":
-           missing_fields.append("Job Link")
-
-       if len(missing_fields) > 0:
-
-            st.warning(
-               "Please fill: " + ", ".join(missing_fields)
-         )
-
-       else:
-
-            saved = save_application(
-            company,
-            role,
-            job_link,
-            status,
-            notes
-        )
-
-        if saved:
-            st.success("Application saved successfully!")
-
-        else:
-            st.warning("This application is already saved.")
-
-    applications = load_applications()
+   
 
     if not applications.empty:
 
