@@ -64,3 +64,11 @@ def update_application_status(index, new_status):
     data.loc[index, "status"] = new_status
 
     data.to_csv(FILE_NAME, index=False)
+    
+def update_interview_date(index, interview_date):
+
+    data = load_applications()
+
+    data.loc[index, "interview_date"] = interview_date
+
+    data.to_csv(FILE_NAME, index=False)
