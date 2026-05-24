@@ -592,7 +592,37 @@ elif page == "📌 Tracker":
 
         notes = st.text_area("Notes")
 
-   
+    if st.button("Save Application", use_container_width=True):
+
+        missing_fields = []
+
+        if company.strip() == "":
+            missing_fields.append("Company Name")
+
+        if role.strip() == "":
+            missing_fields.append("Role Title")
+
+        if job_link.strip() == "":
+            missing_fields.append("Job Link")
+
+        if len(missing_fields) > 0:
+            st.warning("Please fill: " + ", ".join(missing_fields))
+
+        else:
+            saved = save_application(
+                company,
+                role,
+                job_link,
+                status,
+                notes
+            )
+
+            if saved:
+                st.success("Application saved successfully!")
+            else:
+                st.warning("This application is already saved.")
+
+    applications = load_applications()
 
     if not applications.empty:
 
@@ -603,36 +633,19 @@ elif page == "📌 Tracker":
         col1, col2, col3 = st.columns(3)
 
         with col1:
-            st.metric(
-                "Total Applications",
-                len(applications)
-            )
+            st.metric("Total Applications", len(applications))
 
         with col2:
-
             applied_count = len(
-                applications[
-                    applications["status"] == "Applied"
-                ]
+                applications[applications["status"] == "Applied"]
             )
-
-            st.metric(
-                "Applied",
-                applied_count
-            )
+            st.metric("Applied", applied_count)
 
         with col3:
-
             interview_count = len(
-                applications[
-                    applications["status"] == "Interview"
-                ]
+                applications[applications["status"] == "Interview"]
             )
-
-            st.metric(
-                "Interviews",
-                interview_count
-            )
+            st.metric("Interviews", interview_count)
 
         status_counts = (
             applications["status"]
@@ -640,10 +653,7 @@ elif page == "📌 Tracker":
             .reset_index()
         )
 
-        status_counts.columns = [
-            "Status",
-            "Count"
-        ]
+        status_counts.columns = ["Status", "Count"]
 
         fig = px.pie(
             status_counts,
@@ -652,17 +662,11 @@ elif page == "📌 Tracker":
             title="Applications by Status"
         )
 
-        st.plotly_chart(
-            fig,
-            use_container_width=True
-        )
+        st.plotly_chart(fig, use_container_width=True)
 
         st.subheader("Saved Applications")
 
-        st.dataframe(
-            applications,
-            use_container_width=True
-        )
+        st.dataframe(applications, use_container_width=True)
 
         st.markdown("### Delete Applications")
 
@@ -676,17 +680,12 @@ elif page == "📌 Tracker":
                 )
 
             with col2:
-                if st.button(
-                    "Delete",
-                    key=f"delete_{idx}"
-                ):
+                if st.button("Delete", key=f"delete_{idx}"):
                     delete_application(idx)
                     st.success("Application deleted successfully!")
                     st.rerun()
 
-        csv_data = applications.to_csv(
-            index=False
-        ).encode("utf-8")
+        csv_data = applications.to_csv(index=False).encode("utf-8")
 
         st.download_button(
             label="📥 Download Applications CSV",
