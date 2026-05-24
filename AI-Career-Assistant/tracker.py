@@ -14,6 +14,7 @@ def save_application(company, role, job_link, status, notes):
         "job_link": job_link,
         "status": status,
         "notes": notes
+        "interview_date": ""
     }])
 
     if os.path.exists(FILE_NAME):
