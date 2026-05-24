@@ -10,27 +10,35 @@ client = OpenAI(
 )
 
 
-def generate_mock_question(resume_text, job_description, chat_history):
+def interviewer_chat(
+    resume_text,
+    job_description,
+    conversation_history
+):
 
     history_text = ""
 
-    for chat in chat_history:
-        history_text += f"Question: {chat['question']}\n"
-        history_text += f"Answer: {chat['answer']}\n"
-        history_text += f"Feedback: {chat['feedback']}\n\n"
+    for item in conversation_history:
+
+        history_text += f"""
+Interviewer: {item['interviewer']}
+Candidate: {item['candidate']}
+"""
 
     prompt = f"""
-You are an AI mock interview coach.
+You are a professional AI interviewer.
 
-Based on the resume, job description, and previous interview history,
-ask ONE realistic interview question.
+Conduct a realistic interview conversation.
 
 Rules:
-- Ask only one question.
-- Do not provide the answer.
+- Ask ONE question at a time.
+- Respond naturally like a human interviewer.
+- Sometimes ask follow-up questions.
 - Mix technical, behavioral, and resume-based questions.
+- Keep the interview conversational.
+- Do not provide answers.
 - Do not repeat previous questions.
-- Keep it concise.
+- Keep responses concise and realistic.
 
 Resume:
 {resume_text}
@@ -38,41 +46,43 @@ Resume:
 Job Description:
 {job_description}
 
-Previous Interview History:
+Conversation History:
 {history_text}
 """
 
     response = client.responses.create(
         model="gpt-4.1-mini",
         input=prompt,
-        temperature=0
+        temperature=0.7
     )
 
     return response.output_text
 
 
-def evaluate_mock_answer(question, user_answer, resume_text, job_description):
+def evaluate_interview_answer(
+    interviewer_question,
+    candidate_answer,
+    resume_text,
+    job_description
+):
 
     prompt = f"""
-You are an AI interview evaluator.
+You are an expert AI interview evaluator.
 
-Evaluate the user's answer to the interview question.
+Evaluate the candidate's interview answer.
 
 Return:
-
-Score: /10
-
-Feedback:
-[short feedback]
-
-Improved Answer:
-[better version of the answer]
+1. Score out of 10
+2. Strengths
+3. Weaknesses
+4. Improved Answer
+5. Interview Tips
 
 Question:
-{question}
+{interviewer_question}
 
-User Answer:
-{user_answer}
+Candidate Answer:
+{candidate_answer}
 
 Resume:
 {resume_text}
