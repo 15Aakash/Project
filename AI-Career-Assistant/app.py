@@ -488,6 +488,11 @@ elif page == "🎤 Interview Coach":
                 )
 
         if st.session_state.interview_questions:
+            st.markdown("### Interview Preparation Preview")
+
+            st.markdown(
+                 st.session_state.interview_questions
+            )
 
             edited_interview_questions = st.text_area(
                 "Edit Interview Preparation Before Download",
