@@ -43,7 +43,8 @@ Current User Question:
 
     response = client.responses.create(
         model="gpt-4.1-mini",
-        input=prompt
+        input=prompt,
+        temperature=0
     )
 
     return response.output_text
