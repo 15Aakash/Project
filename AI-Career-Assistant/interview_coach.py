@@ -15,16 +15,23 @@ def generate_interview_questions(resume_text, job_description):
     prompt = f"""
 You are an AI interview coach.
 
-Based on the resume and job description:
+Based on the resume and job description, generate a final interview preparation document.
 
-Generate:
+Include:
 
 1. Technical Interview Questions
-2. Behavioral Questions
-3. Resume-based Questions
-4. Suggested Answers
+2. Behavioral Interview Questions
+3. Resume-Based Questions
+4. Suggested Answers Summary
 
-Keep the answers concise and professional.
+Rules:
+- Keep answers concise and professional.
+- Do not include conversational filler.
+- Do not say "Certainly".
+- Do not end with "If you want..." or offer extra follow-up actions.
+- Do not mention that you can generate more content later.
+- The output should be a complete standalone interview preparation document.
+- Use clean headings and bullet points.
 
 Resume:
 {resume_text}
