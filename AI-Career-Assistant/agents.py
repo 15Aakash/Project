@@ -6,7 +6,10 @@ from resume_tailor import generate_tailored_resume_points
 from interview_coach import generate_interview_questions
 from job_recommender import recommend_jobs
 from career_chatbot import career_chatbot_response
-from mock_interview import generate_mock_question, evaluate_mock_answer
+from mock_interview import (
+    interviewer_chat,
+    evaluate_interview_answer
+)
 
 
 class ResumeAgent:
