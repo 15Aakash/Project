@@ -488,6 +488,7 @@ elif page == "🎤 Interview Coach":
                 )
 
         if st.session_state.interview_questions:
+                st.markdown(st.session_state.interview_questions)
                 st.download_button(
                     label="Download Interview Questions as TXT",
                     data=st.session_state.interview_questions,
@@ -496,7 +497,7 @@ elif page == "🎤 Interview Coach":
                 )
                 pdf_path = create_pdf(
                     "Interview Preparation Questions",
-                    edited_interview_questions,
+                     st.session_state.interview_questions,
                     "interview_questions.pdf"
                 )
     
