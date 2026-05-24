@@ -511,55 +511,101 @@ elif page == "🎤 Interview Coach":
 
 elif page == "💬 AI Career Coach":
 
-    st.header("💬 AI Career Coach")
+    st.markdown("""
+    <style>
+    .coach-card {
+        background: linear-gradient(135deg, #f8faff, #eef3ff);
+        padding: 28px;
+        border-radius: 20px;
+        border: 1px solid #dbe4ff;
+        margin-bottom: 25px;
+    }
+
+    .coach-title {
+        font-size: 42px;
+        font-weight: 800;
+        color: #1f2937;
+        margin-bottom: 8px;
+    }
+
+    .coach-subtitle {
+        font-size: 18px;
+        color: #4b5563;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class="coach-card">
+        <div class="coach-title">💬 AI Career Coach</div>
+        <div class="coach-subtitle">
+            Ask career questions based on your resume, skills, job goals, and previous conversation.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
     if st.session_state.resume_text == "":
         st.info("Upload your resume and click Analyze Job first.")
 
     else:
-        st.write(
-            "Ask career questions based on your resume, skills, and previous conversation."
+
+        sample_questions = [
+            "What jobs suit me based on my resume?",
+            "How can I improve my ATS score?",
+            "What skills should I learn next?",
+            "Am I ready for AI Engineer roles?",
+            "How should I prepare for interviews?"
+        ]
+
+        selected_question = st.selectbox(
+            "Quick questions",
+            ["Choose a question"] + sample_questions
         )
+
+        user_question = st.chat_input(
+            "Ask your career coach..."
+        )
+
+        if selected_question != "Choose a question":
+            user_question = selected_question
 
         if st.button("Clear Chat History", use_container_width=True):
             st.session_state.coach_history = []
             st.success("Chat history cleared.")
+            st.rerun()
 
-        user_question = st.text_input(
-            "Ask your career question",
-            placeholder="Example: What jobs suit me based on my resume?"
-        )
+        if user_question:
 
-        if st.button("Ask Career Coach", use_container_width=True):
+            with st.spinner("Career Coach Agent is thinking..."):
 
-            if user_question.strip() == "":
-                st.warning("Please type a question.")
-
-            else:
-                with st.spinner("Career Coach Agent is thinking with memory..."):
-                    coach_answer = career_coach_agent.chat(
-                        st.session_state.resume_text,
-                        st.session_state.coach_history,
-                        user_question
-                    )
-
-                st.session_state.coach_history.append(
-                    {
-                        "question": user_question,
-                        "answer": coach_answer
-                    }
+                coach_answer = career_coach_agent.chat(
+                    st.session_state.resume_text,
+                    st.session_state.coach_history,
+                    user_question
                 )
 
+            st.session_state.coach_history.append(
+                {
+                    "question": user_question,
+                    "answer": coach_answer
+                }
+            )
+
         if st.session_state.coach_history:
+
             st.markdown("---")
-            st.subheader("Conversation")
+
+            for chat in st.session_state.coach_history:
+
+                with st.chat_message("user"):
+                    st.write(chat["question"])
+
+                with st.chat_message("assistant"):
+                    st.write(chat["answer"])
 
             chat_text = ""
 
-            for chat in reversed(st.session_state.coach_history):
-                st.chat_message("user").write(chat["question"])
-                st.chat_message("assistant").write(chat["answer"])
-
+            for chat in st.session_state.coach_history:
                 chat_text += f"User: {chat['question']}\n"
                 chat_text += f"Assistant: {chat['answer']}\n\n"
 
