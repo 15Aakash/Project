@@ -23,7 +23,7 @@ from tracker import (
     save_application,
     load_applications,
     delete_application,
-    update_application_status
+    update_application_status,
     update_interview_date
 )
 
