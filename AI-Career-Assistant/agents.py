@@ -53,17 +53,30 @@ class CareerCoachAgent:
 
 class MockInterviewAgent:
 
-    def ask_question(self, resume_text, job_description, chat_history):
-        return generate_mock_question(
+    def interviewer_chat(
+        self,
+        resume_text,
+        job_description,
+        conversation_history
+    ):
+
+        return interviewer_chat(
             resume_text,
             job_description,
-            chat_history
+            conversation_history
         )
 
-    def evaluate_answer(self, question, user_answer, resume_text, job_description):
-        return evaluate_mock_answer(
-            question,
-            user_answer,
+    def evaluate_answer(
+        self,
+        interviewer_question,
+        candidate_answer,
+        resume_text,
+        job_description
+    ):
+
+        return evaluate_interview_answer(
+            interviewer_question,
+            candidate_answer,
             resume_text,
             job_description
         )
