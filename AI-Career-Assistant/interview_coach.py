@@ -1,57 +1,37 @@
 import os
+
 from dotenv import load_dotenv
 from openai import OpenAI
 
 load_dotenv()
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+client = OpenAI(
+    api_key=os.getenv("OPENAI_API_KEY")
+)
 
 
 def generate_interview_questions(resume_text, job_description):
 
     prompt = f"""
-You are an expert AI/ML interview coach.
+You are an AI interview coach.
 
-Create a clean, professional interview preparation document.
+Based on the resume and job description, generate a final interview preparation document.
 
-Important rules:
-- Do NOT start with "Certainly".
-- Do NOT end with "If you want".
-- Do NOT use markdown symbols like ###, **, or ---.
-- Use clean plain headings.
-- Make the text professional and readable.
-- Do not exaggerate the candidate's experience.
-- If the job requires something the candidate lacks, say how to answer honestly.
-- Focus on AI/ML, computer vision, Python, research, projects, and communication.
-- Include 5 technical questions, 5 behavioral questions, 5 resume-based questions.
-- Include short sample answers under each question.
-- Keep answers realistic for a fresher/early-career candidate.
+Include:
 
-Use this format exactly:
+1. Technical Interview Questions
+2. Behavioral Interview Questions
+3. Resume-Based Questions
+4. Suggested Answers Summary
 
-INTERVIEW PREPARATION GUIDE
-
-1. TECHNICAL INTERVIEW QUESTIONS
-
-Question 1:
-Answer:
-
-Question 2:
-Answer:
-
-2. BEHAVIORAL INTERVIEW QUESTIONS
-
-Question 1:
-Answer:
-
-3. RESUME-BASED QUESTIONS
-
-Question 1:
-Answer:
-
-4. SKILL GAPS TO PREPARE
-
-5. FINAL INTERVIEW STRATEGY
+Rules:
+- Keep answers concise and professional.
+- Do not include conversational filler.
+- Do not say "Certainly".
+- Do not end with "If you want..." or offer extra follow-up actions.
+- Do not mention that you can generate more content later.
+- The output should be a complete standalone interview preparation document.
+- Use clean headings and bullet points.
 
 Resume:
 {resume_text}
