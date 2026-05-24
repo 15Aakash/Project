@@ -13,12 +13,6 @@ from agents import (
     CareerCoachAgent
 )
 
-from tracker_utils import (
-    load_applications,
-    save_application,
-    delete_application
-)
-
 from tracker import (
     save_application,
     load_applications,
