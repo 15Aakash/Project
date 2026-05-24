@@ -598,7 +598,7 @@ elif page == "🎙️ Mock Interview":
 
             with st.spinner("Mock Interview Agent is preparing a question..."):
 
-                st.session_state.current_mock_question = mock_interview_agent.ask_question(
+                st.session_state.current_mock_question = mock_interview_agent.interviewer_chat(
                     st.session_state.resume_text,
                     job_description,
                     st.session_state.mock_history
