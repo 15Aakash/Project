@@ -8,9 +8,15 @@ def clean_text(text):
         "•": "-",
         "–": "-",
         "—": "-",
+        "-": "-",
         "’": "'",
+        "‘": "'",
         "“": '"',
         "”": '"',
+        "≈": "~",
+        "≥": ">=",
+        "≤": "<=",
+        "→": "->",
         "\t": " "
     }
 
@@ -51,13 +57,13 @@ def create_pdf(title, content, filename):
     pdf.set_text_color(40, 40, 40)
 
     for line in content.split("\n"):
-        line = line.strip()
+        line = clean_text(line.strip())
 
         if not line:
             pdf.ln(4)
             continue
 
-        if line.lower() == title.lower():
+        if title.strip() and line.lower() == title.lower():
             continue
 
         if re.match(r"^\d+\.\s+", line) or line.endswith(":"):
@@ -70,7 +76,7 @@ def create_pdf(title, content, filename):
             pdf.set_text_color(40, 40, 40)
 
         elif line.startswith("- "):
-            pdf.multi_cell(0, 7, "• " + line[2:])
+            pdf.multi_cell(0, 7, "- " + line[2:])
 
         else:
             pdf.multi_cell(0, 7, line)
