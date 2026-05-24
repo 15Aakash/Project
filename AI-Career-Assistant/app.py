@@ -24,6 +24,7 @@ from tracker import (
     load_applications,
     delete_application,
     update_application_status
+    update_interview_date
 )
 
 from pdf_generator import create_pdf
@@ -654,6 +655,27 @@ elif page == "📌 Tracker":
             )
             st.metric("Interviews", interview_count)
 
+        if "interview_date" in applications.columns:
+
+            upcoming = applications[
+                applications["interview_date"].notna()
+                & (applications["interview_date"] != "")
+            ]
+
+            if not upcoming.empty:
+                st.subheader("📅 Upcoming Interviews")
+                st.dataframe(
+                    upcoming[
+                        [
+                            "company",
+                            "role",
+                            "interview_date",
+                            "notes"
+                        ]
+                    ],
+                    use_container_width=True
+                )
+
         status_counts = (
             applications["status"]
             .value_counts()
@@ -678,28 +700,59 @@ elif page == "📌 Tracker":
         st.markdown("### Manage Applications")
 
         for idx, row in applications.iterrows():
-        
-            col1, col2, col3 = st.columns([5, 2, 1])
-        
+
+            col1, col2, col3, col4 = st.columns([4, 2, 2, 1])
+
             with col1:
                 st.write(
                     f"{row['company']} | {row['role']}"
                 )
-        
+
             with col2:
+                status_options = [
+                    "Interested",
+                    "Applied",
+                    "Interview",
+                    "Rejected",
+                    "Offer"
+                ]
+
+                current_status = row["status"]
+
+                if current_status not in status_options:
+                    current_status = "Interested"
+
                 new_status = st.selectbox(
                     "Update Status",
-                    ["Interested", "Applied", "Interview", "Rejected", "Offer"],
-                    index=["Interested", "Applied", "Interview", "Rejected", "Offer"].index(row["status"]),
+                    status_options,
+                    index=status_options.index(current_status),
                     key=f"status_{idx}"
                 )
-        
+
                 if new_status != row["status"]:
                     update_application_status(idx, new_status)
                     st.success("Status updated!")
                     st.rerun()
-        
+
             with col3:
+                interview_date = st.date_input(
+                    "Interview Date",
+                    key=f"date_{idx}"
+                )
+
+                if st.button(
+                    "Save Date",
+                    key=f"save_date_{idx}"
+                ):
+                    update_interview_date(
+                        idx,
+                        interview_date.strftime("%Y-%m-%d")
+                    )
+
+                    st.success("Interview date saved!")
+                    st.rerun()
+
+            with col4:
                 if st.button(
                     "Delete",
                     key=f"delete_{idx}"
