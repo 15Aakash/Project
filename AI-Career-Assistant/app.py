@@ -751,7 +751,7 @@ elif page == "📌 Tracker":
             
                 else:
                     st.write("No interview scheduled")
-
+        
             with col4:
                 if st.button(
                     "Delete",
