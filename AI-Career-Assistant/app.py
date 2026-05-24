@@ -65,6 +65,13 @@ recruiter_agent = RecruiterAgent()
 resume_tailor_agent = ResumeTailorAgent()
 interview_agent = InterviewCoachAgent()
 career_coach_agent = CareerCoachAgent()
+mock_interview_agent = MockInterviewAgent()
+
+if "mock_history" not in st.session_state:
+    st.session_state.mock_history = []
+
+if "current_mock_question" not in st.session_state:
+    st.session_state.current_mock_question = ""
 
 if "resume_text" not in st.session_state:
     st.session_state.resume_text = ""
@@ -136,7 +143,9 @@ page = st.radio(
         "📝 Resume Tailor",
         "🎤 Interview Coach",
         "💬 AI Career Coach",
+        "🎙️ Mock Interview",
         "📌 Tracker"
+        
     ],
     horizontal=True
 )
@@ -575,6 +584,78 @@ elif page == "💬 AI Career Coach":
 
                 with st.chat_message("assistant"):
                     st.write(chat["answer"])
+
+elif page == "🎙️ Mock Interview":
+
+    st.header("🎙️ AI Mock Interview")
+
+    if st.session_state.resume_text == "" or job_description.strip() == "":
+        st.info("Analyze a job first to start the mock interview.")
+
+    else:
+
+        if st.button("Start / Next Question", use_container_width=True):
+
+            with st.spinner("Mock Interview Agent is preparing a question..."):
+
+                st.session_state.current_mock_question = mock_interview_agent.ask_question(
+                    st.session_state.resume_text,
+                    job_description,
+                    st.session_state.mock_history
+                )
+
+        if st.session_state.current_mock_question:
+
+            st.subheader("Interview Question")
+            st.info(st.session_state.current_mock_question)
+
+            user_answer = st.text_area(
+                "Type your answer here",
+                height=200
+            )
+
+            if st.button("Submit Answer", use_container_width=True):
+
+                if user_answer.strip() == "":
+                    st.warning("Please type your answer first.")
+
+                else:
+                    with st.spinner("Evaluating your answer..."):
+
+                        feedback = mock_interview_agent.evaluate_answer(
+                            st.session_state.current_mock_question,
+                            user_answer,
+                            st.session_state.resume_text,
+                            job_description
+                        )
+
+                    st.session_state.mock_history.append(
+                        {
+                            "question": st.session_state.current_mock_question,
+                            "answer": user_answer,
+                            "feedback": feedback
+                        }
+                    )
+
+                    st.session_state.current_mock_question = ""
+
+                    st.success("Answer evaluated successfully!")
+                    st.rerun()
+
+        if st.session_state.mock_history:
+
+            st.markdown("---")
+            st.subheader("Mock Interview History")
+
+            for item in reversed(st.session_state.mock_history):
+
+                with st.expander(item["question"]):
+
+                    st.write("Your Answer:")
+                    st.write(item["answer"])
+
+                    st.write("Feedback:")
+                    st.write(item["feedback"])
 
 elif page == "📌 Tracker":
 
