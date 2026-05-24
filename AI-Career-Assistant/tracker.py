@@ -56,3 +56,11 @@ def delete_application(index):
         data = data.drop(index)
 
         data.to_csv(FILE_NAME, index=False)
+
+def update_application_status(index, new_status):
+
+    data = load_applications()
+
+    data.loc[index, "status"] = new_status
+
+    data.to_csv(FILE_NAME, index=False)
