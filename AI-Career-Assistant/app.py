@@ -10,7 +10,8 @@ from agents import (
     RecruiterAgent,
     ResumeTailorAgent,
     InterviewCoachAgent,
-    CareerCoachAgent
+    CareerCoachAgent,
+    MockInterviewAgent
 )
 
 from tracker import (
