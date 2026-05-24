@@ -494,19 +494,19 @@ elif page == "🎤 Interview Coach":
                     file_name="interview_questions.txt",
                     mime="text/plain"
                 )
-            pdf_path = create_pdf(
-                "Interview Preparation Questions",
-                edited_interview_questions,
-                "interview_questions.pdf"
-            )
-
-            with open(pdf_path, "rb") as pdf_file:
-                st.download_button(
-                    label="Download Edited Interview Questions as PDF",
-                    data=pdf_file,
-                    file_name="interview_questions.pdf",
-                    mime="application/pdf"
+                pdf_path = create_pdf(
+                    "Interview Preparation Questions",
+                    edited_interview_questions,
+                    "interview_questions.pdf"
                 )
+    
+                with open(pdf_path, "rb") as pdf_file:
+                    st.download_button(
+                        label="Download Edited Interview Questions as PDF",
+                        data=pdf_file,
+                        file_name="interview_questions.pdf",
+                        mime="application/pdf"
+                    )
 
 elif page == "💬 AI Career Coach":
 
