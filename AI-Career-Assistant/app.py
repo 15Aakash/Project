@@ -728,23 +728,29 @@ elif page == "📌 Tracker":
                     st.success("Status updated!")
                     st.rerun()
 
-            with col3:
-                interview_date = st.date_input(
-                    "Interview Date",
-                    key=f"date_{idx}"
-                )
+           with col3:
 
-                if st.button(
-                    "Save Date",
-                    key=f"save_date_{idx}"
-                ):
-                    update_interview_date(
-                        idx,
-                        interview_date.strftime("%Y-%m-%d")
+                if row["status"] == "Interview":
+            
+                    interview_date = st.date_input(
+                        "Interview Date",
+                        key=f"date_{idx}"
                     )
-
-                    st.success("Interview date saved!")
-                    st.rerun()
+            
+                    if st.button(
+                        "Save Date",
+                        key=f"save_date_{idx}"
+                    ):
+                        update_interview_date(
+                            idx,
+                            interview_date.strftime("%Y-%m-%d")
+                        )
+            
+                        st.success("Interview date saved!")
+                        st.rerun()
+            
+                else:
+                    st.write("No interview scheduled")
 
             with col4:
                 if st.button(
