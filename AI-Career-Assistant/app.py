@@ -494,11 +494,38 @@ elif page == "🎤 Interview Coach":
                  st.session_state.interview_questions
             )
 
-            edited_interview_questions = st.text_area(
-                "Edit Interview Preparation Before Download",
-                st.session_state.interview_questions,
-                height=500
-            )
+            st.markdown("""
+<style>
+
+/* Interview Coach Text Area Only */
+
+div[data-testid="stTextArea"] textarea {
+    font-size: 17px !important;
+    line-height: 1.9 !important;
+    font-family: 'Segoe UI', sans-serif !important;
+
+    background-color: white !important;
+    color: #111111 !important;
+
+    border-radius: 14px !important;
+    padding: 20px !important;
+
+    border: 1px solid #dcdcdc !important;
+}
+
+/* White background */
+div[data-testid="stTextArea"] {
+    background-color: white !important;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+edited_interview_questions = st.text_area(
+    "Edit Interview Preparation Before Download",
+    st.session_state.interview_questions,
+    height=600
+)
 
             st.download_button(
                 label="Download Edited Interview Questions as TXT",
