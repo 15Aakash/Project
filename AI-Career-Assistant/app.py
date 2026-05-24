@@ -488,25 +488,12 @@ elif page == "🎤 Interview Coach":
                 )
 
         if st.session_state.interview_questions:
-            st.markdown("### Interview Preparation Preview")
-
-            st.markdown(
-                 st.session_state.interview_questions
-            )
-            
-            edited_interview_questions = st.text_area(
-                "Edit Interview Preparation Before Download",
-                st.session_state.interview_questions,
-                height=600
-            )
-
-            st.download_button(
-                label="Download Edited Interview Questions as TXT",
-                data=edited_interview_questions,
-                file_name="interview_questions.txt",
-                mime="text/plain"
-            )
-
+                st.download_button(
+                    label="Download Interview Questions as TXT",
+                    data=st.session_state.interview_questions,
+                    file_name="interview_questions.txt",
+                    mime="text/plain"
+                )
             pdf_path = create_pdf(
                 "Interview Preparation Questions",
                 edited_interview_questions,
