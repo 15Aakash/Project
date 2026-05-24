@@ -550,51 +550,34 @@ elif page == "💬 AI Career Coach":
     else:
 
         sample_questions = [
-    "What jobs suit me based on my resume?",
-    "How can I improve my ATS score?",
-    "What skills should I learn next?",
-    "Am I ready for AI Engineer roles?",
-    "How should I prepare for interviews?"
-]
+            "What jobs suit me based on my resume?",
+            "How can I improve my ATS score?",
+            "What skills should I learn next?",
+            "Am I ready for AI Engineer roles?",
+            "How should I prepare for interviews?"
+        ]
 
-selected_question = st.selectbox(
-    "Quick questions",
-    ["Choose a question"] + sample_questions,
-    key="quick_question"
-)
+        selected_question = st.selectbox(
+            "Quick questions",
+            ["Choose a question"] + sample_questions,
+            key="quick_question"
+        )
 
         if st.button("Clear Chat History", use_container_width=True):
             st.session_state.coach_history = []
             st.session_state.quick_question = "Choose a question"
             st.success("Chat history cleared.")
             st.rerun()
-        
+
         user_question = st.chat_input("Ask your career coach...")
-        
+
         if selected_question != "Choose a question":
             user_question = selected_question
             st.session_state.quick_question = "Choose a question"
-        
-        if user_question:
-            with st.spinner("Career Coach Agent is thinking..."):
-                coach_answer = career_coach_agent.chat(
-                    st.session_state.resume_text,
-                    st.session_state.coach_history,
-                    user_question
-                )
-        
-        st.session_state.coach_history.append(
-            {
-                "question": user_question,
-                "answer": coach_answer
-            }
-        )
-        st.rerun()
 
         if user_question:
 
             with st.spinner("Career Coach Agent is thinking..."):
-
                 coach_answer = career_coach_agent.chat(
                     st.session_state.resume_text,
                     st.session_state.coach_history,
@@ -607,6 +590,8 @@ selected_question = st.selectbox(
                     "answer": coach_answer
                 }
             )
+
+            st.rerun()
 
         if st.session_state.coach_history:
 
