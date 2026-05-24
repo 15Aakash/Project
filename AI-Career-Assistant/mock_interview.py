@@ -16,14 +16,14 @@ def interviewer_chat(
     conversation_history
 ):
 
-    history_text = ""
+history_text = ""
 
-   for item in conversation_history:
+for item in conversation_history:
 
     if "interviewer" not in item:
         continue
 
-        history_text += f"""
+    history_text += f"""
 Interviewer: {item['interviewer']}
 Candidate: {item['candidate']}
 """
