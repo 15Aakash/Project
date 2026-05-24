@@ -22,7 +22,8 @@ from tracker_utils import (
 from tracker import (
     save_application,
     load_applications,
-    delete_application
+    delete_application,
+    update_application_status
 )
 
 from pdf_generator import create_pdf
@@ -674,19 +675,35 @@ elif page == "📌 Tracker":
 
         st.dataframe(applications, use_container_width=True)
 
-        st.markdown("### Delete Applications")
+        st.markdown("### Manage Applications")
 
         for idx, row in applications.iterrows():
-
-            col1, col2 = st.columns([6, 1])
-
+        
+            col1, col2, col3 = st.columns([5, 2, 1])
+        
             with col1:
                 st.write(
-                    f"{row['company']} | {row['role']} | {row['status']}"
+                    f"{row['company']} | {row['role']}"
                 )
-
+        
             with col2:
-                if st.button("Delete", key=f"delete_{idx}"):
+                new_status = st.selectbox(
+                    "Update Status",
+                    ["Interested", "Applied", "Interview", "Rejected", "Offer"],
+                    index=["Interested", "Applied", "Interview", "Rejected", "Offer"].index(row["status"]),
+                    key=f"status_{idx}"
+                )
+        
+                if new_status != row["status"]:
+                    update_application_status(idx, new_status)
+                    st.success("Status updated!")
+                    st.rerun()
+        
+            with col3:
+                if st.button(
+                    "Delete",
+                    key=f"delete_{idx}"
+                ):
                     delete_application(idx)
                     st.success("Application deleted successfully!")
                     st.rerun()
