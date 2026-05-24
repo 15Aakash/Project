@@ -563,26 +563,26 @@ selected_question = st.selectbox(
     key="quick_question"
 )
 
-    if st.button("Clear Chat History", use_container_width=True):
-        st.session_state.coach_history = []
-        st.session_state.quick_question = "Choose a question"
-        st.success("Chat history cleared.")
-        st.rerun()
-    
-    user_question = st.chat_input("Ask your career coach...")
-    
-    if selected_question != "Choose a question":
-        user_question = selected_question
-        st.session_state.quick_question = "Choose a question"
-    
-    if user_question:
-        with st.spinner("Career Coach Agent is thinking..."):
-            coach_answer = career_coach_agent.chat(
-                st.session_state.resume_text,
-                st.session_state.coach_history,
-                user_question
-            )
-    
+        if st.button("Clear Chat History", use_container_width=True):
+            st.session_state.coach_history = []
+            st.session_state.quick_question = "Choose a question"
+            st.success("Chat history cleared.")
+            st.rerun()
+        
+        user_question = st.chat_input("Ask your career coach...")
+        
+        if selected_question != "Choose a question":
+            user_question = selected_question
+            st.session_state.quick_question = "Choose a question"
+        
+        if user_question:
+            with st.spinner("Career Coach Agent is thinking..."):
+                coach_answer = career_coach_agent.chat(
+                    st.session_state.resume_text,
+                    st.session_state.coach_history,
+                    user_question
+                )
+        
         st.session_state.coach_history.append(
             {
                 "question": user_question,
