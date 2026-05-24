@@ -548,7 +548,6 @@ elif page == "💬 AI Career Coach":
         st.info("Upload your resume and click Analyze Job first.")
 
     else:
-
         sample_questions = [
             "What jobs suit me based on my resume?",
             "How can I improve my ATS score?",
@@ -559,13 +558,11 @@ elif page == "💬 AI Career Coach":
 
         selected_question = st.selectbox(
             "Quick questions",
-            ["Choose a question"] + sample_questions,
-            key="quick_question"
+            ["Choose a question"] + sample_questions
         )
 
         if st.button("Clear Chat History", use_container_width=True):
             st.session_state.coach_history = []
-            st.session_state.quick_question = "Choose a question"
             st.success("Chat history cleared.")
             st.rerun()
 
@@ -573,10 +570,8 @@ elif page == "💬 AI Career Coach":
 
         if selected_question != "Choose a question":
             user_question = selected_question
-            st.session_state.quick_question = "Choose a question"
 
         if user_question:
-
             with st.spinner("Career Coach Agent is thinking..."):
                 coach_answer = career_coach_agent.chat(
                     st.session_state.resume_text,
@@ -594,36 +589,14 @@ elif page == "💬 AI Career Coach":
             st.rerun()
 
         if st.session_state.coach_history:
-
             st.markdown("---")
 
             for chat in st.session_state.coach_history:
-
                 with st.chat_message("user"):
                     st.write(chat["question"])
 
                 with st.chat_message("assistant"):
                     st.write(chat["answer"])
-
-            chat_text = ""
-
-            for chat in st.session_state.coach_history:
-                chat_text += f"User: {chat['question']}\n"
-                chat_text += f"Assistant: {chat['answer']}\n\n"
-
-            pdf_path = create_pdf(
-                "AI Career Coach Conversation",
-                chat_text,
-                "career_coach_conversation.pdf"
-            )
-
-            with open(pdf_path, "rb") as pdf_file:
-                st.download_button(
-                    label="Download Career Coach Conversation as PDF",
-                    data=pdf_file,
-                    file_name="career_coach_conversation.pdf",
-                    mime="application/pdf"
-                )
 
 elif page == "📌 Tracker":
 
