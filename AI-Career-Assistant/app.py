@@ -511,44 +511,15 @@ elif page == "🎤 Interview Coach":
 
 elif page == "💬 AI Career Coach":
 
-    st.markdown("""
-    <style>
-    .coach-card {
-        background: linear-gradient(135deg, #f8faff, #eef3ff);
-        padding: 28px;
-        border-radius: 20px;
-        border: 1px solid #dbe4ff;
-        margin-bottom: 25px;
-    }
-
-    .coach-title {
-        font-size: 42px;
-        font-weight: 800;
-        color: #1f2937;
-        margin-bottom: 8px;
-    }
-
-    .coach-subtitle {
-        font-size: 18px;
-        color: #4b5563;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
-    st.markdown("""
-    <div class="coach-card">
-        <div class="coach-title">💬 AI Career Coach</div>
-        <div class="coach-subtitle">
-            Ask career questions based on your resume, skills, job goals, and previous conversation.
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+    st.header("💬 AI Career Coach")
 
     if st.session_state.resume_text == "":
         st.info("Upload your resume and click Analyze Job first.")
 
     else:
-        sample_questions = [
+        st.write("Ask career questions based on your resume, skills, and previous conversation.")
+
+        quick_questions = [
             "What jobs suit me based on my resume?",
             "How can I improve my ATS score?",
             "What skills should I learn next?",
@@ -556,20 +527,26 @@ elif page == "💬 AI Career Coach":
             "How should I prepare for interviews?"
         ]
 
-        selected_question = st.selectbox(
-            "Quick questions",
-            ["Choose a question"] + sample_questions
-        )
+        user_question = None
+
+        st.subheader("Quick Questions")
+
+        cols = st.columns(2)
+
+        for i, question in enumerate(quick_questions):
+            with cols[i % 2]:
+                if st.button(question, key=f"quick_{i}", use_container_width=True):
+                    user_question = question
 
         if st.button("Clear Chat History", use_container_width=True):
             st.session_state.coach_history = []
             st.success("Chat history cleared.")
             st.rerun()
 
-        user_question = st.chat_input("Ask your career coach...")
+        typed_question = st.chat_input("Ask your career coach...")
 
-        if selected_question != "Choose a question":
-            user_question = selected_question
+        if typed_question:
+            user_question = typed_question
 
         if user_question:
             with st.spinner("Career Coach Agent is thinking..."):
@@ -579,12 +556,10 @@ elif page == "💬 AI Career Coach":
                     user_question
                 )
 
-            st.session_state.coach_history.append(
-                {
-                    "question": user_question,
-                    "answer": coach_answer
-                }
-            )
+            st.session_state.coach_history.append({
+                "question": user_question,
+                "answer": coach_answer
+            })
 
             st.rerun()
 
