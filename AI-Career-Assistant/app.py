@@ -495,37 +495,51 @@ elif page == "🎤 Interview Coach":
             )
 
             st.markdown("""
-<style>
+            <style>
 
-/* Interview Coach Text Area Only */
+            /* Interview Coach Container */
 
-div[data-testid="stTextArea"] textarea {
-    font-size: 17px !important;
-    line-height: 1.9 !important;
-    font-family: 'Segoe UI', sans-serif !important;
+            div[data-testid="stTextArea"] {
+                background-color: white !important;
+                border-radius: 16px !important;
+                padding: 10px !important;
+                border: 1px solid #dcdcdc !important;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            }
+            
+            /* Actual Text Area */
+            
+            div[data-testid="stTextArea"] textarea {
+            
+                font-size: 18px !important;
+                line-height: 2 !important;
+                font-family: 'Segoe UI', sans-serif !important;
+            
+                background-color: white !important;
+                color: #111111 !important;
+            
+                padding: 25px !important;
+            
+                border: none !important;
+            
+                min-height: 600px !important;
+            }
 
-    background-color: white !important;
-    color: #111111 !important;
-
-    border-radius: 14px !important;
-    padding: 20px !important;
-
-    border: 1px solid #dcdcdc !important;
-}
-
-/* White background */
-div[data-testid="stTextArea"] {
-    background-color: white !important;
-}
-
-</style>
-""", unsafe_allow_html=True)
-
-edited_interview_questions = st.text_area(
-    "Edit Interview Preparation Before Download",
-    st.session_state.interview_questions,
-    height=600
-)
+            /* Remove focus border */
+            
+            div[data-testid="stTextArea"] textarea:focus {
+                outline: none !important;
+                box-shadow: none !important;
+            }
+            
+            </style>
+            """, unsafe_allow_html=True)
+            
+            edited_interview_questions = st.text_area(
+                "Edit Interview Preparation Before Download",
+                st.session_state.interview_questions,
+                height=600
+            )
 
             st.download_button(
                 label="Download Edited Interview Questions as TXT",
