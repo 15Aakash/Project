@@ -1173,17 +1173,17 @@ elif page == "🧠 AI Assistant":
         "Ask anything like: Tailor my resume, prepare interview questions, write a cover letter..."
     )
 
-   if user_request:
+    if user_request:
 
-    selected_agent = route_user_request(user_request)
+        selected_agent = route_user_request(user_request)
 
-    if selected_agent == "INTERVIEW_COACH_AGENT":
+        if selected_agent == "INTERVIEW_COACH_AGENT":
 
-        response = interview_agent.generate_questions(
-            user_request
-        )
+            response = interview_agent.generate_questions(
+                user_request
+            )
 
-        response = f"""
+            response = f"""
 I selected the Interview Coach Agent.
 
 Here are interview questions:
@@ -1191,14 +1191,14 @@ Here are interview questions:
 {response}
 """
 
-    elif selected_agent == "RECRUITER_AGENT":
+        elif selected_agent == "RECRUITER_AGENT":
 
-        response = recruiter_agent.generate(
-            st.session_state.resume_text,
-            user_request
-        )
+            response = recruiter_agent.generate(
+                st.session_state.resume_text,
+                user_request
+            )
 
-        response = f"""
+            response = f"""
 I selected the Recruiter Outreach Agent.
 
 Generated recruiter message:
@@ -1206,14 +1206,14 @@ Generated recruiter message:
 {response}
 """
 
-    elif selected_agent == "COVER_LETTER_AGENT":
+        elif selected_agent == "COVER_LETTER_AGENT":
 
-        response = cover_letter_agent.generate(
-            st.session_state.resume_text,
-            user_request
-        )
+            response = cover_letter_agent.generate(
+                st.session_state.resume_text,
+                user_request
+            )
 
-        response = f"""
+            response = f"""
 I selected the Cover Letter Agent.
 
 Generated cover letter:
@@ -1221,34 +1221,34 @@ Generated cover letter:
 {response}
 """
 
-    elif selected_agent == "CAREER_COACH_AGENT":
+        elif selected_agent == "CAREER_COACH_AGENT":
 
-        response = career_coach_agent.chat(
-            st.session_state.resume_text,
-            st.session_state.coach_history,
-            user_request
-        )
+            response = career_coach_agent.chat(
+                st.session_state.resume_text,
+                st.session_state.coach_history,
+                user_request
+            )
 
-    else:
+        else:
 
-        response = f"""
+            response = f"""
 I routed your request to: {selected_agent}
 
 Opening corresponding module.
 """
 
-    st.session_state.ai_assistant_chat.append(
-        {
-            "user": user_request,
-            "assistant": response
-        }
-    )
+        st.session_state.ai_assistant_chat.append(
+            {
+                "user": user_request,
+                "assistant": response
+            }
+        )
 
-    st.session_state.selected_page = map_agent_to_page(
-        selected_agent
-    )
+        st.session_state.selected_page = map_agent_to_page(
+            selected_agent
+        )
 
-    st.rerun()
+        st.rerun()
             
 elif page == "📌 Tracker":
 
