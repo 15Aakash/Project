@@ -107,6 +107,9 @@ if "tailored_resume" not in st.session_state:
 if "interview_questions" not in st.session_state:
     st.session_state.interview_questions = ""
 
+if "mock_scores" not in st.session_state:
+    st.session_state.mock_scores = ""
+
 col1, col2 = st.columns([1, 2])
 
 with col1:
@@ -613,23 +616,18 @@ elif page == "🎙️ Mock Interview":
         or job_description.strip() == ""
     ):
 
-        st.info(
-            "Analyze a job first to start the mock interview."
-        )
+        st.info("Analyze a job first to start the mock interview.")
 
     else:
 
         col1, col2 = st.columns(2)
 
         with col1:
-
-            if st.button(
-                "Start Interview",
-                use_container_width=True
-            ):
+            if st.button("Start Interview", use_container_width=True):
 
                 st.session_state.mock_chat = []
                 st.session_state.mock_feedback = []
+                st.session_state.mock_scores = ""
                 st.session_state.mock_started = True
 
                 first_question = mock_interview_agent.interviewer_chat(
@@ -648,18 +646,14 @@ elif page == "🎙️ Mock Interview":
                 st.rerun()
 
         with col2:
-
-            if st.button(
-                "Reset Interview",
-                use_container_width=True
-            ):
+            if st.button("Reset Interview", use_container_width=True):
 
                 st.session_state.mock_chat = []
                 st.session_state.mock_feedback = []
+                st.session_state.mock_scores = ""
                 st.session_state.mock_started = False
 
                 st.success("Mock interview reset.")
-
                 st.rerun()
 
         if st.session_state.mock_started:
@@ -667,9 +661,7 @@ elif page == "🎙️ Mock Interview":
             if interview_mode == "Text Interview":
 
                 for message in st.session_state.mock_chat:
-
                     with st.chat_message(message["role"]):
-
                         st.write(message["content"])
 
             else:
@@ -677,19 +669,14 @@ elif page == "🎙️ Mock Interview":
                 latest_assistant_message = None
 
                 for message in reversed(st.session_state.mock_chat):
-
                     if message["role"] == "assistant":
-
                         latest_assistant_message = message["content"]
                         break
 
                 if latest_assistant_message:
 
                     st.markdown("### 🎤 Voice Interview Mode")
-
-                    st.info(
-                        "Step 1: Listen to the AI interviewer."
-                    )
+                    st.info("Step 1: Listen to the AI interviewer.")
 
                     audio_path = "latest_question.mp3"
 
@@ -722,11 +709,7 @@ elif page == "🎙️ Mock Interview":
                 )
 
                 if audio:
-
-                    if st.button(
-                        "Submit Voice Answer",
-                        use_container_width=True
-                    ):
+                    if st.button("Submit Voice Answer", use_container_width=True):
 
                         with tempfile.NamedTemporaryFile(
                             delete=False,
@@ -734,12 +717,9 @@ elif page == "🎙️ Mock Interview":
                         ) as tmp_file:
 
                             tmp_file.write(audio["bytes"])
-
                             tmp_audio_path = tmp_file.name
 
-                        with st.spinner(
-                            "🎧 Processing your response..."
-                        ):
+                        with st.spinner("🎧 Processing your response..."):
 
                             user_answer = mock_interview_agent.transcribe_audio(
                                 tmp_audio_path
@@ -775,9 +755,7 @@ elif page == "🎙️ Mock Interview":
                             }
                         )
 
-                with st.spinner(
-                    "Generating feedback for your answer..."
-                ):
+                with st.spinner("Generating feedback for your answer..."):
 
                     feedback = mock_interview_agent.evaluate_answer(
                         st.session_state.mock_chat[-2]["content"],
@@ -794,9 +772,7 @@ elif page == "🎙️ Mock Interview":
                     }
                 )
 
-                with st.spinner(
-                    "🎤 AI interviewer is thinking..."
-                ):
+                with st.spinner("🎤 AI interviewer is thinking..."):
 
                     next_question = mock_interview_agent.interviewer_chat(
                         st.session_state.resume_text,
@@ -816,16 +792,11 @@ elif page == "🎙️ Mock Interview":
             if st.session_state.mock_feedback:
 
                 st.markdown("---")
-
                 st.subheader("📊 Interview Feedback")
 
-                for item in reversed(
-                    st.session_state.mock_feedback
-                ):
+                for item in reversed(st.session_state.mock_feedback):
 
-                    with st.expander(
-                        item["question"]
-                    ):
+                    with st.expander(item["question"]):
 
                         st.write("Your Answer:")
                         st.write(item["answer"])
@@ -833,11 +804,33 @@ elif page == "🎙️ Mock Interview":
                         st.write("Feedback:")
                         st.write(item["feedback"])
 
+                st.markdown("---")
+                st.subheader("📈 Final Interview Analytics")
+
+                if st.button(
+                    "Generate Final Interview Analytics",
+                    use_container_width=True
+                ):
+
+                    with st.spinner(
+                        "Analyzing your full interview performance..."
+                    ):
+
+                        st.session_state.mock_scores = mock_interview_agent.generate_scores(
+                            st.session_state.mock_feedback
+                        )
+
+                if st.session_state.mock_scores:
+
+                    st.text_area(
+                        "Interview Analytics Report",
+                        st.session_state.mock_scores,
+                        height=250
+                    )
+
         else:
 
-            st.info(
-                "Click Start Interview to begin your AI mock interview."
-            )
+            st.info("Click Start Interview to begin your AI mock interview.")
             
 elif page == "📌 Tracker":
 
