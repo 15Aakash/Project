@@ -659,6 +659,10 @@ elif page == "🎙️ Mock Interview":
 
         if st.session_state.mock_started:
 
+            # =========================
+            # TEXT INTERVIEW DISPLAY
+            # =========================
+
             if interview_mode == "Text Interview":
 
                 for message in st.session_state.mock_chat:
@@ -666,6 +670,10 @@ elif page == "🎙️ Mock Interview":
                     with st.chat_message(message["role"]):
 
                         st.write(message["content"])
+
+            # =========================
+            # VOICE INTERVIEW DISPLAY
+            # =========================
 
             else:
 
@@ -681,7 +689,11 @@ elif page == "🎙️ Mock Interview":
 
                 if latest_assistant_message:
 
-                    st.info("🎤 AI Interviewer is speaking...")
+                    st.markdown("### 🎤 Voice Interview Mode")
+
+                    st.info(
+                        "Step 1: Play the AI interviewer audio below."
+                    )
 
                     audio_path = "latest_question.mp3"
 
@@ -690,9 +702,16 @@ elif page == "🎙️ Mock Interview":
                         audio_path
                     )
 
-                    st.audio(audio_path)
+                    st.audio(
+                        audio_path,
+                        format="audio/mp3"
+                    )
 
             user_answer = None
+
+            # =========================
+            # TEXT ANSWER INPUT
+            # =========================
 
             if interview_mode == "Text Interview":
 
@@ -700,13 +719,17 @@ elif page == "🎙️ Mock Interview":
                     "Type your interview answer..."
                 )
 
+            # =========================
+            # VOICE ANSWER INPUT
+            # =========================
+
             else:
 
-                st.info("🎙️ Record your answer below.")
+                st.markdown("### 🎙️ Your Turn")
 
                 audio = mic_recorder(
-                    start_prompt="🎙️ Start Recording",
-                    stop_prompt="⏹️ Stop Recording",
+                    start_prompt="🎙️ Start Answer",
+                    stop_prompt="⏹️ Stop Answer",
                     key="voice_recorder"
                 )
 
@@ -733,6 +756,10 @@ elif page == "🎙️ Mock Interview":
                             user_answer = mock_interview_agent.transcribe_audio(
                                 tmp_audio_path
                             )
+
+            # =========================
+            # PROCESS USER ANSWER
+            # =========================
 
             if user_answer:
 
