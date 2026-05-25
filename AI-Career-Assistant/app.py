@@ -26,7 +26,12 @@ from tracker import (
 from pdf_generator import create_pdf
 from streamlit_mic_recorder import mic_recorder
 from auth import signup_user, login_user
-from user_storage import save_resume_text, load_resume_text
+from user_storage import (
+    save_resume_text,
+    load_resume_text,
+    save_ats_report,
+    load_ats_reports
+)
 
 
 st.set_page_config(
@@ -217,6 +222,12 @@ if st.button("🚀 Analyze Job", use_container_width=True):
             st.session_state.analysis = ats_agent.analyze(
                 st.session_state.resume_text,
                 job_description
+            )
+
+            save_ats_report(
+                st.session_state.username,
+                job_description,
+                st.session_state.analysis
             )
 
         st.success("Multi-agent analysis completed successfully!")
