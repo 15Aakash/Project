@@ -290,6 +290,25 @@ if st.button("Route Request", use_container_width=True):
 
 st.markdown("---")
 
+st.subheader("🛠 LangChain Tool Agent Test")
+
+tool_test_query = st.text_input(
+    "Test LangChain tool calling",
+    placeholder="Example: Write a cover letter"
+)
+
+if st.button("Run Tool Agent", use_container_width=True):
+
+    if tool_test_query.strip() == "":
+        st.warning("Please enter a request.")
+
+    else:
+        with st.spinner("LangChain tool agent is selecting and using a tool..."):
+
+            tool_result = run_langchain_tool_agent(tool_test_query)
+
+        st.success(f"Tool Agent Result: {tool_result}")
+
 st.subheader("⚡ Autonomous Multi-Agent Workflow")
 
 workflow_request = st.text_input(
