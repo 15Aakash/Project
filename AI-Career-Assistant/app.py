@@ -77,6 +77,9 @@ if "current_mock_question" not in st.session_state:
 if "mock_chat" not in st.session_state:
     st.session_state.mock_chat = []
 
+if "mock_feedback" not in st.session_state:
+    st.session_state.mock_feedback = []
+
 if "mock_started" not in st.session_state:
     st.session_state.mock_started = False
 
