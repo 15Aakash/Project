@@ -25,6 +25,7 @@ from tracker import (
 
 from pdf_generator import create_pdf
 from streamlit_mic_recorder import mic_recorder
+from auth import signup_user, login_user
 
 
 st.set_page_config(
@@ -33,7 +34,56 @@ st.set_page_config(
     page_icon="🤖"
 )
 
+if not st.session_state.logged_in:
+
+    st.title("🔐 AI Career Assistant Login")
+
+    auth_mode = st.radio(
+        "Choose Option",
+        ["Login", "Sign Up"],
+        horizontal=True
+    )
+
+    username = st.text_input("Username")
+    password = st.text_input("Password", type="password")
+
+    if auth_mode == "Sign Up":
+
+        if st.button("Create Account", use_container_width=True):
+
+            if username.strip() == "" or password.strip() == "":
+                st.warning("Please enter username and password.")
+
+            else:
+                created = signup_user(username, password)
+
+                if created:
+                    st.success("Account created successfully. Please login.")
+                else:
+                    st.warning("Username already exists.")
+
+    else:
+
+        if st.button("Login", use_container_width=True):
+
+            if login_user(username, password):
+                st.session_state.logged_in = True
+                st.session_state.username = username
+                st.success("Login successful.")
+                st.rerun()
+
+            else:
+                st.error("Invalid username or password.")
+
+    st.stop()
+
 st.sidebar.title("🤖 AI Career Assistant")
+st.sidebar.write(f"Logged in as: {st.session_state.username}")
+
+if st.sidebar.button("Logout"):
+    st.session_state.clear()
+    st.rerun()
+    
 st.sidebar.write("### Features")
 st.sidebar.write("✅ Resume Parser Agent")
 st.sidebar.write("✅ ATS Match Agent")
@@ -46,6 +96,7 @@ st.sidebar.write("✅ AI Career Coach with Memory")
 st.sidebar.write("✅ Application Tracker")
 st.sidebar.write("✅ Analytics Dashboard")
 st.sidebar.write("✅ PDF Export")
+
 
 st.markdown("""
 <h1 style='font-size:48px;'>
@@ -110,6 +161,12 @@ if "interview_questions" not in st.session_state:
 
 if "mock_scores" not in st.session_state:
     st.session_state.mock_scores = ""
+
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+
+if "username" not in st.session_state:
+    st.session_state.username = ""
 
 col1, col2 = st.columns([1, 2])
 
