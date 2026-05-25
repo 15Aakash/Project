@@ -194,6 +194,9 @@ if "selected_page" not in st.session_state:
 if "auto_workflow_result" not in st.session_state:
     st.session_state.auto_workflow_result = None
 
+if "ai_assistant_chat" not in st.session_state:
+    st.session_state.ai_assistant_chat = []
+
 col1, col2 = st.columns([1, 2])
 
 with col1:
@@ -363,6 +366,7 @@ pages = [
     "🎤 Interview Coach",
     "💬 AI Career Coach",
     "🎙️ Mock Interview",
+    "🧠 AI Assistant",
     "📌 Tracker"
 ]
 
@@ -1148,6 +1152,67 @@ elif page == "🎙️ Mock Interview":
         else:
 
             st.info("Click Start Interview to begin your AI mock interview.")
+
+elif page == "🧠 AI Assistant":
+
+    st.header("🧠 Conversational AI Assistant")
+
+    st.write(
+        "Ask the AI assistant to route your request, use the right agent, and guide your career workflow."
+    )
+
+    for chat in st.session_state.ai_assistant_chat:
+
+        with st.chat_message("user"):
+            st.write(chat["user"])
+
+        with st.chat_message("assistant"):
+            st.write(chat["assistant"])
+
+    user_request = st.chat_input(
+        "Ask anything like: Tailor my resume, prepare interview questions, write a cover letter..."
+    )
+
+    if user_request:
+
+        selected_agent = route_user_request(user_request)
+
+        response = f"I routed your request to: {selected_agent}"
+
+        if selected_agent == "ATS_AGENT":
+            response += "\n\nGo to Match Dashboard to review ATS analysis."
+
+        elif selected_agent == "RESUME_TAILOR_AGENT":
+            response += "\n\nI recommend using the Resume Tailor agent for this request."
+
+        elif selected_agent == "COVER_LETTER_AGENT":
+            response += "\n\nI recommend generating a cover letter for the uploaded resume and job description."
+
+        elif selected_agent == "RECRUITER_AGENT":
+            response += "\n\nI recommend generating a LinkedIn recruiter outreach message."
+
+        elif selected_agent == "INTERVIEW_COACH_AGENT":
+            response += "\n\nI recommend using the Interview Coach to generate role-specific questions."
+
+        elif selected_agent == "MOCK_INTERVIEW_AGENT":
+            response += "\n\nI recommend starting a Mock Interview session."
+
+        elif selected_agent == "CAREER_COACH_AGENT":
+            response += "\n\nI can answer career strategy questions using your resume context."
+
+        elif selected_agent == "TRACKER_AGENT":
+            response += "\n\nI recommend opening the Tracker to manage your applications."
+
+        st.session_state.ai_assistant_chat.append(
+            {
+                "user": user_request,
+                "assistant": response
+            }
+        )
+
+        st.session_state.selected_page = map_agent_to_page(selected_agent)
+
+        st.rerun()
             
 elif page == "📌 Tracker":
 
