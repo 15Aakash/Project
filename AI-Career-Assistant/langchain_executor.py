@@ -1,63 +1,41 @@
-import os
-
-from dotenv import load_dotenv
-from langchain_openai import ChatOpenAI
-from langchain.agents import AgentExecutor, create_openai_tools_agent
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-
-from langchain_tools import career_tools
-
-load_dotenv()
-
-llm = ChatOpenAI(
-    model="gpt-4.1-mini",
-    temperature=0,
-    api_key=os.getenv("OPENAI_API_KEY")
-)
-
-prompt = ChatPromptTemplate.from_messages(
-    [
-        (
-            "system",
-            """
-You are a career AI tool-calling agent.
-
-Your job is to choose the best available tool based on the user's request.
-
-Use exactly one tool.
-
-Return only the tool result.
-"""
-        ),
-        (
-            "human",
-            "{input}"
-        ),
-        MessagesPlaceholder(
-            variable_name="agent_scratchpad"
-        )
-    ]
-)
-
-agent = create_openai_tools_agent(
-    llm,
-    career_tools,
-    prompt
-)
-
-agent_executor = AgentExecutor(
-    agent=agent,
-    tools=career_tools,
-    verbose=True
+from langchain_tools import (
+    ats_tool,
+    resume_tailor_tool,
+    cover_letter_tool,
+    recruiter_tool,
+    interview_tool,
+    mock_interview_tool,
+    career_coach_tool,
+    tracker_tool
 )
 
 
 def run_langchain_tool_agent(user_request):
 
-    result = agent_executor.invoke(
-        {
-            "input": user_request
-        }
-    )
+    request = user_request.lower()
 
-    return result["output"]
+    if "cover letter" in request:
+        return cover_letter_tool.invoke(user_request)
+
+    if "resume" in request or "tailor" in request:
+        return resume_tailor_tool.invoke(user_request)
+
+    if "recruiter" in request or "linkedin" in request or "outreach" in request:
+        return recruiter_tool.invoke(user_request)
+
+    if "mock interview" in request:
+        return mock_interview_tool.invoke(user_request)
+
+    if "interview" in request:
+        return interview_tool.invoke(user_request)
+
+    if "track" in request or "application" in request:
+        return tracker_tool.invoke(user_request)
+
+    if "career" in request or "roadmap" in request:
+        return career_coach_tool.invoke(user_request)
+
+    if "ats" in request or "match" in request:
+        return ats_tool.invoke(user_request)
+
+    return career_coach_tool.invoke(user_request)
