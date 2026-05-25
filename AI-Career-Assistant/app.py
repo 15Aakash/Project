@@ -73,6 +73,12 @@ if "mock_history" not in st.session_state:
 if "current_mock_question" not in st.session_state:
     st.session_state.current_mock_question = ""
 
+if "mock_chat" not in st.session_state:
+    st.session_state.mock_chat = []
+
+if "mock_started" not in st.session_state:
+    st.session_state.mock_started = False
+
 if "resume_text" not in st.session_state:
     st.session_state.resume_text = ""
 
@@ -594,69 +600,90 @@ elif page == "🎙️ Mock Interview":
 
     else:
 
-        if st.button("Start / Next Question", use_container_width=True):
+        col1, col2 = st.columns(2)
 
-            with st.spinner("Mock Interview Agent is preparing a question..."):
+        with col1:
+            if st.button("Start Interview", use_container_width=True):
 
-                st.session_state.current_mock_question = mock_interview_agent.interviewer_chat(
+                st.session_state.mock_chat = []
+                st.session_state.mock_started = True
+
+                first_question = mock_interview_agent.interviewer_chat(
                     st.session_state.resume_text,
                     job_description,
-                    st.session_state.mock_history
+                    st.session_state.mock_chat
                 )
 
-        if st.session_state.current_mock_question:
+                st.session_state.mock_chat.append(
+                    {
+                        "role": "assistant",
+                        "content": first_question
+                    }
+                )
 
-            st.subheader("Interview Question")
-            st.info(st.session_state.current_mock_question)
+                st.rerun()
 
-            user_answer = st.text_area(
-                "Type your answer here",
-                height=200
-            )
+        with col2:
+            if st.button("Reset Interview", use_container_width=True):
+                st.session_state.mock_chat = []
+                st.session_state.mock_started = False
+                st.success("Mock interview reset.")
+                st.rerun()
 
-            if st.button("Submit Answer", use_container_width=True):
+        if st.session_state.mock_started:
 
-                if user_answer.strip() == "":
-                    st.warning("Please type your answer first.")
+            for message in st.session_state.mock_chat:
 
-                else:
-                    with st.spinner("Evaluating your answer..."):
+                with st.chat_message(message["role"]):
+                    st.write(message["content"])
 
-                        feedback = mock_interview_agent.evaluate_answer(
-                            st.session_state.current_mock_question,
-                            user_answer,
-                            st.session_state.resume_text,
-                            job_description
+            user_answer = st.chat_input("Type your interview answer...")
+
+            if user_answer:
+
+                st.session_state.mock_chat.append(
+                    {
+                        "role": "user",
+                        "content": user_answer
+                    }
+                )
+
+                conversation_history = []
+
+                for i in range(0, len(st.session_state.mock_chat) - 1, 2):
+
+                    if (
+                        i + 1 < len(st.session_state.mock_chat)
+                        and st.session_state.mock_chat[i]["role"] == "assistant"
+                        and st.session_state.mock_chat[i + 1]["role"] == "user"
+                    ):
+
+                        conversation_history.append(
+                            {
+                                "interviewer": st.session_state.mock_chat[i]["content"],
+                                "candidate": st.session_state.mock_chat[i + 1]["content"]
+                            }
                         )
 
-                    st.session_state.mock_history.append(
-                        {
-                            "question": st.session_state.current_mock_question,
-                            "answer": user_answer,
-                            "feedback": feedback
-                        }
+                with st.spinner("AI interviewer is responding..."):
+
+                    next_question = mock_interview_agent.interviewer_chat(
+                        st.session_state.resume_text,
+                        job_description,
+                        conversation_history
                     )
 
-                    st.session_state.current_mock_question = ""
+                st.session_state.mock_chat.append(
+                    {
+                        "role": "assistant",
+                        "content": next_question
+                    }
+                )
 
-                    st.success("Answer evaluated successfully!")
-                    st.rerun()
+                st.rerun()
 
-        if st.session_state.mock_history:
-
-            st.markdown("---")
-            st.subheader("Mock Interview History")
-
-            for item in reversed(st.session_state.mock_history):
-
-                with st.expander(item["question"]):
-
-                    st.write("Your Answer:")
-                    st.write(item["answer"])
-
-                    st.write("Feedback:")
-                    st.write(item["feedback"])
-
+        else:
+            st.info("Click Start Interview to begin your AI mock interview.")
 elif page == "📌 Tracker":
 
     st.header("📌 Application Tracker")
