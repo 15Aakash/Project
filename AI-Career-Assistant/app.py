@@ -30,7 +30,9 @@ from user_storage import (
     save_resume_text,
     load_resume_text,
     save_ats_report,
-    load_ats_reports
+    load_ats_reports,
+    save_mock_interview,
+    load_mock_interviews
 )
 
 
@@ -966,6 +968,14 @@ elif page == "🎙️ Mock Interview":
 
                             st.session_state.mock_scores = mock_interview_agent.generate_scores(
                                 st.session_state.mock_feedback
+                            )
+                            save_mock_interview(
+                                st.session_state.username,
+                                {
+                                    "chat": st.session_state.mock_chat,
+                                    "feedback": st.session_state.mock_feedback,
+                                    "scores": st.session_state.mock_scores
+                                }
                             )
 
                     if st.session_state.mock_scores:
