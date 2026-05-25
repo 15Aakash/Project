@@ -373,13 +373,16 @@ Reason:
             )
 
         with st.expander("View Extracted Resume Text"):
-            st.text_area(
-                "Resume Content",
-                st.session_state.resume_text,
-                height=300
-            )
-        st.markdown("---")
-        st.subheader("📁 Saved ATS Reports")
+
+    st.text_area(
+        "Resume Content",
+        st.session_state.resume_text,
+        height=300
+    )
+
+st.markdown("---")
+
+st.subheader("📁 Saved ATS Reports")
 
 saved_reports = load_ats_reports(
     st.session_state.username
