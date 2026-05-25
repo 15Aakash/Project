@@ -906,19 +906,32 @@ elif page == "📌 Tracker":
     col1, col2 = st.columns(2)
 
     with col1:
+
         company = st.text_input("Company Name")
+
         role = st.text_input("Role Title")
+
         job_link = st.text_input("Job Link")
 
     with col2:
+
         status = st.selectbox(
             "Application Status",
-            ["Interested", "Applied", "Interview", "Rejected", "Offer"]
+            [
+                "Interested",
+                "Applied",
+                "Interview",
+                "Rejected",
+                "Offer"
+            ]
         )
 
         notes = st.text_area("Notes")
 
-    if st.button("Save Application", use_container_width=True):
+    if st.button(
+        "Save Application",
+        use_container_width=True
+    ):
 
         missing_fields = []
 
@@ -932,10 +945,15 @@ elif page == "📌 Tracker":
             missing_fields.append("Job Link")
 
         if len(missing_fields) > 0:
-            st.warning("Please fill: " + ", ".join(missing_fields))
+
+            st.warning(
+                "Please fill: " + ", ".join(missing_fields)
+            )
 
         else:
+
             saved = save_application(
+                st.session_state.username,
                 company,
                 role,
                 job_link,
@@ -944,11 +962,18 @@ elif page == "📌 Tracker":
             )
 
             if saved:
-                st.success("Application saved successfully!")
-            else:
-                st.warning("This application is already saved.")
+                st.success(
+                    "Application saved successfully!"
+                )
 
-    applications = load_applications()
+            else:
+                st.warning(
+                    "This application is already saved."
+                )
+
+    applications = load_applications(
+        st.session_state.username
+    )
 
     if not applications.empty:
 
@@ -959,40 +984,37 @@ elif page == "📌 Tracker":
         col1, col2, col3 = st.columns(3)
 
         with col1:
-            st.metric("Total Applications", len(applications))
+
+            st.metric(
+                "Total Applications",
+                len(applications)
+            )
 
         with col2:
+
             applied_count = len(
-                applications[applications["status"] == "Applied"]
+                applications[
+                    applications["status"] == "Applied"
+                ]
             )
-            st.metric("Applied", applied_count)
+
+            st.metric(
+                "Applied",
+                applied_count
+            )
 
         with col3:
+
             interview_count = len(
-                applications[applications["status"] == "Interview"]
+                applications[
+                    applications["status"] == "Interview"
+                ]
             )
-            st.metric("Interviews", interview_count)
 
-        if "interview_date" in applications.columns:
-
-            upcoming = applications[
-                applications["interview_date"].notna()
-                & (applications["interview_date"] != "")
-            ]
-
-            if not upcoming.empty:
-                st.subheader("📅 Upcoming Interviews")
-                st.dataframe(
-                    upcoming[
-                        [
-                            "company",
-                            "role",
-                            "interview_date",
-                            "notes"
-                        ]
-                    ],
-                    use_container_width=True
-                )
+            st.metric(
+                "Interviews",
+                interview_count
+            )
 
         status_counts = (
             applications["status"]
@@ -1000,7 +1022,10 @@ elif page == "📌 Tracker":
             .reset_index()
         )
 
-        status_counts.columns = ["Status", "Count"]
+        status_counts.columns = [
+            "Status",
+            "Count"
+        ]
 
         fig = px.pie(
             status_counts,
@@ -1009,87 +1034,122 @@ elif page == "📌 Tracker":
             title="Applications by Status"
         )
 
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(
+            fig,
+            use_container_width=True
+        )
 
         st.subheader("Saved Applications")
 
-        st.dataframe(applications, use_container_width=True)
+        st.dataframe(
+            applications,
+            use_container_width=True
+        )
 
         st.markdown("### Manage Applications")
 
         for idx, row in applications.iterrows():
 
-            col1, col2, col3, col4 = st.columns([4, 2, 2, 1])
+            st.markdown("---")
+
+            col1, col2, col3 = st.columns([5, 2, 1])
 
             with col1:
+
                 st.write(
-                    f"{row['company']} | {row['role']}"
+                    f"🏢 {row['company']}"
+                )
+
+                st.write(
+                    f"💼 {row['role']}"
+                )
+
+                st.write(
+                    f"📍 Status: {row['status']}"
                 )
 
             with col2:
-                status_options = [
-                    "Interested",
-                    "Applied",
-                    "Interview",
-                    "Rejected",
-                    "Offer"
-                ]
-
-                current_status = row["status"]
-
-                if current_status not in status_options:
-                    current_status = "Interested"
 
                 new_status = st.selectbox(
                     "Update Status",
-                    status_options,
-                    index=status_options.index(current_status),
+                    [
+                        "Interested",
+                        "Applied",
+                        "Interview",
+                        "Rejected",
+                        "Offer"
+                    ],
+                    index=[
+                        "Interested",
+                        "Applied",
+                        "Interview",
+                        "Rejected",
+                        "Offer"
+                    ].index(row["status"]),
                     key=f"status_{idx}"
                 )
 
                 if new_status != row["status"]:
-                    update_application_status(idx, new_status)
-                    st.success("Status updated!")
-                    st.rerun()
-            with col3:
 
-                if row["status"] == "Interview":
+                    update_application_status(
+                        st.session_state.username,
+                        idx,
+                        new_status
+                    )
+
+                    st.success("Status updated!")
+
+                    st.rerun()
+
+                if new_status == "Interview":
 
                     interview_date = st.date_input(
                         "Interview Date",
-                        key=f"date_{idx}"
+                        key=f"interview_date_{idx}"
                     )
 
                     if st.button(
-                        "Save Date",
-                        key=f"save_date_{idx}"
+                        "Save Interview Date",
+                        key=f"save_interview_{idx}"
                     ):
 
                         update_interview_date(
+                            st.session_state.username,
                             idx,
-                            interview_date.strftime("%Y-%m-%d")
+                            str(interview_date)
                         )
 
-                        st.success("Interview date saved!")
+                        st.success(
+                            "Interview date updated!"
+                        )
+
                         st.rerun()
 
-                else:
-                    st.write("No interview scheduled")
-        
-            with col4:
+            with col3:
+
                 if st.button(
                     "Delete",
                     key=f"delete_{idx}"
                 ):
-                    delete_application(idx)
-                    st.success("Application deleted successfully!")
+
+                    delete_application(
+                        st.session_state.username,
+                        idx
+                    )
+
+                    st.success(
+                        "Application deleted successfully!"
+                    )
+
                     st.rerun()
 
-        csv_data = applications.to_csv(index=False).encode("utf-8")
+        csv_data = applications.to_csv(
+            index=False
+        ).encode("utf-8")
 
         st.download_button(
             label="📥 Download Applications CSV",
             data=csv_data,
-            file_name="applications.csv",
+            file_name=f"{st.session_state.username}_applications.csv",
             mime="text/csv"
         )
