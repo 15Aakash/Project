@@ -1245,9 +1245,7 @@ Opening corresponding module.
             }
         )
 
-        st.session_state.selected_page = map_agent_to_page(
-            selected_agent
-        )
+        st.session_state.selected_page = "🧠 AI Assistant"
 
         st.rerun()
             
