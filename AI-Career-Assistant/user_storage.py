@@ -79,3 +79,41 @@ def load_ats_reports(username):
 
     with open(file_name, "r", encoding="utf-8") as file:
         return json.load(file)
+
+def get_mock_file(username):
+
+    safe_username = get_safe_username(username)
+
+    return f"mock_interviews_{safe_username}.json"
+
+
+def save_mock_interview(
+    username,
+    interview_data
+):
+
+    file_name = get_mock_file(username)
+
+    if os.path.exists(file_name):
+
+        with open(file_name, "r", encoding="utf-8") as file:
+            interviews = json.load(file)
+
+    else:
+        interviews = []
+
+    interviews.append(interview_data)
+
+    with open(file_name, "w", encoding="utf-8") as file:
+        json.dump(interviews, file, indent=4)
+
+
+def load_mock_interviews(username):
+
+    file_name = get_mock_file(username)
+
+    if not os.path.exists(file_name):
+        return []
+
+    with open(file_name, "r", encoding="utf-8") as file:
+        return json.load(file)
