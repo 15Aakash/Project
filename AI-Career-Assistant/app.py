@@ -191,6 +191,9 @@ if "mock_scores" not in st.session_state:
 if "selected_page" not in st.session_state:
     st.session_state.selected_page = "📊 Match Dashboard"
 
+if "auto_workflow_result" not in st.session_state:
+    st.session_state.auto_workflow_result = None
+
 col1, col2 = st.columns([1, 2])
 
 with col1:
@@ -281,6 +284,75 @@ if st.button("Route Request", use_container_width=True):
         st.rerun()
 
 st.markdown("---")
+
+st.subheader("⚡ Autonomous Multi-Agent Workflow")
+
+workflow_request = st.text_input(
+    "Describe what you want the AI agents to do",
+    placeholder="Example: Analyze this job and prepare my full application package"
+)
+
+if st.button("Run Multi-Agent Workflow", use_container_width=True):
+
+    if st.session_state.resume_text == "":
+        st.warning("Please upload and analyze your resume first.")
+
+    elif job_description.strip() == "":
+        st.warning("Please paste a job description first.")
+
+    else:
+
+        with st.spinner("ATS Agent analyzing match..."):
+            ats_result = ats_agent.analyze(
+                st.session_state.resume_text,
+                job_description
+            )
+
+        with st.spinner("Resume Tailor Agent tailoring resume..."):
+            tailored_resume = resume_tailor_agent.tailor(
+                st.session_state.resume_text,
+                job_description
+            )
+
+        with st.spinner("Cover Letter Agent writing cover letter..."):
+            cover_letter = cover_letter_agent.generate(
+                st.session_state.resume_text,
+                job_description
+            )
+
+        with st.spinner("Recruiter Agent writing outreach message..."):
+            recruiter_message = recruiter_agent.generate(
+                st.session_state.resume_text,
+                job_description
+            )
+
+        st.session_state.auto_workflow_result = {
+            "ats_result": ats_result,
+            "tailored_resume": tailored_resume,
+            "cover_letter": cover_letter,
+            "recruiter_message": recruiter_message
+        }
+
+        st.success("Autonomous multi-agent workflow completed.")
+
+if st.session_state.auto_workflow_result:
+
+    st.markdown("---")
+    st.subheader("📦 Generated Application Package")
+
+    result = st.session_state.auto_workflow_result
+
+    with st.expander("📊 ATS Analysis"):
+        st.write(result["ats_result"])
+
+    with st.expander("📝 Tailored Resume"):
+        st.write(result["tailored_resume"])
+
+    with st.expander("✍️ Cover Letter"):
+        st.write(result["cover_letter"])
+
+    with st.expander("💬 Recruiter Outreach"):
+        st.write(result["recruiter_message"])
 
 pages = [
     "📊 Match Dashboard",
