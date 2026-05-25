@@ -111,18 +111,6 @@ st.write(
 
 st.markdown("---")
 
-if st.session_state.resume_text != "":
-
-    st.success("Saved resume loaded successfully!")
-
-    with st.expander("View Saved Resume"):
-
-        st.text_area(
-            "Resume Text",
-            st.session_state.resume_text,
-            height=300
-        )
-
 resume_agent = ResumeAgent()
 ats_agent = ATSAgent()
 recommendation_agent = RecommendationAgent()
