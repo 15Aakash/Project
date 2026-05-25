@@ -87,7 +87,16 @@ class MockInterviewAgent:
             job_description
         )
 
-   def generate_ai_voice(
+    def transcribe_audio(
+        self,
+        audio_file_path
+    ):
+
+        return transcribe_audio(
+            audio_file_path
+        )
+
+    def generate_ai_voice(
         self,
         text,
         output_path
