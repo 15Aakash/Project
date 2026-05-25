@@ -629,6 +629,7 @@ elif page == "🎙️ Mock Interview":
             ):
 
                 st.session_state.mock_chat = []
+                st.session_state.mock_feedback = []
                 st.session_state.mock_started = True
 
                 first_question = mock_interview_agent.interviewer_chat(
@@ -654,6 +655,7 @@ elif page == "🎙️ Mock Interview":
             ):
 
                 st.session_state.mock_chat = []
+                st.session_state.mock_feedback = []
                 st.session_state.mock_started = False
 
                 st.success("Mock interview reset.")
@@ -662,10 +664,6 @@ elif page == "🎙️ Mock Interview":
 
         if st.session_state.mock_started:
 
-            # =========================
-            # TEXT INTERVIEW DISPLAY
-            # =========================
-
             if interview_mode == "Text Interview":
 
                 for message in st.session_state.mock_chat:
@@ -673,10 +671,6 @@ elif page == "🎙️ Mock Interview":
                     with st.chat_message(message["role"]):
 
                         st.write(message["content"])
-
-            # =========================
-            # VOICE INTERVIEW DISPLAY
-            # =========================
 
             else:
 
@@ -687,7 +681,6 @@ elif page == "🎙️ Mock Interview":
                     if message["role"] == "assistant":
 
                         latest_assistant_message = message["content"]
-
                         break
 
                 if latest_assistant_message:
@@ -695,7 +688,7 @@ elif page == "🎙️ Mock Interview":
                     st.markdown("### 🎤 Voice Interview Mode")
 
                     st.info(
-                        "Step 1: Play the AI interviewer audio below."
+                        "Step 1: Listen to the AI interviewer."
                     )
 
                     audio_path = "latest_question.mp3"
@@ -712,19 +705,11 @@ elif page == "🎙️ Mock Interview":
 
             user_answer = None
 
-            # =========================
-            # TEXT ANSWER INPUT
-            # =========================
-
             if interview_mode == "Text Interview":
 
                 user_answer = st.chat_input(
                     "Type your interview answer..."
                 )
-
-            # =========================
-            # VOICE ANSWER INPUT
-            # =========================
 
             else:
 
@@ -760,10 +745,6 @@ elif page == "🎙️ Mock Interview":
                                 tmp_audio_path
                             )
 
-            # =========================
-            # PROCESS USER ANSWER
-            # =========================
-
             if user_answer:
 
                 st.session_state.mock_chat.append(
@@ -795,6 +776,25 @@ elif page == "🎙️ Mock Interview":
                         )
 
                 with st.spinner(
+                    "Generating feedback for your answer..."
+                ):
+
+                    feedback = mock_interview_agent.evaluate_answer(
+                        st.session_state.mock_chat[-2]["content"],
+                        user_answer,
+                        st.session_state.resume_text,
+                        job_description
+                    )
+
+                st.session_state.mock_feedback.append(
+                    {
+                        "question": st.session_state.mock_chat[-2]["content"],
+                        "answer": user_answer,
+                        "feedback": feedback
+                    }
+                )
+
+                with st.spinner(
                     "🎤 AI interviewer is thinking..."
                 ):
 
@@ -812,6 +812,26 @@ elif page == "🎙️ Mock Interview":
                 )
 
                 st.rerun()
+
+            if st.session_state.mock_feedback:
+
+                st.markdown("---")
+
+                st.subheader("📊 Interview Feedback")
+
+                for item in reversed(
+                    st.session_state.mock_feedback
+                ):
+
+                    with st.expander(
+                        item["question"]
+                    ):
+
+                        st.write("Your Answer:")
+                        st.write(item["answer"])
+
+                        st.write("Feedback:")
+                        st.write(item["feedback"])
 
         else:
 
