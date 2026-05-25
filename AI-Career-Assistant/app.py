@@ -23,6 +23,7 @@ from tracker import (
 )
 
 from pdf_generator import create_pdf
+from streamlit_mic_recorder import mic_recorder
 
 
 st.set_page_config(
