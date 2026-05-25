@@ -11,7 +11,8 @@ from mock_interview import (
     interviewer_chat,
     evaluate_interview_answer,
     transcribe_audio,
-    generate_ai_voice
+    generate_ai_voice,
+    generate_interview_scores
 )
 
 
@@ -105,4 +106,13 @@ class MockInterviewAgent:
         return generate_ai_voice(
             text,
             output_path
+        )
+
+    def generate_scores(
+        self,
+        mock_feedback
+    ):
+
+        return generate_interview_scores(
+            mock_feedback
         )
