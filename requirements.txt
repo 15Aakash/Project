@@ -13,3 +13,4 @@ python-docx
 plotly
 fpdf2
 streamlit-mic-recorder
+requests
