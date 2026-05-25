@@ -134,3 +134,18 @@ def transcribe_audio(audio_file_path):
         )
 
     return transcript.text
+
+def generate_ai_voice(
+    text,
+    output_path
+):
+
+    speech = client.audio.speech.create(
+        model="tts-1",
+        voice="alloy",
+        input=text
+    )
+
+    speech.stream_to_file(output_path)
+
+    return output_path
