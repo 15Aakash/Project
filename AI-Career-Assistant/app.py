@@ -373,12 +373,13 @@ Reason:
             )
 
         with st.expander("View Extracted Resume Text"):
+            
+            st.text_area(
+                "Resume Content",
+                st.session_state.resume_text,
+                height=300
+            )
 
-    st.text_area(
-        "Resume Content",
-        st.session_state.resume_text,
-        height=300
-    )
 
 st.markdown("---")
 
