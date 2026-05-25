@@ -10,7 +10,8 @@ from career_chatbot import career_chatbot_response
 from mock_interview import (
     interviewer_chat,
     evaluate_interview_answer,
-    transcribe_audio
+    transcribe_audio,
+    generate_ai_voice
 )
 
 
@@ -84,4 +85,15 @@ class MockInterviewAgent:
             candidate_answer,
             resume_text,
             job_description
+        )
+
+   def generate_ai_voice(
+        self,
+        text,
+        output_path
+    ):
+
+        return generate_ai_voice(
+            text,
+            output_path
         )
