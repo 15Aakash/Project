@@ -9,7 +9,8 @@ from career_chatbot import career_chatbot_response
 
 from mock_interview import (
     interviewer_chat,
-    evaluate_interview_answer
+    evaluate_interview_answer,
+    transcribe_audio
 )
 
 
