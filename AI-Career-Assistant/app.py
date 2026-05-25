@@ -594,9 +594,9 @@ elif page == "💬 AI Career Coach":
 
 elif page == "🎙️ Mock Interview":
 
-        st.header("🎙️ AI Mock Interview")
-    
-        interview_mode = st.radio(
+    st.header("🎙️ AI Mock Interview")
+
+    interview_mode = st.radio(
         "Choose Interview Mode",
         ["Text Interview", "Voice Interview"],
         horizontal=True
@@ -644,23 +644,28 @@ elif page == "🎙️ Mock Interview":
                 with st.chat_message(message["role"]):
                     st.write(message["content"])
 
-           user_answer = None
+            user_answer = None
 
-        if interview_mode == "Text Interview":
-            user_answer = st.chat_input("Type your interview answer...")
-        
-        else:
-            audio = mic_recorder(
-                start_prompt="🎙️ Start Recording",
-                stop_prompt="⏹️ Stop Recording",
-                key="voice_recorder"
-            )
-        
-            if audio:
-                st.audio(audio["bytes"])
-        
-                if st.button("Use Recorded Answer", use_container_width=True):
-                    st.warning("Voice recording works. Next step is converting audio to text.")
+            if interview_mode == "Text Interview":
+
+                user_answer = st.chat_input("Type your interview answer...")
+
+            else:
+
+                audio = mic_recorder(
+                    start_prompt="🎙️ Start Recording",
+                    stop_prompt="⏹️ Stop Recording",
+                    key="voice_recorder"
+                )
+
+                if audio:
+
+                    st.audio(audio["bytes"])
+
+                    if st.button("Use Recorded Answer", use_container_width=True):
+                        st.warning(
+                            "Voice recording works. Next step is converting audio to text."
+                        )
 
             if user_answer:
 
@@ -707,6 +712,7 @@ elif page == "🎙️ Mock Interview":
 
         else:
             st.info("Click Start Interview to begin your AI mock interview.")
+            
 elif page == "📌 Tracker":
 
     st.header("📌 Application Tracker")
