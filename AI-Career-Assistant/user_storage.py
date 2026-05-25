@@ -37,3 +37,45 @@ def load_resume_text(username):
         data = json.load(file)
 
     return data.get("resume_text", "")
+
+from datetime import datetime
+
+
+def get_ats_file(username):
+
+    safe_username = get_safe_username(username)
+
+    return f"ats_reports_{safe_username}.json"
+
+
+def save_ats_report(username, job_description, analysis):
+
+    file_name = get_ats_file(username)
+
+    if os.path.exists(file_name):
+        with open(file_name, "r", encoding="utf-8") as file:
+            reports = json.load(file)
+    else:
+        reports = []
+
+    new_report = {
+        "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "job_description": job_description,
+        "analysis": analysis
+    }
+
+    reports.append(new_report)
+
+    with open(file_name, "w", encoding="utf-8") as file:
+        json.dump(reports, file, indent=4)
+
+
+def load_ats_reports(username):
+
+    file_name = get_ats_file(username)
+
+    if not os.path.exists(file_name):
+        return []
+
+    with open(file_name, "r", encoding="utf-8") as file:
+        return json.load(file)
