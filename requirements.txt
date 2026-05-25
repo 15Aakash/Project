@@ -16,3 +16,4 @@ streamlit-mic-recorder
 requests
 langchain
 langchain-openai
+langchain-community
