@@ -282,25 +282,28 @@ if st.button("Route Request", use_container_width=True):
 
 st.markdown("---")
 
-page = [
-        "📊 Match Dashboard",
-        "🎯 Job Recommendations",
-        "✍️ Cover Letter",
-        "💬 Recruiter Outreach",
-        "📝 Resume Tailor",
-        "🎤 Interview Coach",
-        "💬 AI Career Coach",
-        "🎙️ Mock Interview",
-        "📌 Tracker"
-        
-    ]
-    page = st.radio(
-        "Navigation",
-        pages,
-        index=pages.index(st.session_state.selected_page),
-        horizontal=True
-    )
-    st.session_state.selected_page = page
+pages = [
+    "📊 Match Dashboard",
+    "🎯 Job Recommendations",
+    "✍️ Cover Letter",
+    "💬 Recruiter Outreach",
+    "📝 Resume Tailor",
+    "🎤 Interview Coach",
+    "💬 AI Career Coach",
+    "🎙️ Mock Interview",
+    "📌 Tracker"
+]
+
+page = st.radio(
+    "Navigation",
+    pages,
+    index=pages.index(
+        st.session_state.selected_page
+    ),
+    horizontal=True
+)
+
+st.session_state.selected_page = page
 
 if page == "📊 Match Dashboard":
 
