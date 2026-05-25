@@ -26,6 +26,7 @@ from tracker import (
 from pdf_generator import create_pdf
 from streamlit_mic_recorder import mic_recorder
 from auth import signup_user, login_user
+from agent_router import route_user_request
 from user_storage import (
     save_resume_text,
     load_resume_text,
