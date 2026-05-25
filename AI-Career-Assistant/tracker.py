@@ -1,5 +1,7 @@
-import pandas as pd
 import os
+import pandas as pd
+from datetime import datetime
+
 
 def get_file_name(username):
 
@@ -13,6 +15,7 @@ def load_applications(username):
     file_name = get_file_name(username)
 
     if os.path.exists(file_name):
+
         return pd.read_csv(file_name)
 
     columns = [
@@ -29,6 +32,7 @@ def load_applications(username):
 
 
 def save_application(
+    username,
     company,
     role,
     job_link,
@@ -36,59 +40,95 @@ def save_application(
     notes
 ):
 
-    data = load_applications()
+    applications = load_applications(username)
 
-    duplicate = data[
-        (data["company"] == company)
-        &
-        (data["role"] == role)
+    duplicate = applications[
+        (applications["company"] == company)
+        & (applications["role"] == role)
     ]
 
     if not duplicate.empty:
         return False
 
-    new_row = {
-        "date": pd.Timestamp.now().strftime("%Y-%m-%d"),
-        "company": company,
-        "role": role,
-        "job_link": job_link,
-        "status": status,
-        "notes": notes,
-        "interview_date": ""
-    }
+    new_application = pd.DataFrame(
+        [
+            {
+                "date": datetime.now().strftime("%Y-%m-%d"),
+                "company": company,
+                "role": role,
+                "job_link": job_link,
+                "status": status,
+                "notes": notes,
+                "interview_date": ""
+            }
+        ]
+    )
 
-    data = pd.concat(
-        [data, pd.DataFrame([new_row])],
+    applications = pd.concat(
+        [applications, new_application],
         ignore_index=True
     )
 
-    data.to_csv(FILE_NAME, index=False)
+    file_name = get_file_name(username)
+
+    applications.to_csv(
+        file_name,
+        index=False
+    )
 
     return True
 
 
-def delete_application(index):
+def delete_application(
+    username,
+    index
+):
 
-    data = load_applications()
+    applications = load_applications(username)
 
-    data = data.drop(index)
+    applications = applications.drop(index)
 
-    data.to_csv(FILE_NAME, index=False)
+    applications = applications.reset_index(drop=True)
 
+    file_name = get_file_name(username)
 
-def update_application_status(index, new_status):
-
-    data = load_applications()
-
-    data.loc[index, "status"] = new_status
-
-    data.to_csv(FILE_NAME, index=False)
+    applications.to_csv(
+        file_name,
+        index=False
+    )
 
 
-def update_interview_date(index, interview_date):
+def update_application_status(
+    username,
+    index,
+    new_status
+):
 
-    data = load_applications()
+    applications = load_applications(username)
 
-    data.loc[index, "interview_date"] = interview_date
+    applications.loc[index, "status"] = new_status
 
-    data.to_csv(FILE_NAME, index=False)
+    file_name = get_file_name(username)
+
+    applications.to_csv(
+        file_name,
+        index=False
+    )
+
+
+def update_interview_date(
+    username,
+    index,
+    interview_date
+):
+
+    applications = load_applications(username)
+
+    applications.loc[index, "interview_date"] = interview_date
+
+    file_name = get_file_name(username)
+
+    applications.to_csv(
+        file_name,
+        index=False
+    )
