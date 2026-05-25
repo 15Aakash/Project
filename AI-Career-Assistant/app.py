@@ -1179,7 +1179,8 @@ elif page == "🧠 AI Assistant":
 
         if selected_agent == "INTERVIEW_COACH_AGENT":
 
-            response = interview_agent.generate_questions(
+            response = interview_agent.generate(
+                st.session_state.resume_text,
                 user_request
             )
 
