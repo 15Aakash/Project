@@ -42,7 +42,14 @@ def search_remoteok_jobs(keyword):
 
             full_text = f"{title} {company} {location} {tags}".lower()
 
-            if any(word in full_text for word in search_words):
+            match_count = sum(
+                1 for word in search_words
+                if word in full_text
+            )
+
+            if match_count >= max(1, len(search_words) // 2):
+                if title == "":
+                    continue
 
                 jobs.append(
                     {
