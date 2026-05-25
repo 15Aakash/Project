@@ -1173,46 +1173,82 @@ elif page == "🧠 AI Assistant":
         "Ask anything like: Tailor my resume, prepare interview questions, write a cover letter..."
     )
 
-    if user_request:
+   if user_request:
 
-        selected_agent = route_user_request(user_request)
+    selected_agent = route_user_request(user_request)
 
-        response = f"I routed your request to: {selected_agent}"
+    if selected_agent == "INTERVIEW_COACH_AGENT":
 
-        if selected_agent == "ATS_AGENT":
-            response += "\n\nGo to Match Dashboard to review ATS analysis."
-
-        elif selected_agent == "RESUME_TAILOR_AGENT":
-            response += "\n\nI recommend using the Resume Tailor agent for this request."
-
-        elif selected_agent == "COVER_LETTER_AGENT":
-            response += "\n\nI recommend generating a cover letter for the uploaded resume and job description."
-
-        elif selected_agent == "RECRUITER_AGENT":
-            response += "\n\nI recommend generating a LinkedIn recruiter outreach message."
-
-        elif selected_agent == "INTERVIEW_COACH_AGENT":
-            response += "\n\nI recommend using the Interview Coach to generate role-specific questions."
-
-        elif selected_agent == "MOCK_INTERVIEW_AGENT":
-            response += "\n\nI recommend starting a Mock Interview session."
-
-        elif selected_agent == "CAREER_COACH_AGENT":
-            response += "\n\nI can answer career strategy questions using your resume context."
-
-        elif selected_agent == "TRACKER_AGENT":
-            response += "\n\nI recommend opening the Tracker to manage your applications."
-
-        st.session_state.ai_assistant_chat.append(
-            {
-                "user": user_request,
-                "assistant": response
-            }
+        response = interview_agent.generate_questions(
+            user_request
         )
 
-        st.session_state.selected_page = map_agent_to_page(selected_agent)
+        response = f"""
+I selected the Interview Coach Agent.
 
-        st.rerun()
+Here are interview questions:
+
+{response}
+"""
+
+    elif selected_agent == "RECRUITER_AGENT":
+
+        response = recruiter_agent.generate(
+            st.session_state.resume_text,
+            user_request
+        )
+
+        response = f"""
+I selected the Recruiter Outreach Agent.
+
+Generated recruiter message:
+
+{response}
+"""
+
+    elif selected_agent == "COVER_LETTER_AGENT":
+
+        response = cover_letter_agent.generate(
+            st.session_state.resume_text,
+            user_request
+        )
+
+        response = f"""
+I selected the Cover Letter Agent.
+
+Generated cover letter:
+
+{response}
+"""
+
+    elif selected_agent == "CAREER_COACH_AGENT":
+
+        response = career_coach_agent.chat(
+            st.session_state.resume_text,
+            st.session_state.coach_history,
+            user_request
+        )
+
+    else:
+
+        response = f"""
+I routed your request to: {selected_agent}
+
+Opening corresponding module.
+"""
+
+    st.session_state.ai_assistant_chat.append(
+        {
+            "user": user_request,
+            "assistant": response
+        }
+    )
+
+    st.session_state.selected_page = map_agent_to_page(
+        selected_agent
+    )
+
+    st.rerun()
             
 elif page == "📌 Tracker":
 
