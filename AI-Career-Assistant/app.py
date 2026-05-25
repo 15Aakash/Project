@@ -1196,7 +1196,7 @@ elif page == "🧠 AI Assistant":
 
     if user_request:
 
-        selected_agent = langchain_route_request(user_request)
+        selected_agent = run_langchain_tool_agent(user_request)
 
         if selected_agent == "INTERVIEW_COACH_AGENT":
 
