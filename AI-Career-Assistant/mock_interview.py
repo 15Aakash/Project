@@ -174,3 +174,51 @@ def generate_ai_voice(
     speech.stream_to_file(output_path)
 
     return output_path
+
+def generate_interview_scores(mock_feedback):
+
+    feedback_text = ""
+
+    for item in mock_feedback:
+        feedback_text += f"""
+Question:
+{item['question']}
+
+Answer:
+{item['answer']}
+
+Feedback:
+{item['feedback']}
+"""
+
+    prompt = f"""
+You are an AI interview evaluator.
+
+Based on the full mock interview feedback, generate final interview analytics.
+
+Return ONLY in this exact format:
+
+Overall Score: 
+Technical Score:
+Communication Score:
+Confidence Score:
+Problem Solving Score:
+Final Summary:
+
+Rules:
+- Scores must be out of 100.
+- Be realistic.
+- Do not use markdown symbols.
+- Keep final summary concise.
+
+Mock Interview Feedback:
+{feedback_text}
+"""
+
+    response = client.responses.create(
+        model="gpt-4.1-mini",
+        input=prompt,
+        temperature=0
+    )
+
+    return response.output_text
