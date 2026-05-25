@@ -373,7 +373,15 @@ Reason:
             )
 
         with st.expander("View Extracted Resume Text"):
-            st.markdown("---")
+
+    st.text_area(
+        "Resume Content",
+        st.session_state.resume_text,
+        height=300
+    )
+
+st.markdown("---")
+
 st.subheader("📁 Saved ATS Reports")
 
 saved_reports = load_ats_reports(
@@ -381,10 +389,14 @@ saved_reports = load_ats_reports(
 )
 
 if len(saved_reports) == 0:
+
     st.info("No saved ATS reports yet.")
 
 else:
-    for idx, report in enumerate(reversed(saved_reports)):
+
+    for idx, report in enumerate(
+        reversed(saved_reports)
+    ):
 
         analysis = report["analysis"]
 
@@ -396,26 +408,27 @@ else:
             st.write(report["job_description"])
 
             st.write("### Decision")
-            st.info(analysis["final_decision"])
+            st.info(
+                analysis["final_decision"]
+            )
 
             st.write("### Strong Skills")
+
             for skill in analysis["strong_skills"]:
                 st.success(skill)
 
             st.write("### Missing Skills")
+
             for skill in analysis["missing_skills"]:
                 st.warning(skill)
 
             st.write("### Resume Improvements")
-            for improvement in analysis["resume_improvements"]:
+
+            for improvement in analysis[
+                "resume_improvements"
+            ]:
                 st.write("- " + improvement)
                 
-            st.text_area(
-                "Resume Content",
-                st.session_state.resume_text,
-                height=300
-            )
-
 elif page == "🎯 Job Recommendations":
 
     st.header("🎯 AI Job Recommendation Engine")
