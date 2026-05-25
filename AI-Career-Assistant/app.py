@@ -237,6 +237,28 @@ if st.button("🚀 Analyze Job", use_container_width=True):
 
 st.markdown("---")
 
+st.markdown("---")
+st.subheader("🧠 AI Agent Router")
+
+router_query = st.text_input(
+    "Ask the AI system what you want to do",
+    placeholder="Example: Tailor my resume for this job"
+)
+
+if st.button("Route Request", use_container_width=True):
+
+    if router_query.strip() == "":
+        st.warning("Please enter a request.")
+
+    else:
+        with st.spinner("Agent Router is selecting the best agent..."):
+
+            selected_agent = route_user_request(router_query)
+
+        st.success(f"Selected Agent: {selected_agent}")
+
+st.markdown("---")
+
 page = st.radio(
     "Navigation",
     [
