@@ -26,6 +26,7 @@ from tracker import (
 from pdf_generator import create_pdf
 from streamlit_mic_recorder import mic_recorder
 from auth import signup_user, login_user
+from user_storage import save_resume_text, load_resume_text
 
 
 st.set_page_config(
@@ -138,6 +139,17 @@ if "mock_chat" not in st.session_state:
 if "mock_feedback" not in st.session_state:
     st.session_state.mock_feedback = []
 
+if "resume_loaded" not in st.session_state:
+    st.session_state.resume_loaded = False
+
+if not st.session_state.resume_loaded:
+    saved_resume = load_resume_text(st.session_state.username)
+
+    if saved_resume:
+        st.session_state.resume_text = saved_resume
+
+    st.session_state.resume_loaded = True
+
 if "mock_started" not in st.session_state:
     st.session_state.mock_started = False
 
@@ -192,7 +204,14 @@ if st.button("🚀 Analyze Job", use_container_width=True):
 
     else:
         with st.spinner("Resume Agent is reading your resume..."):
-            st.session_state.resume_text = resume_agent.parse_resume(resume_file)
+            st.session_state.resume_text = resume_agent.parse_resume(
+                resume_file
+            )
+            
+            save_resume_text(
+                st.session_state.username,
+                st.session_state.resume_text
+            )    
 
         with st.spinner("ATS Agent is analyzing job match..."):
             st.session_state.analysis = ats_agent.analyze(
