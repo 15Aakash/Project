@@ -188,6 +188,9 @@ if "interview_questions" not in st.session_state:
 if "mock_scores" not in st.session_state:
     st.session_state.mock_scores = ""
 
+if "selected_page" not in st.session_state:
+    st.session_state.selected_page = "📊 Match Dashboard"
+
 col1, col2 = st.columns([1, 2])
 
 with col1:
@@ -238,6 +241,20 @@ if st.button("🚀 Analyze Job", use_container_width=True):
 st.markdown("---")
 
 st.markdown("---")
+def map_agent_to_page(agent_name):
+
+    mapping = {
+        "ATS_AGENT": "📊 Match Dashboard",
+        "RESUME_TAILOR_AGENT": "📝 Resume Tailor",
+        "COVER_LETTER_AGENT": "✍️ Cover Letter",
+        "RECRUITER_AGENT": "💬 Recruiter Outreach",
+        "INTERVIEW_COACH_AGENT": "🎤 Interview Coach",
+        "MOCK_INTERVIEW_AGENT": "🎙️ Mock Interview",
+        "CAREER_COACH_AGENT": "💬 AI Career Coach",
+        "TRACKER_AGENT": "📌 Tracker"
+    }
+
+    return mapping.get(agent_name, "📊 Match Dashboard")
 st.subheader("🧠 AI Agent Router")
 
 router_query = st.text_input(
@@ -255,13 +272,17 @@ if st.button("Route Request", use_container_width=True):
 
             selected_agent = route_user_request(router_query)
 
-        st.success(f"Selected Agent: {selected_agent}")
+        st.session_state.selected_page = map_agent_to_page(selected_agent)
+        
+        st.success(
+            
+            f"Selected Agent: {selected_agent} → Opening {st.session_state.selected_page}"
+        )
+        st.rerun()
 
 st.markdown("---")
 
-page = st.radio(
-    "Navigation",
-    [
+page = [
         "📊 Match Dashboard",
         "🎯 Job Recommendations",
         "✍️ Cover Letter",
@@ -272,9 +293,14 @@ page = st.radio(
         "🎙️ Mock Interview",
         "📌 Tracker"
         
-    ],
-    horizontal=True
-)
+    ]
+    page = st.radio(
+        "Navigation",
+        pages,
+        index=pages.index(st.session_state.selected_page),
+        horizontal=True
+    )
+    st.session_state.selected_page = page
 
 if page == "📊 Match Dashboard":
 
