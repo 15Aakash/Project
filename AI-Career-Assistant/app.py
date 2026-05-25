@@ -309,7 +309,7 @@ if st.button("Run Multi-Agent Workflow", use_container_width=True):
             )
 
         with st.spinner("Resume Tailor Agent tailoring resume..."):
-            tailored_resume = resume_tailor_agent.tailor(
+            tailored_resume = resume_tailor_agent.generate(
                 st.session_state.resume_text,
                 job_description
             )
