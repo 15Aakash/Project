@@ -34,7 +34,7 @@ st.set_page_config(
     page_icon="🤖"
 )
 
-if not st.session_state.logged_in:
+if not st.session_state.get("logged_in", False):
 
     st.title("🔐 AI Career Assistant Login")
 
@@ -120,6 +120,12 @@ interview_agent = InterviewCoachAgent()
 career_coach_agent = CareerCoachAgent()
 mock_interview_agent = MockInterviewAgent()
 
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+
+if "username" not in st.session_state:
+    st.session_state.username = ""
+
 if "mock_history" not in st.session_state:
     st.session_state.mock_history = []
 
@@ -161,12 +167,6 @@ if "interview_questions" not in st.session_state:
 
 if "mock_scores" not in st.session_state:
     st.session_state.mock_scores = ""
-
-if "logged_in" not in st.session_state:
-    st.session_state.logged_in = False
-
-if "username" not in st.session_state:
-    st.session_state.username = ""
 
 col1, col2 = st.columns([1, 2])
 
