@@ -615,7 +615,6 @@ elif page == "🎙️ Mock Interview":
         st.session_state.resume_text == ""
         or job_description.strip() == ""
     ):
-
         st.info("Analyze a job first to start the mock interview.")
 
     else:
@@ -772,6 +771,8 @@ elif page == "🎙️ Mock Interview":
                     }
                 )
 
+                st.session_state.mock_scores = ""
+
                 with st.spinner("🎤 AI interviewer is thinking..."):
 
                     next_question = mock_interview_agent.interviewer_chat(
@@ -807,26 +808,34 @@ elif page == "🎙️ Mock Interview":
                 st.markdown("---")
                 st.subheader("📈 Final Interview Analytics")
 
-                if st.button(
-                    "Generate Final Interview Analytics",
-                    use_container_width=True
-                ):
+                if len(st.session_state.mock_feedback) < 3:
 
-                    with st.spinner(
-                        "Analyzing your full interview performance..."
+                    st.info(
+                        "Complete at least 3 interview questions to generate accurate interview analytics."
+                    )
+
+                else:
+
+                    if st.button(
+                        "Generate Final Interview Analytics",
+                        use_container_width=True
                     ):
 
-                        st.session_state.mock_scores = mock_interview_agent.generate_scores(
-                            st.session_state.mock_feedback
+                        with st.spinner(
+                            "Analyzing your full interview performance..."
+                        ):
+
+                            st.session_state.mock_scores = mock_interview_agent.generate_scores(
+                                st.session_state.mock_feedback
+                            )
+
+                    if st.session_state.mock_scores:
+
+                        st.text_area(
+                            "Interview Analytics Report",
+                            st.session_state.mock_scores,
+                            height=250
                         )
-
-                if st.session_state.mock_scores:
-
-                    st.text_area(
-                        "Interview Analytics Report",
-                        st.session_state.mock_scores,
-                        height=250
-                    )
 
         else:
 
