@@ -602,15 +602,25 @@ elif page == "🎙️ Mock Interview":
         horizontal=True
     )
 
-    if st.session_state.resume_text == "" or job_description.strip() == "":
-        st.info("Analyze a job first to start the mock interview.")
+    if (
+        st.session_state.resume_text == ""
+        or job_description.strip() == ""
+    ):
+
+        st.info(
+            "Analyze a job first to start the mock interview."
+        )
 
     else:
 
         col1, col2 = st.columns(2)
 
         with col1:
-            if st.button("Start Interview", use_container_width=True):
+
+            if st.button(
+                "Start Interview",
+                use_container_width=True
+            ):
 
                 st.session_state.mock_chat = []
                 st.session_state.mock_started = True
@@ -631,10 +641,17 @@ elif page == "🎙️ Mock Interview":
                 st.rerun()
 
         with col2:
-            if st.button("Reset Interview", use_container_width=True):
+
+            if st.button(
+                "Reset Interview",
+                use_container_width=True
+            ):
+
                 st.session_state.mock_chat = []
                 st.session_state.mock_started = False
+
                 st.success("Mock interview reset.")
+
                 st.rerun()
 
         if st.session_state.mock_started:
@@ -642,13 +659,24 @@ elif page == "🎙️ Mock Interview":
             for message in st.session_state.mock_chat:
 
                 with st.chat_message(message["role"]):
+
                     st.write(message["content"])
 
             user_answer = None
 
+            # =========================
+            # TEXT INTERVIEW MODE
+            # =========================
+
             if interview_mode == "Text Interview":
 
-                user_answer = st.chat_input("Type your interview answer...")
+                user_answer = st.chat_input(
+                    "Type your interview answer..."
+                )
+
+            # =========================
+            # VOICE INTERVIEW MODE
+            # =========================
 
             else:
 
@@ -662,10 +690,35 @@ elif page == "🎙️ Mock Interview":
 
                     st.audio(audio["bytes"])
 
-                    if st.button("Use Recorded Answer", use_container_width=True):
-                        st.warning(
-                            "Voice recording works. Next step is converting audio to text."
+                    if st.button(
+                        "Submit Voice Answer",
+                        use_container_width=True
+                    ):
+
+                        with tempfile.NamedTemporaryFile(
+                            delete=False,
+                            suffix=".wav"
+                        ) as tmp_file:
+
+                            tmp_file.write(audio["bytes"])
+
+                            tmp_audio_path = tmp_file.name
+
+                        with st.spinner(
+                            "Transcribing voice answer..."
+                        ):
+
+                            user_answer = mock_interview_agent.transcribe_audio(
+                                tmp_audio_path
+                            )
+
+                        st.success(
+                            "Voice transcribed successfully!"
                         )
+
+            # =========================
+            # PROCESS USER ANSWER
+            # =========================
 
             if user_answer:
 
@@ -678,7 +731,11 @@ elif page == "🎙️ Mock Interview":
 
                 conversation_history = []
 
-                for i in range(0, len(st.session_state.mock_chat) - 1, 2):
+                for i in range(
+                    0,
+                    len(st.session_state.mock_chat) - 1,
+                    2
+                ):
 
                     if (
                         i + 1 < len(st.session_state.mock_chat)
@@ -693,7 +750,9 @@ elif page == "🎙️ Mock Interview":
                             }
                         )
 
-                with st.spinner("AI interviewer is responding..."):
+                with st.spinner(
+                    "AI interviewer is responding..."
+                ):
 
                     next_question = mock_interview_agent.interviewer_chat(
                         st.session_state.resume_text,
@@ -711,7 +770,10 @@ elif page == "🎙️ Mock Interview":
                 st.rerun()
 
         else:
-            st.info("Click Start Interview to begin your AI mock interview.")
+
+            st.info(
+                "Click Start Interview to begin your AI mock interview."
+            )
             
 elif page == "📌 Tracker":
 
