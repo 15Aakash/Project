@@ -1,13 +1,19 @@
 import pandas as pd
 import os
 
-FILE_NAME = "applications.csv"
+def get_file_name(username):
+
+    safe_username = username.replace(" ", "_").lower()
+
+    return f"applications_{safe_username}.csv"
 
 
-def load_applications():
+def load_applications(username):
 
-    if os.path.exists(FILE_NAME):
-        return pd.read_csv(FILE_NAME)
+    file_name = get_file_name(username)
+
+    if os.path.exists(file_name):
+        return pd.read_csv(file_name)
 
     columns = [
         "date",
