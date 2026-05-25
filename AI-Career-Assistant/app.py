@@ -985,6 +985,41 @@ elif page == "🎙️ Mock Interview":
                             st.session_state.mock_scores,
                             height=250
                         )
+                        st.markdown("---")
+                        st.subheader("📁 Saved Mock Interviews")
+                        saved_interviews = load_mock_interviews(
+                            st.session_state.username
+                        )
+                        
+                        if len(saved_interviews) == 0:
+                            
+                            st.info("No saved mock interviews yet.")
+                            
+                        else:
+                            for idx, interview in enumerate(
+                                reversed(saved_interviews)
+                            ):
+                                with st.expander(
+                                    f"Saved Interview {idx + 1}"
+                                ):
+                                    st.write("### Final Analytics")
+                                    
+                                    st.write(interview["scores"])
+                                    
+                                    st.write("### Feedback History")
+                                    
+                                    for item in interview["feedback"]:
+                                        
+                                        st.write("Question:")
+                                        st.write(item["question"])
+                                        
+                                        st.write("Your Answer:")
+                                        st.write(item["answer"])
+                                        
+                                        st.write("Feedback:")
+                                        st.write(item["feedback"])
+                                        
+                                        st.markdown("---")
 
         else:
 
