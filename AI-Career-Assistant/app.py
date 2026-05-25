@@ -575,10 +575,12 @@ elif page == "💬 AI Career Coach":
                     user_question
                 )
 
-            st.session_state.coach_history.append({
-                "question": user_question,
-                "answer": coach_answer
-            })
+            st.session_state.coach_history.append(
+                {
+                    "question": user_question,
+                    "answer": coach_answer
+                }
+            )
 
             st.rerun()
 
@@ -591,6 +593,7 @@ elif page == "💬 AI Career Coach":
 
                 with st.chat_message("assistant"):
                     st.write(chat["answer"])
+
 
 elif page == "🎙️ Mock Interview":
 
@@ -656,17 +659,40 @@ elif page == "🎙️ Mock Interview":
 
         if st.session_state.mock_started:
 
-            for message in st.session_state.mock_chat:
+            if interview_mode == "Text Interview":
 
-                with st.chat_message(message["role"]):
+                for message in st.session_state.mock_chat:
 
-                    st.write(message["content"])
+                    with st.chat_message(message["role"]):
+
+                        st.write(message["content"])
+
+            else:
+
+                latest_assistant_message = None
+
+                for message in reversed(st.session_state.mock_chat):
+
+                    if message["role"] == "assistant":
+
+                        latest_assistant_message = message["content"]
+
+                        break
+
+                if latest_assistant_message:
+
+                    st.info("🎤 AI Interviewer is speaking...")
+
+                    audio_path = "latest_question.mp3"
+
+                    mock_interview_agent.generate_ai_voice(
+                        latest_assistant_message,
+                        audio_path
+                    )
+
+                    st.audio(audio_path)
 
             user_answer = None
-
-            # =========================
-            # TEXT INTERVIEW MODE
-            # =========================
 
             if interview_mode == "Text Interview":
 
@@ -674,11 +700,9 @@ elif page == "🎙️ Mock Interview":
                     "Type your interview answer..."
                 )
 
-            # =========================
-            # VOICE INTERVIEW MODE
-            # =========================
-
             else:
+
+                st.info("🎙️ Record your answer below.")
 
                 audio = mic_recorder(
                     start_prompt="🎙️ Start Recording",
@@ -687,8 +711,6 @@ elif page == "🎙️ Mock Interview":
                 )
 
                 if audio:
-
-                    st.audio(audio["bytes"])
 
                     if st.button(
                         "Submit Voice Answer",
@@ -705,20 +727,12 @@ elif page == "🎙️ Mock Interview":
                             tmp_audio_path = tmp_file.name
 
                         with st.spinner(
-                            "Transcribing voice answer..."
+                            "🎧 Processing your response..."
                         ):
 
                             user_answer = mock_interview_agent.transcribe_audio(
                                 tmp_audio_path
                             )
-
-                        st.success(
-                            "Voice transcribed successfully!"
-                        )
-
-            # =========================
-            # PROCESS USER ANSWER
-            # =========================
 
             if user_answer:
 
@@ -751,7 +765,7 @@ elif page == "🎙️ Mock Interview":
                         )
 
                 with st.spinner(
-                    "AI interviewer is responding..."
+                    "🎤 AI interviewer is thinking..."
                 ):
 
                     next_question = mock_interview_agent.interviewer_chat(
