@@ -27,6 +27,7 @@ from pdf_generator import create_pdf
 from streamlit_mic_recorder import mic_recorder
 from auth import signup_user, login_user
 from agent_router import route_user_request
+from langchain_agent import langchain_route_request
 from user_storage import (
     save_resume_text,
     load_resume_text,
@@ -276,7 +277,7 @@ if st.button("Route Request", use_container_width=True):
     else:
         with st.spinner("Agent Router is selecting the best agent..."):
 
-            selected_agent = route_user_request(router_query)
+            selected_agent = langchain_route_request(router_query)
 
         st.session_state.selected_page = map_agent_to_page(selected_agent)
         
@@ -1175,7 +1176,7 @@ elif page == "🧠 AI Assistant":
 
     if user_request:
 
-        selected_agent = route_user_request(user_request)
+        selected_agent = langchain_route_request(user_request)
 
         if selected_agent == "INTERVIEW_COACH_AGENT":
 
