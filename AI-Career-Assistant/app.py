@@ -2,6 +2,7 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 
+
 from agents import (
     ResumeAgent,
     ATSAgent,
@@ -24,6 +25,7 @@ from tracker import (
 
 from pdf_generator import create_pdf
 from streamlit_mic_recorder import mic_recorder
+from job_search import search_remoteok_jobs
 
 
 st.set_page_config(
@@ -110,6 +112,9 @@ if "interview_questions" not in st.session_state:
 if "mock_scores" not in st.session_state:
     st.session_state.mock_scores = ""
 
+if "job_results" not in st.session_state:
+    st.session_state.job_results = None
+
 col1, col2 = st.columns([1, 2])
 
 with col1:
@@ -157,6 +162,7 @@ page = st.radio(
         "🎤 Interview Coach",
         "💬 AI Career Coach",
         "🎙️ Mock Interview",
+        "🔎 Real Job Search",
         "📌 Tracker"
         
     ],
@@ -840,6 +846,76 @@ elif page == "🎙️ Mock Interview":
         else:
 
             st.info("Click Start Interview to begin your AI mock interview.")
+
+elif page == "🔎 Real Job Search":
+
+    st.header("🔎 Real Job Search")
+
+    st.write(
+        "Search real remote job openings and save interesting roles to your application tracker."
+    )
+
+    keyword = st.text_input(
+        "Search keyword",
+        placeholder="Example: AI Engineer, Machine Learning, Data Analyst"
+    )
+
+    if st.button("Search Jobs", use_container_width=True):
+
+        if keyword.strip() == "":
+            st.warning("Please enter a search keyword.")
+
+        else:
+            with st.spinner("Searching real job openings..."):
+                st.session_state.job_results = search_remoteok_jobs(keyword)
+
+            if st.session_state.job_results.empty:
+                st.warning("No jobs found for this keyword.")
+            else:
+                st.success(
+                    f"Found {len(st.session_state.job_results)} jobs."
+                )
+
+    if st.session_state.job_results is not None:
+
+        if not st.session_state.job_results.empty:
+
+            for idx, row in st.session_state.job_results.iterrows():
+
+                with st.container():
+
+                    st.markdown("---")
+
+                    st.subheader(row["role"])
+
+                    st.write(f"Company: {row['company']}")
+                    st.write(f"Location: {row['location']}")
+                    st.write(f"Skills: {row['skills']}")
+                    st.write(f"Source: {row['source']}")
+
+                    st.link_button(
+                        "Open Job",
+                        row["job_link"]
+                    )
+
+                    if st.button(
+                        "Save to Tracker",
+                        key=f"save_job_{idx}",
+                        use_container_width=True
+                    ):
+
+                        saved = save_application(
+                            row["company"],
+                            row["role"],
+                            row["job_link"],
+                            "Interested",
+                            f"Saved from {row['source']} job search"
+                        )
+
+                        if saved:
+                            st.success("Job saved to tracker.")
+                        else:
+                            st.warning("This job is already saved.")
             
 elif page == "📌 Tracker":
 
