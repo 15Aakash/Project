@@ -927,12 +927,16 @@ elif page == "🎤 Interview Coach":
                         mime="application/pdf"
                     )
 
-elif page == "💬 AI Career Coach":
+elif page == "🧠 AI Career Coach":
 
-    st.header("💬 AI Career Coach")
+    st.header("🧠 AI Career Coach")
 
-    if st.session_state.resume_text == "":
-        st.info("Upload your resume and click Analyze Job first.")
+    if (
+        "resume_text" not in st.session_state
+        or st.session_state.resume_text is None
+        or st.session_state.resume_text.strip() == ""
+    ):
+        st.info("Upload your resume, paste a job description, and click Analyze Job first.")
 
     else:
         st.write("Ask career questions based on your resume, skills, and previous conversation.")
@@ -961,7 +965,10 @@ elif page == "💬 AI Career Coach":
             st.success("Chat history cleared.")
             st.rerun()
 
-        typed_question = st.chat_input("Ask your career coach...")
+        typed_question = st.text_input(
+            "Ask your career coach",
+            placeholder="Example: What skills should I learn next?"
+        )
 
         if typed_question:
             user_question = typed_question
@@ -981,8 +988,6 @@ elif page == "💬 AI Career Coach":
                 }
             )
 
-            st.rerun()
-
         if st.session_state.coach_history:
             st.markdown("---")
 
@@ -992,7 +997,6 @@ elif page == "💬 AI Career Coach":
 
                 with st.chat_message("assistant"):
                     st.write(chat["answer"])
-
 
 elif page == "🎙️ Mock Interview":
 
