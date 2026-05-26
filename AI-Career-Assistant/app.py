@@ -301,6 +301,10 @@ st.caption(
     "Your intelligent AI career copilot for resume optimization, interview preparation, recruiter outreach, and job application workflows."
 )
 
+if st.button("🧹 Clear Chat"):
+    st.session_state.ai_assistant_chat = []
+    st.rerun()
+
 for chat in st.session_state.ai_assistant_chat:
 
     with st.chat_message("user"):
