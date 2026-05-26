@@ -15,7 +15,7 @@ openai_ef = embedding_functions.OpenAIEmbeddingFunction(
 
 def get_user_collection(username):
 
-    safe_username = username.replace(" ", "_").lower()
+    safe_username = re.sub(r'[^a-zA-Z0-9_-]', '_', username.lower())
 
     return client.get_or_create_collection(
         name=f"user_memory_{safe_username}",
