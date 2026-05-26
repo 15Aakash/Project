@@ -1,3 +1,4 @@
+import os
 import chromadb
 from chromadb.utils import embedding_functions
 
@@ -7,7 +8,7 @@ client = chromadb.PersistentClient(
 )
 
 openai_ef = embedding_functions.OpenAIEmbeddingFunction(
-    api_key=None,
+    api_key=os.getenv("OPENAI_API_KEY"),
     model_name="text-embedding-3-small"
 )
 
