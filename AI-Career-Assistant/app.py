@@ -215,7 +215,7 @@ with col2:
         height=180
     )
 
-if st.button("🚀 Analyze Job", use_container_width=True):
+if st.button("🚀 Analyze Job"):
 
     if resume_file is None:
         st.warning("Please upload your resume first.")
@@ -458,7 +458,7 @@ Opening corresponding module.
         }
     )
 
-st.markdown("<br><br>", unsafe_allow_html=True)
+st.markdown("<br>", unsafe_allow_html=True)
 
 st.divider()
 
