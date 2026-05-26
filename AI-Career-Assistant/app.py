@@ -680,8 +680,8 @@ elif page == "🎯 Job Recommendations":
         or st.session_state.resume_text is None
         or st.session_state.resume_text.strip() == ""
     ):
-        st.session_state.recommendations = None
-        st.warning("Please upload and analyze your resume first.")
+        st.header("🎯 AI Job Recommendation Engine")
+        st.info("Upload your resume, paste a job description, and click Analyze Job first.")
         st.stop()
 
     st.header("🎯 AI Job Recommendation Engine")
