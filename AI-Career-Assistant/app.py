@@ -85,16 +85,16 @@ if not st.session_state.get("logged_in", False):
 
     else:
 
-        st.button("🚀 Continue to Dashboard", use_container_width=True)
+       if st.button("🚀 Continue to Dashboard", use_container_width=True):
 
-        if login_user(username, password):
-            st.session_state.logged_in = True
-            st.session_state.username = username
-            st.success("Login successful.")
-            st.rerun()
+            if login_user(username, password):
+                st.session_state.logged_in = True
+                st.session_state.username = username
+                st.success("Login successful.")
+                st.rerun()
 
-        else:
-            st.error("Invalid username or password.")
+            else:
+                st.error("Invalid username or password.")
 
     st.stop()
 
