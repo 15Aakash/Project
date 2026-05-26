@@ -17,7 +17,20 @@ def run_langchain_tool_agent(user_request):
     if "cover letter" in request:
         return cover_letter_tool.invoke(user_request)
 
-    if "resume" in request or "tailor" in request:
+    if (
+        "best projects" in request
+        or "skills" in request
+        or "career" in request
+        or "ai engineer" in request
+        or "ml engineer" in request
+    ):
+        return career_coach_tool.invoke(user_request)
+
+    if (
+        "tailor" in request
+        or "improve my resume" in request
+        or "rewrite resume" in request
+    ):
         return resume_tailor_tool.invoke(user_request)
 
     if "recruiter" in request or "linkedin" in request or "outreach" in request:
