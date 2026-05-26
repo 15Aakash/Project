@@ -17,3 +17,5 @@ requests
 langchain
 langchain-openai
 langchain-community
+chromadb
+tiktoken
