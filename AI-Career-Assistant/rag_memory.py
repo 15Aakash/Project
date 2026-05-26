@@ -49,3 +49,20 @@ def search_memory(username, query, n_results=3):
     )
 
     return results
+
+def retrieve_memory_context(username, query, n_results=3):
+
+    results = search_memory(
+        username,
+        query,
+        n_results
+    )
+
+    documents = results.get("documents", [[]])[0]
+
+    if not documents:
+        return ""
+
+    context = "\n\n".join(documents)
+
+    return context
