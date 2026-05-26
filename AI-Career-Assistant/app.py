@@ -460,7 +460,10 @@ Opening corresponding module.
         }
     )
 
+st.markdown("<br><br>", unsafe_allow_html=True)
+
 st.divider()
+
 st.markdown("### Advanced Tools")
 
 pages = [
