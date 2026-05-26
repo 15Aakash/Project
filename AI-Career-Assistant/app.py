@@ -274,37 +274,37 @@ def map_agent_to_page(agent_name):
 
     return mapping.get(agent_name, "📊 Match Dashboard")
     
-    if "selected_page" not in st.session_state:
-        st.session_state.selected_page = "🧠 AI Assistant"
+if "selected_page" not in st.session_state:
+    st.session_state.selected_page = "🧠 AI Assistant"
         
-    page = st.session_state.selected_page
+page = st.session_state.selected_page
     
-    if "selected_page" not in st.session_state:
-        st.session_state.selected_page = "🧠 AI Assistant"
+if "selected_page" not in st.session_state:
+    st.session_state.selected_page = "🧠 AI Assistant"
 
-    page = st.session_state.selected_page
+page = st.session_state.selected_page
 
-    st.divider()
-    st.markdown("### Advanced Tools")
+st.divider()
+st.markdown("### Advanced Tools")
 
-    pages = [
-        "📊 Match Dashboard",
-        "🎯 Job Recommendations",
-        "✍️ Cover Letter",
-        "💬 Recruiter Outreach",
-        "📄 Resume Tailor",
-        "🎤 Interview Coach",
-        "🧠 AI Career Coach",
-        "🎙️ Mock Interview",
-        "🧠 AI Assistant",
-        "📌 Tracker"
-    ]
+pages = [
+     "📊 Match Dashboard",
+     "🎯 Job Recommendations",
+     "✍️ Cover Letter",
+     "💬 Recruiter Outreach",
+     "📄 Resume Tailor",
+     "🎤 Interview Coach",
+     "🧠 AI Career Coach", 
+     "🎙️ Mock Interview",
+     "🧠 AI Assistant", 
+     "📌 Tracker"
+]
 
-    page = st.radio(
-        "",
-        pages,
-        index=pages.index(
-            st.session_state.selected_page
+page = st.radio(
+   "",
+   pages,
+   index=pages.index(
+       st.session_state.selected_page 
     ),
     horizontal=True
 )
