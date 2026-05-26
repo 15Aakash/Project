@@ -49,7 +49,15 @@ st.set_page_config(
 
 if not st.session_state.get("logged_in", False):
 
-    st.title("🔐 AI Career Assistant Login")
+    st.title("🧠 Welcome to AI Career Assistant")
+    
+    st.markdown(
+        "Your AI-powered career copilot for resume optimization, ATS matching, interview preparation, and recruiter outreach."
+    )
+
+    st.markdown("---")
+
+    st.subheader("🔐 Login or Create Account")
 
     auth_mode = st.radio(
         "Choose Option",
@@ -77,7 +85,7 @@ if not st.session_state.get("logged_in", False):
 
     else:
 
-        if st.button("Login", use_container_width=True):
+        st.button("🚀 Continue to Dashboard", use_container_width=True)
 
             if login_user(username, password):
                 st.session_state.logged_in = True
