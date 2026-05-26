@@ -90,26 +90,27 @@ if not st.session_state.get("logged_in", False):
 
     st.stop()
 
-st.sidebar.title("🤖 AI Career Assistant")
-st.sidebar.write(f"Logged in as: {st.session_state.username}")
+st.sidebar.title("🧠 AI Career Assistant")
+
+st.sidebar.caption(f"Logged in as: {st.session_state.username}")
+
+st.sidebar.divider()
+
+st.sidebar.markdown("### 🚀 AI Features")
+
+st.sidebar.markdown("""
+- Resume Analysis
+- ATS Optimization
+- AI Interview Prep
+- Recruiter Outreach
+- Career Coaching
+- Application Tracking
+""")
+
+st.sidebar.divider()
 
 if st.sidebar.button("Logout"):
-    st.session_state.clear()
-    st.rerun()
-    
-st.sidebar.write("### Features")
-st.sidebar.write("✅ Resume Parser Agent")
-st.sidebar.write("✅ ATS Match Agent")
-st.sidebar.write("✅ Job Recommendation Agent")
-st.sidebar.write("✅ Cover Letter Agent")
-st.sidebar.write("✅ Recruiter Outreach Agent")
-st.sidebar.write("✅ Resume Tailoring Agent")
-st.sidebar.write("✅ Interview Coach Agent")
-st.sidebar.write("✅ AI Career Coach with Memory")
-st.sidebar.write("✅ Application Tracker")
-st.sidebar.write("✅ Analytics Dashboard")
-st.sidebar.write("✅ PDF Export")
-
+    logout_user()
 
 st.markdown("""
 <h1 style='font-size:48px;'>
