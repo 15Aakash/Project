@@ -273,6 +273,11 @@ def map_agent_to_page(agent_name):
     }
 
     return mapping.get(agent_name, "📊 Match Dashboard")
+    
+    if "selected_page" not in st.session_state:
+        st.session_state.selected_page = "🧠 AI Assistant"
+        
+    page = st.session_state.selected_page
 
 
 
