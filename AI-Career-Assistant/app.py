@@ -110,7 +110,11 @@ st.sidebar.markdown("""
 st.sidebar.divider()
 
 if st.sidebar.button("Logout"):
-    logout_user()
+    
+    st.session_state.logged_in = False
+    st.session_state.username = ""
+    
+    st.rerun()
 
 st.markdown("""
 <h1 style='font-size:48px;'>
