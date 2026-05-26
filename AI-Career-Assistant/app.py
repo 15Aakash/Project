@@ -29,6 +29,7 @@ from auth import signup_user, login_user
 from agent_router import route_user_request
 from langchain_agent import langchain_route_request
 from langchain_executor import run_langchain_tool_agent
+from agent_executor_tools import execute_selected_agent
 from user_storage import (
     save_resume_text,
     load_resume_text,
@@ -305,9 +306,22 @@ if st.button("Run Tool Agent", use_container_width=True):
     else:
         with st.spinner("LangChain tool agent is selecting and using a tool..."):
 
-            tool_result = run_langchain_tool_agent(tool_test_query)
-
-        st.success(f"Tool Agent Result: {tool_result}")
+            selected_agent = run_langchain_tool_agent(tool_test_query)
+            tool_output = execute_selected_agent(
+                selected_agent,
+                tool_test_query,
+                st.session_state.resume_text,
+                job_description,
+                interview_agent,
+                recruiter_agent,
+                cover_letter_agent,
+                resume_tailor_agent,
+                career_coach_agent,
+                st.session_state.coach_history
+            )
+            
+            st.success(f"Selected Tool Agent: {selected_agent}")
+            st.write(tool_output)
 
 st.subheader("⚡ Autonomous Multi-Agent Workflow")
 
