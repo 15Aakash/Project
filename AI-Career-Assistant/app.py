@@ -838,51 +838,57 @@ elif page == "💬 Recruiter Outreach":
                     mime="application/pdf"
                 )
 
-elif page == "📝 Resume Tailor":
+elif page == "📄 Resume Tailor":
 
-    st.header("📝 Resume Tailoring Agent")
+    if (
+        "resume_text" not in st.session_state
+        or st.session_state.resume_text is None
+        or st.session_state.resume_text.strip() == ""
+    ):
+        st.header("📄 AI Resume Tailor")
+        st.info("Upload your resume, paste a job description, and click Analyze Job first.")
+        st.stop()
 
-    if st.session_state.resume_text == "" or job_description.strip() == "":
-        st.info("Analyze a job first to generate tailored resume improvements.")
+    st.header("📄 AI Resume Tailor")
 
-    else:
-        if st.button("Generate Resume Improvements", use_container_width=True):
+    if st.button("Generate Resume Improvements", use_container_width=True):
 
-            with st.spinner("Resume Tailor Agent is optimizing your resume..."):
-                st.session_state.tailored_resume = resume_tailor_agent.generate(
-                    st.session_state.resume_text,
-                    job_description
-                )
+        with st.spinner("Resume Tailor Agent is optimizing your resume..."):
 
-        if st.session_state.tailored_resume:
-
-            edited_tailored_resume = st.text_area(
-                "Edit Resume Improvements Before Download",
-                st.session_state.tailored_resume,
-                height=450
+            st.session_state.tailored_resume = resume_tailor_agent.generate(
+                st.session_state.resume_text,
+                job_description
             )
 
+    if st.session_state.tailored_resume:
+
+        edited_tailored_resume = st.text_area(
+            "Edit Resume Improvements Before Download",
+            st.session_state.tailored_resume,
+            height=450
+        )
+
+        st.download_button(
+            label="Download Edited Resume Improvements as TXT",
+            data=edited_tailored_resume,
+            file_name="tailored_resume_improvements.txt",
+            mime="text/plain"
+        )
+
+        pdf_path = create_pdf(
+            "Tailored Resume Improvements",
+            edited_tailored_resume,
+            "tailored_resume_improvements.pdf"
+        )
+
+        with open(pdf_path, "rb") as pdf_file:
             st.download_button(
-                label="Download Edited Resume Improvements as TXT",
-                data=edited_tailored_resume,
-                file_name="tailored_resume_improvements.txt",
-                mime="text/plain"
+                label="Download Edited Resume Improvements as PDF",
+                data=pdf_file,
+                file_name="tailored_resume_improvements.pdf",
+                mime="application/pdf"
             )
-
-            pdf_path = create_pdf(
-                "Tailored Resume Improvements",
-                edited_tailored_resume,
-                "tailored_resume_improvements.pdf"
-            )
-
-            with open(pdf_path, "rb") as pdf_file:
-                st.download_button(
-                    label="Download Edited Resume Improvements as PDF",
-                    data=pdf_file,
-                    file_name="tailored_resume_improvements.pdf",
-                    mime="application/pdf"
-                )
-
+            
 elif page == "🎤 Interview Coach":
 
     st.header("🎤 AI Interview Coach")
