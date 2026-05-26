@@ -274,29 +274,7 @@ def map_agent_to_page(agent_name):
 
     return mapping.get(agent_name, "📊 Match Dashboard")
 
-pages = [
-    "📊 Match Dashboard",
-    "🎯 Job Recommendations",
-    "✍️ Cover Letter",
-    "💬 Recruiter Outreach",
-    "📝 Resume Tailor",
-    "🎤 Interview Coach",
-    "💬 AI Career Coach",
-    "🎙️ Mock Interview",
-    "🧠 AI Assistant",
-    "📌 Tracker"
-]
 
-page = st.radio(
-    "Navigation",
-    pages,
-    index=pages.index(
-        st.session_state.selected_page
-    ),
-    horizontal=True
-)
-
-st.session_state.selected_page = page
 
 if page == "📊 Match Dashboard":
 
@@ -1075,7 +1053,7 @@ elif page == "🧠 AI Assistant":
     st.header("🧠 Conversational AI Assistant")
 
     st.write(
-        "Ask the AI assistant to route your request, use the right agent, and guide your career workflow."
+       "Your intelligent AI career copilot for resume optimization, interview preparation, recruiter outreach, and job application workflows."
     )
 
     for chat in st.session_state.ai_assistant_chat:
@@ -1249,7 +1227,36 @@ Opening corresponding module.
         )
 
         st.session_state.selected_page = "🧠 AI Assistant"
-            
+        
+        st.divider()
+
+        st.markdown("### Advanced Tools")
+        
+        pages = [
+            "📊 Match Dashboard",
+            "🎯 Job Recommendations",
+            "✍️ Cover Letter",
+            "💬 Recruiter Outreach",
+            "📄 Resume Tailor",
+            "🎤 Interview Coach",
+            "🧠 AI Career Coach",
+            "🎙️ Mock Interview",
+            "🧠 AI Assistant",
+            "📌 Tracker"
+        ]
+
+        page = st.radio(
+            "",
+            pages,
+            index=pages.index(
+                st.session_state.selected_page
+            ),
+            horizontal=True
+        )
+        
+        st.session_state.selected_page = page
+
+
 elif page == "📌 Tracker":
 
     st.header("📌 Application Tracker")
