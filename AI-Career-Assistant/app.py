@@ -280,9 +280,11 @@ page = st.session_state.selected_page
     
 # 🧠 AI Assistant
 
+st.markdown("<br>", unsafe_allow_html=True)
+
 st.header("🧠 Conversational AI Assistant")
 
-st.write(
+st.caption(
     "Your intelligent AI career copilot for resume optimization, interview preparation, recruiter outreach, and job application workflows."
 )
 
