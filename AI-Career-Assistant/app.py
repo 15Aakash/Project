@@ -305,14 +305,6 @@ if st.button("🧹 Clear Chat"):
     st.session_state.ai_assistant_chat = []
     st.rerun()
 
-for chat in st.session_state.ai_assistant_chat:
-
-    with st.chat_message("user"):
-        st.write(chat["user"])
-
-    with st.chat_message("assistant"):
-        st.write(chat["assistant"])
-
 user_request = st.text_input(
     "Ask your AI Career Assistant",
     placeholder="Tailor my resume, prepare interview questions, write a cover letter..."
@@ -469,13 +461,6 @@ Opening corresponding module.
 
     with st.chat_message("assistant"):
         st.write(response)
-
-    st.session_state.ai_assistant_chat.append(
-        {
-            "user": user_request,
-            "assistant": response
-        }
-    )
 
 st.markdown("<br>", unsafe_allow_html=True)
 
