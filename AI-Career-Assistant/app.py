@@ -1092,21 +1092,35 @@ elif page == "🧠 AI Assistant":
 
     if user_request:
 
-        selected_agent = run_langchain_tool_agent(user_request)
+        selected_agent = run_langchain_tool_agent(
+            user_request
+        )
+
         memory_context = retrieve_memory_context(
             st.session_state.username,
             user_request
         )
-  
+
         if selected_agent == "INTERVIEW_COACH_AGENT":
+
+            enhanced_prompt = f"""
+User Request:
+{user_request}
+
+Job Description:
+{job_description}
+
+Relevant Resume Memory:
+{memory_context}
+"""
 
             response = interview_agent.generate(
                 st.session_state.resume_text,
-                user_request
+                enhanced_prompt
             )
 
             response = f"""
-I selected the Interview Coach Agent.
+I selected the Interview Coach Agent using your resume, job description, and memory.
 
 Here are interview questions:
 
@@ -1115,13 +1129,24 @@ Here are interview questions:
 
         elif selected_agent == "RECRUITER_AGENT":
 
+            enhanced_prompt = f"""
+User Request:
+{user_request}
+
+Job Description:
+{job_description}
+
+Relevant Resume Memory:
+{memory_context}
+"""
+
             response = recruiter_agent.generate(
                 st.session_state.resume_text,
-                user_request
+                enhanced_prompt
             )
 
             response = f"""
-I selected the Recruiter Outreach Agent.
+I selected the Recruiter Outreach Agent using your resume, job description, and memory.
 
 Generated recruiter message:
 
@@ -1130,15 +1155,50 @@ Generated recruiter message:
 
         elif selected_agent == "COVER_LETTER_AGENT":
 
+            enhanced_prompt = f"""
+User Request:
+{user_request}
+
+Job Description:
+{job_description}
+
+Relevant Resume Memory:
+{memory_context}
+"""
+
             response = cover_letter_agent.generate(
                 st.session_state.resume_text,
-                user_request
+                enhanced_prompt
             )
 
             response = f"""
-I selected the Cover Letter Agent.
+I selected the Cover Letter Agent using your resume, job description, and memory.
 
 Generated cover letter:
+
+{response}
+"""
+
+        elif selected_agent == "RESUME_TAILOR_AGENT":
+
+            enhanced_prompt = f"""
+User Request:
+{user_request}
+
+Job Description:
+{job_description}
+
+Relevant Resume Memory:
+{memory_context}
+"""
+
+            response = resume_tailor_agent.generate(
+                st.session_state.resume_text,
+                enhanced_prompt
+            )
+
+            response = f"""
+I selected the Resume Tailor Agent using your resume, job description, and memory.
 
 {response}
 """
@@ -1146,18 +1206,27 @@ Generated cover letter:
         elif selected_agent == "CAREER_COACH_AGENT":
 
             enhanced_request = f"""
-            User Question:
-            {user_request}
-            
-            Relevant Memory:
-            {memory_context}
-            """
-            
+User Question:
+{user_request}
+
+Job Description:
+{job_description}
+
+Relevant Memory:
+{memory_context}
+"""
+
             response = career_coach_agent.chat(
                 st.session_state.resume_text,
                 st.session_state.coach_history,
                 enhanced_request
             )
+
+            response = f"""
+I selected the Career Coach Agent using your resume, job description, and memory.
+
+{response}
+"""
 
         else:
 
