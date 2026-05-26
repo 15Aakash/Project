@@ -296,7 +296,7 @@ for chat in st.session_state.ai_assistant_chat:
     with st.chat_message("assistant"):
         st.write(chat["assistant"])
 
-user_request = st.chat_input(
+user_request = st.text_input(
     "Ask your AI Career Assistant",
     placeholder="Tailor my resume, prepare interview questions, write a cover letter..."
 )
