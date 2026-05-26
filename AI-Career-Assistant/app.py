@@ -279,48 +279,43 @@ if "selected_page" not in st.session_state:
         
 page = st.session_state.selected_page
     
-if "selected_page" not in st.session_state:
-    st.session_state.selected_page = "🧠 AI Assistant"
+# 🧠 AI Assistant
 
-page = st.session_state.selected_page
+st.header("🧠 Conversational AI Assistant")
 
-if page == "🧠 AI Assistant":
+st.write(
+    "Your intelligent AI career copilot for resume optimization, interview preparation, recruiter outreach, and job application workflows."
+)
 
-    st.header("🧠 Conversational AI Assistant")
+for chat in st.session_state.ai_assistant_chat:
 
-    st.write(
-       "Your intelligent AI career copilot for resume optimization, interview preparation, recruiter outreach, and job application workflows."
+    with st.chat_message("user"):
+        st.write(chat["user"])
+
+    with st.chat_message("assistant"):
+        st.write(chat["assistant"])
+
+user_request = st.chat_input(
+    "Ask anything like: Tailor my resume, prepare interview questions, write a cover letter..."
+)
+
+if user_request:
+
+    with st.chat_message("user"):
+        st.write(user_request)
+
+    selected_agent = run_langchain_tool_agent(
+        user_request
     )
 
-    for chat in st.session_state.ai_assistant_chat:
-
-        with st.chat_message("user"):
-            st.write(chat["user"])
-
-        with st.chat_message("assistant"):
-            st.write(chat["assistant"])
-
-    user_request = st.chat_input(
-        "Ask anything like: Tailor my resume, prepare interview questions, write a cover letter..."
+    memory_context = retrieve_memory_context(
+        st.session_state.username,
+        user_request
     )
 
-    if user_request:
+    if selected_agent == "INTERVIEW_COACH_AGENT":
 
-        with st.chat_message("user"):
-            st.write(user_request)
-
-        selected_agent = run_langchain_tool_agent(
-            user_request
-        )
-
-        memory_context = retrieve_memory_context(
-            st.session_state.username,
-            user_request
-        )
-
-        if selected_agent == "INTERVIEW_COACH_AGENT":
-
-            enhanced_prompt = f"""
+        enhanced_prompt = f"""
 User Request:
 {user_request}
 
@@ -331,12 +326,12 @@ Relevant Resume Memory:
 {memory_context}
 """
 
-            response = interview_agent.generate(
-                st.session_state.resume_text,
-                enhanced_prompt
-            )
+        response = interview_agent.generate(
+            st.session_state.resume_text,
+            enhanced_prompt
+        )
 
-            response = f"""
+        response = f"""
 I selected the Interview Coach Agent using your resume, job description, and memory.
 
 Here are interview questions:
@@ -344,9 +339,9 @@ Here are interview questions:
 {response}
 """
 
-        elif selected_agent == "RECRUITER_AGENT":
+    elif selected_agent == "RECRUITER_AGENT":
 
-            enhanced_prompt = f"""
+        enhanced_prompt = f"""
 User Request:
 {user_request}
 
@@ -357,12 +352,12 @@ Relevant Resume Memory:
 {memory_context}
 """
 
-            response = recruiter_agent.generate(
-                st.session_state.resume_text,
-                enhanced_prompt
-            )
+        response = recruiter_agent.generate(
+            st.session_state.resume_text,
+            enhanced_prompt
+        )
 
-            response = f"""
+        response = f"""
 I selected the Recruiter Outreach Agent using your resume, job description, and memory.
 
 Generated recruiter message:
@@ -370,9 +365,9 @@ Generated recruiter message:
 {response}
 """
 
-        elif selected_agent == "COVER_LETTER_AGENT":
+    elif selected_agent == "COVER_LETTER_AGENT":
 
-            enhanced_prompt = f"""
+        enhanced_prompt = f"""
 User Request:
 {user_request}
 
@@ -383,12 +378,12 @@ Relevant Resume Memory:
 {memory_context}
 """
 
-            response = cover_letter_agent.generate(
-                st.session_state.resume_text,
-                enhanced_prompt
-            )
+        response = cover_letter_agent.generate(
+            st.session_state.resume_text,
+            enhanced_prompt
+        )
 
-            response = f"""
+        response = f"""
 I selected the Cover Letter Agent using your resume, job description, and memory.
 
 Generated cover letter:
@@ -396,9 +391,9 @@ Generated cover letter:
 {response}
 """
 
-        elif selected_agent == "RESUME_TAILOR_AGENT":
+    elif selected_agent == "RESUME_TAILOR_AGENT":
 
-            enhanced_prompt = f"""
+        enhanced_prompt = f"""
 User Request:
 {user_request}
 
@@ -409,20 +404,20 @@ Relevant Resume Memory:
 {memory_context}
 """
 
-            response = resume_tailor_agent.generate(
-                st.session_state.resume_text,
-                enhanced_prompt
-            )
+        response = resume_tailor_agent.generate(
+            st.session_state.resume_text,
+            enhanced_prompt
+        )
 
-            response = f"""
+        response = f"""
 I selected the Resume Tailor Agent using your resume, job description, and memory.
 
 {response}
 """
 
-        elif selected_agent == "CAREER_COACH_AGENT":
+    elif selected_agent == "CAREER_COACH_AGENT":
 
-            enhanced_request = f"""
+        enhanced_request = f"""
 User Question:
 {user_request}
 
@@ -433,61 +428,59 @@ Relevant Memory:
 {memory_context}
 """
 
-            response = career_coach_agent.chat(
-                st.session_state.resume_text,
-                st.session_state.coach_history,
-                enhanced_request
-            )
+        response = career_coach_agent.chat(
+            st.session_state.resume_text,
+            st.session_state.coach_history,
+            enhanced_request
+        )
 
-            response = f"""
+        response = f"""
 I selected the Career Coach Agent using your resume, job description, and memory.
 
 {response}
 """
 
-        else:
+    else:
 
-            response = f"""
+        response = f"""
 I routed your request to: {selected_agent}
 
 Opening corresponding module.
 """
-        with st.chat_message("assistant"):
-            st.write(response)
 
-        st.session_state.ai_assistant_chat.append(
-            {
-                "user": user_request,
-                "assistant": response
-            }
-        )
+    with st.chat_message("assistant"):
+        st.write(response)
 
-        st.session_state.selected_page = "🧠 AI Assistant"
-        
-        st.divider()
+    st.session_state.ai_assistant_chat.append(
+        {
+            "user": user_request,
+            "assistant": response
+        }
+    )
 
-        st.markdown("### Advanced Tools")
+    st.session_state.selected_page = "🧠 AI Assistant"
+
 
 st.divider()
 st.markdown("### Advanced Tools")
 
 pages = [
-     "📊 Match Dashboard",
-     "🎯 Job Recommendations",
-     "✍️ Cover Letter",
-     "💬 Recruiter Outreach",
-     "📄 Resume Tailor",
-     "🎤 Interview Coach",
-     "🧠 AI Career Coach", 
-     "🎙️ Mock Interview",
-     "📌 Tracker"
+    "📊 Match Dashboard",
+    "🎯 Job Recommendations",
+    "✍️ Cover Letter",
+    "💬 Recruiter Outreach",
+    "📄 Resume Tailor",
+    "🎤 Interview Coach",
+    "🧠 AI Career Coach",
+    "🎙️ Mock Interview",
+    "📌 Tracker"
 ]
 
 page = st.radio(
-   "",
-   pages,
-   index=pages.index(
-       st.session_state.selected_page 
+    "",
+    pages,
+    index=pages.index(
+        st.session_state.selected_page
     ),
     horizontal=True
 )
