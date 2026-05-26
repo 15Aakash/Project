@@ -30,7 +30,7 @@ from agent_router import route_user_request
 from langchain_agent import langchain_route_request
 from langchain_executor import run_langchain_tool_agent
 from agent_executor_tools import execute_selected_agent
-from rag_memory import save_memory, search_memory
+from rag_memory import save_memory, search_memory, retrieve_memory_context
 from user_storage import (
     save_resume_text,
     load_resume_text,
@@ -1220,7 +1220,11 @@ elif page == "🧠 AI Assistant":
     if user_request:
 
         selected_agent = run_langchain_tool_agent(user_request)
-
+        memory_context = retrieve_memory_context(
+            st.session_state.username,
+            user_request
+        )
+  
         if selected_agent == "INTERVIEW_COACH_AGENT":
 
             response = interview_agent.generate(
@@ -1268,10 +1272,18 @@ Generated cover letter:
 
         elif selected_agent == "CAREER_COACH_AGENT":
 
+            enhanced_request = f"""
+            User Question:
+            {user_request}
+            
+            Relevant Memory:
+            {memory_context}
+            """
+            
             response = career_coach_agent.chat(
                 st.session_state.resume_text,
                 st.session_state.coach_history,
-                user_request
+                enhanced_request
             )
 
         else:
