@@ -499,7 +499,7 @@ if page == "📊 Match Dashboard":
     st.header("📊 AI Job Match Dashboard")
 
     if st.session_state.analysis is None:
-        st.info("Analyze a job first to generate Job Recommendation.")
+        st.info("Upload your resume,paste a job description,and click Analyze Job.")
 
     else:
         analysis = st.session_state.analysis
@@ -681,7 +681,7 @@ elif page == "🎯 Job Recommendations":
         or st.session_state.resume_text.strip() == ""
     ):
         st.header("🎯 AI Job Recommendation Engine")
-        st.info("Upload your resume, paste a job description, and click Analyze Job first.")
+        st.info("Analyze a job first to generate Job Recommendations.")
         st.stop()
 
     st.header("🎯 AI Job Recommendation Engine")
