@@ -276,6 +276,7 @@ def map_agent_to_page(agent_name):
     
 if "selected_page" not in st.session_state:
     st.session_state.selected_page = "🧠 AI Assistant"
+
         
 page = st.session_state.selected_page
     
@@ -458,9 +459,6 @@ Opening corresponding module.
         }
     )
 
-    st.session_state.selected_page = "🧠 AI Assistant"
-
-
 st.divider()
 st.markdown("### Advanced Tools")
 
@@ -475,6 +473,9 @@ pages = [
     "🎙️ Mock Interview",
     "📌 Tracker"
 ]
+
+if st.session_state.selected_page not in pages:
+    st.session_state.selected_page = "📊 Match Dashboard"
 
 page = st.radio(
     "",
