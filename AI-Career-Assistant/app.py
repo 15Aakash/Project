@@ -686,6 +686,10 @@ Reason:
                 
 elif page == "🎯 Job Recommendations":
 
+    if st.session_state.resume_text is None:
+        st.warning("Please upload and analyze your resume first.")
+        st.stop()
+
     st.header("🎯 AI Job Recommendation Engine")
 
     if st.session_state.resume_text == "":
