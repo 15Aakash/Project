@@ -18,6 +18,8 @@ def get_user_collection(username):
 
     safe_username = re.sub(r'[^a-zA-Z0-9_-]', '_', username.lower())
 
+    safe_username = safe_username[:40]
+
     return client.get_or_create_collection(
         name=f"user_memory_{safe_username}",
         embedding_function=openai_ef
