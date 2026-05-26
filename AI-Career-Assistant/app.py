@@ -257,8 +257,6 @@ if st.button("🚀 Analyze Job", use_container_width=True):
         st.success("Multi-agent analysis completed successfully!")
 
 st.markdown("---")
-
-st.markdown("---")
 def map_agent_to_page(agent_name):
 
     mapping = {
