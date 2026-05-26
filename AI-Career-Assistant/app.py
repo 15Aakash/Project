@@ -675,49 +675,50 @@ Reason:
                 
 elif page == "🎯 Job Recommendations":
 
-    if st.session_state.resume_text is None:
+    if (
+        "resume_text" not in st.session_state
+        or st.session_state.resume_text is None
+        or st.session_state.resume_text.strip() == ""
+    ):
+        st.session_state.recommendations = None
         st.warning("Please upload and analyze your resume first.")
         st.stop()
 
     st.header("🎯 AI Job Recommendation Engine")
 
-    if st.session_state.resume_text == "":
-        st.info("Upload your resume and click Analyze Job first.")
+    if st.button("Generate Job Recommendations", use_container_width=True):
 
-    else:
-        if st.button("Generate Job Recommendations", use_container_width=True):
+        with st.spinner("Recommendation Agent is finding best matching roles..."):
+            st.session_state.recommendations = recommendation_agent.recommend(
+                st.session_state.resume_text
+            )
 
-            with st.spinner("Recommendation Agent is finding best matching roles..."):
-                st.session_state.recommendations = recommendation_agent.recommend(
-                    st.session_state.resume_text
-                )
+    if st.session_state.recommendations is not None:
 
-        if st.session_state.recommendations is not None:
+        recommendation_text = ""
 
-            recommendation_text = ""
+        for item in st.session_state.recommendations["recommended_roles"]:
 
-            for item in st.session_state.recommendations["recommended_roles"]:
+            st.markdown("---")
+            st.subheader(item["role"])
+            st.metric("Role Match Score", item["match_score"])
 
-                st.markdown("---")
-                st.subheader(item["role"])
-                st.metric("Role Match Score", item["match_score"])
+            st.write("### Why this is a good fit:")
+            st.write(item["why_good_fit"])
 
-                st.write("### Why this is a good fit:")
-                st.write(item["why_good_fit"])
+            col1, col2 = st.columns(2)
 
-                col1, col2 = st.columns(2)
+            with col1:
+                st.write("### Missing Skills:")
+                for skill in item["missing_skills"]:
+                    st.warning(skill)
 
-                with col1:
-                    st.write("### Missing Skills:")
-                    for skill in item["missing_skills"]:
-                        st.warning(skill)
+            with col2:
+                st.write("### Learning Plan:")
+                for step in item["learning_plan"]:
+                    st.info(step)
 
-                with col2:
-                    st.write("### Learning Plan:")
-                    for step in item["learning_plan"]:
-                        st.info(step)
-
-                recommendation_text += f"""
+            recommendation_text += f"""
 Role: {item["role"]}
 Match Score: {item["match_score"]}
 
@@ -733,19 +734,19 @@ Learning Plan:
 ----------------------------------------
 """
 
-            pdf_path = create_pdf(
-                "AI Job Recommendations",
-                recommendation_text,
-                "job_recommendations.pdf"
-            )
+        pdf_path = create_pdf(
+            "AI Job Recommendations",
+            recommendation_text,
+            "job_recommendations.pdf"
+        )
 
-            with open(pdf_path, "rb") as pdf_file:
-                st.download_button(
-                    label="Download Job Recommendations as PDF",
-                    data=pdf_file,
-                    file_name="job_recommendations.pdf",
-                    mime="application/pdf"
-                )
+        with open(pdf_path, "rb") as pdf_file:
+            st.download_button(
+                label="Download Job Recommendations as PDF",
+                data=pdf_file,
+                file_name="job_recommendations.pdf",
+                mime="application/pdf"
+            )
 
 elif page == "✍️ Cover Letter":
 
