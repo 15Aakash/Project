@@ -1,5 +1,6 @@
 import os
 import chromadb
+import re
 from chromadb.utils import embedding_functions
 
 
