@@ -1092,6 +1092,9 @@ elif page == "🧠 AI Assistant":
 
     if user_request:
 
+        with st.chat_message("user"):
+            st.write(user_request)
+
         selected_agent = run_langchain_tool_agent(
             user_request
         )
@@ -1235,6 +1238,8 @@ I routed your request to: {selected_agent}
 
 Opening corresponding module.
 """
+        with st.chat_message("assistant"):
+            st.write(response)
 
         st.session_state.ai_assistant_chat.append(
             {
@@ -1244,8 +1249,6 @@ Opening corresponding module.
         )
 
         st.session_state.selected_page = "🧠 AI Assistant"
-
-        st.rerun()
             
 elif page == "📌 Tracker":
 
