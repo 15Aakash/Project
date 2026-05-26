@@ -278,8 +278,38 @@ def map_agent_to_page(agent_name):
         st.session_state.selected_page = "🧠 AI Assistant"
         
     page = st.session_state.selected_page
+    
+    if "selected_page" not in st.session_state:
+        st.session_state.selected_page = "🧠 AI Assistant"
 
+    page = st.session_state.selected_page
 
+    st.divider()
+    st.markdown("### Advanced Tools")
+
+    pages = [
+        "📊 Match Dashboard",
+        "🎯 Job Recommendations",
+        "✍️ Cover Letter",
+        "💬 Recruiter Outreach",
+        "📄 Resume Tailor",
+        "🎤 Interview Coach",
+        "🧠 AI Career Coach",
+        "🎙️ Mock Interview",
+        "🧠 AI Assistant",
+        "📌 Tracker"
+    ]
+
+    page = st.radio(
+        "",
+        pages,
+        index=pages.index(
+            st.session_state.selected_page
+    ),
+    horizontal=True
+)
+
+st.session_state.selected_page = page
 
 if page == "📊 Match Dashboard":
 
@@ -1237,30 +1267,6 @@ Opening corresponding module.
 
         st.markdown("### Advanced Tools")
         
-        pages = [
-            "📊 Match Dashboard",
-            "🎯 Job Recommendations",
-            "✍️ Cover Letter",
-            "💬 Recruiter Outreach",
-            "📄 Resume Tailor",
-            "🎤 Interview Coach",
-            "🧠 AI Career Coach",
-            "🎙️ Mock Interview",
-            "🧠 AI Assistant",
-            "📌 Tracker"
-        ]
-
-        page = st.radio(
-            "",
-            pages,
-            index=pages.index(
-                st.session_state.selected_page
-            ),
-            horizontal=True
-        )
-        
-        st.session_state.selected_page = page
-
 
 elif page == "📌 Tracker":
 
