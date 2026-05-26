@@ -30,6 +30,7 @@ from agent_router import route_user_request
 from langchain_agent import langchain_route_request
 from langchain_executor import run_langchain_tool_agent
 from agent_executor_tools import execute_selected_agent
+from rag_memory import save_memory, search_memory
 from user_storage import (
     save_resume_text,
     load_resume_text,
@@ -226,6 +227,14 @@ if st.button("🚀 Analyze Job", use_container_width=True):
         with st.spinner("Resume Agent is reading your resume..."):
             st.session_state.resume_text = resume_agent.parse_resume(
                 resume_file
+            )
+            
+            save_memory(
+                st.session_state.username,
+                st.session_state.resume_text,
+                {
+                    "type": "resume"
+                }
             )
             
             save_resume_text(
