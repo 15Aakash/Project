@@ -155,4 +155,66 @@ https://github.com/15Aakash/Project/tree/main/AI-Career-Assistant
 
 ```bash
 git clone https://github.com/15Aakash/Project.git
+```
 
+## Navigate to Project
+
+```bash
+cd AI-Career-Assistant
+```
+
+## Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+## Add Environment Variables
+
+```bash
+OPENAI_API_KEY=your_api_key
+```
+## Run Application
+
+```bash
+streamlit run app.py
+```
+
+# 📂 Project Structure
+
+AI-Career-Assistant/
+│
+├── app.py
+├── agents/
+├── rag_memory.py
+├── requirements.txt
+├── utils/
+├── database/
+├── exports/
+├── assets/
+└── README.md
+
+# 🎯 Future Improvements
+Voice-based AI Career Assistant
+Real-time LinkedIn Job Scraping
+Multi-LLM Support
+AI Resume Builder
+Advanced Analytics Dashboard
+Agent Memory Optimization
+Improved Vector Search
+Cloud Deployment Enhancements
+
+# 👨‍💻 Author
+
+# Aakash Kathirvel
+AI / ML Engineer
+Data Science & Decision Analytics
+GenAI | NLP | Computer Vision | Agentic AI
+
+# 📬 Contact
+
+📧 aakashkathirvel80@gmail.com
+
+# ⭐ Support
+
+If you like this project, give it a ⭐ on GitHub and connect with me on LinkedIn!
