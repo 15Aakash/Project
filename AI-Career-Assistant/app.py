@@ -399,6 +399,9 @@ Generated recruiter message:
 
         # Cover Letter Agent
         elif selected_agent == "COVER_LETTER_AGENT":
+            
+            from datetime import datetime
+            from zoneinfo import ZoneInfo
 
             today_date = datetime.now(
                 ZoneInfo("America/New_York")
@@ -437,29 +440,19 @@ Important Rules:
 
 Generated cover letter:
 
+Aakash Kathirvel  
+aakashkathirvel80@gmail.com | +1 (804) 866 2848  
+
+{today_date}  
+
+Dear Hiring Manager,  
+
 {agent_response}
+
+Sincerely,  
+Aakash Kathirvel
 """
-
-        # Resume Tailor Agent
-        elif selected_agent == "RESUME_TAILOR_AGENT":
-
-            enhanced_prompt = f"""
-User Request:
-{user_request}
-
-Job Description:
-{job_description}
-
-Relevant Resume Memory:
-{memory_context}
-"""
-
-            agent_response = resume_tailor_agent.generate(
-                st.session_state.resume_text,
-                enhanced_prompt
-            )
-
-            response = f"""
+            
 📄 **Resume Tailor Agent**
 
 {agent_response}
