@@ -31,6 +31,9 @@ from langchain_agent import langchain_route_request
 from langchain_executor import run_langchain_tool_agent
 from agent_executor_tools import execute_selected_agent
 from rag_memory import save_memory, search_memory, retrieve_memory_context
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
 from user_storage import (
     save_resume_text,
     load_resume_text,
@@ -811,37 +814,91 @@ elif page == "✍️ Cover Letter":
         if st.button("Generate Cover Letter", use_container_width=True):
 
             with st.spinner("Cover Letter Agent is writing your letter..."):
-                st.session_state.cover_letter = cover_letter_agent.generate(
+
+                # Correct current date based on Virginia / Eastern Time
+                today_date = datetime.now(
+                    ZoneInfo("America/New_York")
+                ).strftime("%m/%d/%Y")
+
+                # Ask AI to generate ONLY the body of the cover letter
+                cover_letter_prompt = f"""
+You are a professional cover letter writing assistant.
+
+Generate a tailored, ATS-friendly cover letter body using the resume and job description below.
+
+Resume:
+{st.session_state.resume_text}
+
+Job Description:
+{job_description}
+
+Important Rules:
+- Generate ONLY the body paragraphs of the cover letter.
+- Do NOT include my name.
+- Do NOT include my email.
+- Do NOT include my phone number.
+- Do NOT include any date.
+- Do NOT include "Dear Hiring Manager,".
+- Do NOT include "Sincerely,".
+- Do NOT include my name at the end.
+- Start directly with the first paragraph.
+- Use the company name ONLY if it is explicitly mentioned in the job description.
+- If no company name is found, write "your organization" instead.
+- Do NOT guess the company name.
+- Do NOT reuse company names from previous chats or memory.
+- Keep the tone professional, confident, and natural.
+- Make the letter specific to the role.
+- Highlight only relevant skills from the resume.
+"""
+
+                cover_letter_body = cover_letter_agent.generate(
                     st.session_state.resume_text,
-                    job_description
+                    cover_letter_prompt
                 )
+
+                # Python creates the fixed header, date, greeting, and closing
+                st.session_state.cover_letter = f"""Aakash Kathirvel
+aakashkathirvel80@gmail.com | +1 (804) 866 2848
+
+{today_date}
+
+Dear Hiring Manager,
+
+{cover_letter_body}
+
+Sincerely,
+Aakash Kathirvel
+"""
 
         if st.session_state.cover_letter:
 
             edited_cover_letter = st.text_area(
                 "Edit Cover Letter Before Download",
-                st.session_state.cover_letter,
+                value=st.session_state.cover_letter,
                 height=350
             )
+
+            # Save edited version back to session state
+            st.session_state.cover_letter = edited_cover_letter
 
             st.download_button(
                 label="Download Edited Cover Letter as TXT",
                 data=edited_cover_letter,
-                file_name="cover_letter.txt",
+                file_name="Aakash_Kathirvel_Cover_Letter.txt",
                 mime="text/plain"
             )
 
             pdf_path = create_pdf(
                 "",
                 edited_cover_letter,
-                "cover_letter.pdf"
+                "Aakash_Kathirvel_Cover_Letter.pdf"
             )
 
             with open(pdf_path, "rb") as pdf_file:
                 st.download_button(
                     label="Download Edited Cover Letter as PDF",
                     data=pdf_file,
-                    file_name="cover_letter.pdf",
+                    file_name="Aakash_Kathirvel_Cover_Letter.pdf",
                     mime="application/pdf"
                 )
 
