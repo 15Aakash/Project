@@ -413,6 +413,7 @@ Important rules:
             )
 
             response = f"""
+            
 ✍️ **Cover Letter Agent**
 
 Generated cover letter:
@@ -464,6 +465,7 @@ Relevant Memory:
             )
 
             response = f"""
+            
 🧠 **Career Coach Agent**
 
 {response}
@@ -490,118 +492,6 @@ Please open the matching tool below if needed.
     )
 
     st.rerun()
-
-elif selected_agent == "RECRUITER_AGENT":
-
-        enhanced_prompt = f"""
-User Request:
-{user_request}
-
-Job Description:
-{job_description}
-
-Relevant Resume Memory:
-{memory_context}
-"""
-
-        response = recruiter_agent.generate(
-            st.session_state.resume_text,
-            enhanced_prompt
-        )
-
-        response = f"""
-I selected the Recruiter Outreach Agent using your resume, job description, and memory.
-
-Generated recruiter message:
-
-{response}
-"""
-
-    elif selected_agent == "COVER_LETTER_AGENT":
-
-        enhanced_prompt = f"""
-User Request:
-{user_request}
-
-Job Description:
-{job_description}
-
-Relevant Resume Memory:
-{memory_context}
-"""
-
-        response = cover_letter_agent.generate(
-            st.session_state.resume_text,
-            enhanced_prompt
-        )
-
-        response = f"""
-I selected the Cover Letter Agent using your resume, job description, and memory.
-
-Generated cover letter:
-
-{response}
-"""
-
-    elif selected_agent == "RESUME_TAILOR_AGENT":
-
-        enhanced_prompt = f"""
-User Request:
-{user_request}
-
-Job Description:
-{job_description}
-
-Relevant Resume Memory:
-{memory_context}
-"""
-
-        response = resume_tailor_agent.generate(
-            st.session_state.resume_text,
-            enhanced_prompt
-        )
-
-        response = f"""
-I selected the Resume Tailor Agent using your resume, job description, and memory.
-
-{response}
-"""
-
-    elif selected_agent == "CAREER_COACH_AGENT":
-
-        enhanced_request = f"""
-User Question:
-{user_request}
-
-Job Description:
-{job_description}
-
-Relevant Memory:
-{memory_context}
-"""
-
-        response = career_coach_agent.chat(
-            st.session_state.resume_text,
-            st.session_state.coach_history,
-            enhanced_request
-        )
-
-        response = f"""
-I selected the Career Coach Agent using your resume, job description, and memory.
-
-{response}
-"""
-
-    else:
-
-        response = f"""
-I routed your request to: {selected_agent}
-
-Opening corresponding module.
-"""
-
-    with st.chat_message("assistant"):
-        st.write(response)
 
 st.markdown("<br>", unsafe_allow_html=True)
 
