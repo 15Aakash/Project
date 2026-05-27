@@ -180,22 +180,10 @@ OPENAI_API_KEY=your_api_key
 streamlit run app.py
 ```
 
-# 📂 Project Structure
-
-AI-Career-Assistant/
-│
-├── app.py
-├── agents/
-├── rag_memory.py
-├── requirements.txt
-├── utils/
-├── database/
-├── exports/
-├── assets/
-└── README.md
 
 # 🎯 Future Improvements
 Voice-based AI Career Assistant
+
 Real-time LinkedIn Job Scraping
 Multi-LLM Support
 AI Resume Builder
