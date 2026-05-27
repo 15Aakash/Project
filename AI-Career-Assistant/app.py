@@ -309,16 +309,13 @@ if st.button("🧹 Clear Chat"):
     st.rerun()
 
 for chat in st.session_state.ai_assistant_chat:
-
     with st.chat_message("user"):
         st.markdown(chat["user"])
 
     with st.chat_message("assistant"):
         st.markdown(chat["assistant"])
 
-user_request = st.chat_input(
-    "Ask your AI Career Assistant..."
-)
+user_request = st.chat_input("Ask your AI Career Assistant...")
 
 if user_request:
 
@@ -327,9 +324,7 @@ if user_request:
 
     with st.spinner("AI Assistant is thinking..."):
 
-        selected_agent = run_langchain_tool_agent(
-            user_request
-        )
+        selected_agent = run_langchain_tool_agent(user_request)
 
         memory_context = retrieve_memory_context(
             st.session_state.username,
@@ -390,37 +385,11 @@ Generated recruiter message:
 
         elif selected_agent == "COVER_LETTER_AGENT":
 
+            from datetime import datetime
+
+            today_date = datetime.today().strftime("%m/%d/%Y")
+
             enhanced_prompt = f"""
-User Request:
-{user_request}
-
-Job Description:
-{job_description}
-
-Relevant Resume Memory:
-{memory_context}
-
-Important rules:
-- Use the company name only if it is explicitly present in the job description.
-- If no company name is found, write "your organization" instead.
-- Do not guess the company name.
-- Do not reuse company names from previous chats or memory.
-"""
-
-            response = cover_letter_agent.generate(
-                st.session_state.resume_text,
-                enhanced_prompt
-            )
-
-            response = f"""
-            
-elif selected_agent == "COVER_LETTER_AGENT":
-
-    from datetime import datetime
-
-    today_date = datetime.today().strftime("%m/%d/%Y")
-
-    enhanced_prompt = f"""
 User Request:
 {user_request}
 
@@ -438,16 +407,16 @@ Important Rules:
 - Use the company name ONLY if it is explicitly mentioned in the job description.
 - If no company name is found, write "your organization" instead.
 - Do NOT guess company names.
+- Do NOT reuse company names from previous chats or memory.
 - Generate a professional ATS-friendly cover letter.
 """
 
-    response = cover_letter_agent.generate(
-        st.session_state.resume_text,
-        enhanced_prompt
-    )
+            response = cover_letter_agent.generate(
+                st.session_state.resume_text,
+                enhanced_prompt
+            )
 
-    response = f"""
-    
+            response = f"""
 ✍️ **Cover Letter Agent**
 
 Generated cover letter:
@@ -455,9 +424,9 @@ Generated cover letter:
 {response}
 """
 
-elif selected_agent == "RESUME_TAILOR_AGENT":
+        elif selected_agent == "RESUME_TAILOR_AGENT":
 
-    enhanced_prompt = f"""
+            enhanced_prompt = f"""
 User Request:
 {user_request}
 
@@ -468,12 +437,12 @@ Relevant Resume Memory:
 {memory_context}
 """
 
-    response = resume_tailor_agent.generate(
-        st.session_state.resume_text,
-        enhanced_prompt
-    )
+            response = resume_tailor_agent.generate(
+                st.session_state.resume_text,
+                enhanced_prompt
+            )
 
-    response = f"""
+            response = f"""
 📄 **Resume Tailor Agent**
 
 {response}
@@ -499,7 +468,6 @@ Relevant Memory:
             )
 
             response = f"""
-            
 🧠 **Career Coach Agent**
 
 {response}
