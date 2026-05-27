@@ -447,12 +447,6 @@ Important Rules:
     )
 
     response = f"""
-✍️ **Cover Letter Agent**
-
-Generated cover letter:
-
-{response}
-"""
     
 ✍️ **Cover Letter Agent**
 
