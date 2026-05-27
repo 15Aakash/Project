@@ -117,6 +117,8 @@ Specialized AI Agents
 RAG Memory + Resume Context
      ↓
 Generated AI Response
+```
+
 
 # 📸 Application Modules
 
