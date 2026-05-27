@@ -293,8 +293,9 @@ page = st.session_state.selected_page
     
 # 🧠 AI Assistant
 
-from datetime import datetime
 import streamlit as st
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 st.markdown("<br>", unsafe_allow_html=True)
 
@@ -399,7 +400,9 @@ Generated recruiter message:
         # Cover Letter Agent
         elif selected_agent == "COVER_LETTER_AGENT":
 
-            today_date = datetime.today().strftime("%m/%d/%Y")
+            today_date = datetime.now(
+                ZoneInfo("America/New_York")
+            ).strftime("%m/%d/%Y")
 
             enhanced_prompt = f"""
 User Request:
@@ -415,7 +418,8 @@ Today's Date:
 {today_date}
 
 Important Rules:
-- Use today's date exactly as provided.
+- Use today's date exactly as provided: {today_date}
+- Do not change, guess, or generate a different date.
 - Use the company name ONLY if it is explicitly mentioned in the job description.
 - If no company name is found, write "your organization" instead.
 - Do NOT guess company names.
@@ -515,6 +519,7 @@ Please open the matching tool below if needed.
 st.markdown("<br>", unsafe_allow_html=True)
 st.divider()
 st.markdown("### Advanced Tools")
+
 pages = [
     "📊 Match Dashboard",
     "🎯 Job Recommendations",
