@@ -480,16 +480,15 @@ pages = [
     "📌 Tracker"
 ]
 
-if st.session_state.selected_page not in pages:
+if "selected_page" not in st.session_state:
     st.session_state.selected_page = "📊 Match Dashboard"
 
 page = st.radio(
     "",
     pages,
-    index=pages.index(
-        st.session_state.selected_page
-    ),
-    horizontal=True
+    index=pages.index(st.session_state.selected_page),
+    horizontal=True,
+    key="navigation_radio"
 )
 
 st.session_state.selected_page = page
