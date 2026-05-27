@@ -181,28 +181,56 @@ streamlit run app.py
 ```
 
 
-# 🎯 Future Improvements
-Voice-based AI Career Assistant
+# 🚀 Future Improvements
 
-Real-time LinkedIn Job Scraping
-Multi-LLM Support
-AI Resume Builder
-Advanced Analytics Dashboard
-Agent Memory Optimization
-Improved Vector Search
-Cloud Deployment Enhancements
+- 🎙️ Voice-based AI Career Assistant
+- 🔍 Real-time LinkedIn Job Scraping
+- 🤖 Multi-LLM Support
+- 📄 AI Resume Builder
+- 📊 Advanced Analytics Dashboard
+- 🧠 Agent Memory Optimization
+- 🔎 Improved Vector Search
+- ☁️ Cloud Deployment Enhancements
+
+---
 
 # 👨‍💻 Author
 
-# Aakash Kathirvel
-AI / ML Engineer
-Data Science & Decision Analytics
-GenAI | NLP | Computer Vision | Agentic AI
+## Aakash Kathirvel
+
+AI / ML Engineer  
+Data Science & Decision Analytics  
+
+### 🔥 Specializations
+- GenAI
+- NLP
+- Computer Vision
+- Agentic AI
+- LLM Applications
+- Multi-Agent Systems
+
+---
 
 # 📬 Contact
 
-📧 aakashkathirvel80@gmail.com
+📧 **Email:**  
+aakashkathirvel80@gmail.com
+
+🔗 **LinkedIn:**  
+https://www.linkedin.com/in/aakash-kathirvel/
+
+🔗 **GitHub:**  
+https://github.com/15Aakash
+
+---
 
 # ⭐ Support
 
-If you like this project, give it a ⭐ on GitHub and connect with me on LinkedIn!
+If you found this project interesting:
+
+- ⭐ Star the repository
+- 🍴 Fork the project
+- 🔗 Connect with me on LinkedIn
+- 🚀 Explore the live demo
+
+Thank you for visiting the project!
