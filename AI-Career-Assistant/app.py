@@ -291,7 +291,7 @@ if "selected_page" not in st.session_state:
         
 page = st.session_state.selected_page
     
-# 🧠 AI Assistant
+# Conversational AI Assistant
 
 import streamlit as st
 from datetime import datetime
@@ -317,7 +317,6 @@ if st.button("🧹 Clear Chat"):
 
 # Display previous chat history
 for chat in st.session_state.ai_assistant_chat:
-
     with st.chat_message("user"):
         st.markdown(chat["user"])
 
@@ -334,16 +333,13 @@ if user_request:
 
     with st.spinner("AI Assistant is thinking..."):
 
-        # Select the correct agent
         selected_agent = run_langchain_tool_agent(user_request)
 
-        # Retrieve memory context
         memory_context = retrieve_memory_context(
             st.session_state.username,
             user_request
         )
 
-        # Interview Coach Agent
         if selected_agent == "INTERVIEW_COACH_AGENT":
 
             enhanced_prompt = f"""
@@ -363,14 +359,13 @@ Relevant Resume Memory:
             )
 
             response = f"""
-🎤 **Interview Coach Agent**
+**Interview Coach Agent**
 
 Here are interview questions:
 
 {agent_response}
 """
 
-        # Recruiter Outreach Agent
         elif selected_agent == "RECRUITER_AGENT":
 
             enhanced_prompt = f"""
@@ -390,18 +385,14 @@ Relevant Resume Memory:
             )
 
             response = f"""
-💬 **Recruiter Outreach Agent**
+**Recruiter Outreach Agent**
 
 Generated recruiter message:
 
 {agent_response}
 """
 
-        # Cover Letter Agent
         elif selected_agent == "COVER_LETTER_AGENT":
-            
-            from datetime import datetime
-            from zoneinfo import ZoneInfo
 
             today_date = datetime.now(
                 ZoneInfo("America/New_York")
@@ -417,12 +408,15 @@ Job Description:
 Relevant Resume Memory:
 {memory_context}
 
-Today's Date:
-{today_date}
-
 Important Rules:
-- Use today's date exactly as provided: {today_date}
-- Do not change, guess, or generate a different date.
+- Generate ONLY the cover letter body.
+- Do NOT include my name.
+- Do NOT include my email.
+- Do NOT include my phone number.
+- Do NOT include any date.
+- Do NOT include "Dear Hiring Manager,".
+- Do NOT include "Sincerely," or my name at the end.
+- Start directly with the first paragraph.
 - Use the company name ONLY if it is explicitly mentioned in the job description.
 - If no company name is found, write "your organization" instead.
 - Do NOT guess company names.
@@ -436,7 +430,7 @@ Important Rules:
             )
 
             response = f"""
-✍️ **Cover Letter Agent**
+**Cover Letter Agent**
 
 Generated cover letter:
 
@@ -452,13 +446,31 @@ Dear Hiring Manager,
 Sincerely,  
 Aakash Kathirvel
 """
-            
-📄 **Resume Tailor Agent**
+
+        elif selected_agent == "RESUME_TAILOR_AGENT":
+
+            enhanced_prompt = f"""
+User Request:
+{user_request}
+
+Job Description:
+{job_description}
+
+Relevant Resume Memory:
+{memory_context}
+"""
+
+            agent_response = resume_tailor_agent.generate(
+                st.session_state.resume_text,
+                enhanced_prompt
+            )
+
+            response = f"""
+**Resume Tailor Agent**
 
 {agent_response}
 """
 
-        # Career Coach Agent
         elif selected_agent == "CAREER_COACH_AGENT":
 
             enhanced_request = f"""
@@ -479,27 +491,24 @@ Relevant Memory:
             )
 
             response = f"""
-🧠 **Career Coach Agent**
+**Career Coach Agent**
 
 {agent_response}
 """
 
-        # Default fallback
         else:
 
             response = f"""
-🤖 **AI Assistant**
+**AI Assistant**
 
 I routed your request to: **{selected_agent}**
 
 Please open the matching tool below if needed.
 """
 
-    # Show assistant response
     with st.chat_message("assistant"):
         st.markdown(response)
 
-    # Save chat history
     st.session_state.ai_assistant_chat.append(
         {
             "user": user_request,
@@ -512,7 +521,6 @@ Please open the matching tool below if needed.
 st.markdown("<br>", unsafe_allow_html=True)
 st.divider()
 st.markdown("### Advanced Tools")
-
 pages = [
     "📊 Match Dashboard",
     "🎯 Job Recommendations",
