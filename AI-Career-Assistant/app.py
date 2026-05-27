@@ -491,7 +491,7 @@ Please open the matching tool below if needed.
 
     st.rerun()
 
-    elif selected_agent == "RECRUITER_AGENT":
+elif selected_agent == "RECRUITER_AGENT":
 
         enhanced_prompt = f"""
 User Request:
