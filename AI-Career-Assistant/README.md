@@ -118,5 +118,39 @@ RAG Memory + Resume Context
      ↓
 Generated AI Response
 
+# 📸 Application Modules
 
+- AI Dashboard  
+- Conversational AI Assistant  
+- ATS Match Dashboard  
+- Job Recommendation Engine  
+- Cover Letter Generator  
+- Resume Tailoring Agent  
+- Recruiter Outreach Agent  
+- Interview Coach  
+- AI Career Coach  
+- Application Tracker  
+
+---
+
+# 🚀 Live Demo
+
+🔗 Streamlit App:  
+https://project-kcb4gfgzv42xpavfcma6f4.streamlit.app/
+
+---
+
+# 💻 GitHub Repository
+
+🔗 GitHub Repo:  
+https://github.com/15Aakash/Project/tree/main/AI-Career-Assistant
+
+---
+
+# ⚙️ Installation
+
+## Clone Repository
+
+```bash
+git clone https://github.com/15Aakash/Project.git
 
