@@ -1755,4 +1755,3 @@ elif page == "📌 Tracker":
             file_name=f"{st.session_state.username}_applications.csv",
             mime="text/csv"
         )
-
