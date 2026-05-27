@@ -414,6 +414,40 @@ Important rules:
 
             response = f"""
             
+elif selected_agent == "COVER_LETTER_AGENT":
+
+    from datetime import datetime
+
+    today_date = datetime.today().strftime("%m/%d/%Y")
+
+    enhanced_prompt = f"""
+User Request:
+{user_request}
+
+Job Description:
+{job_description}
+
+Relevant Resume Memory:
+{memory_context}
+
+Today's Date:
+{today_date}
+
+Important Rules:
+- Use today's date exactly as provided.
+- Use the company name ONLY if it is explicitly mentioned in the job description.
+- If no company name is found, write "your organization" instead.
+- Do NOT guess company names.
+- Generate a professional ATS-friendly cover letter.
+"""
+
+    response = cover_letter_agent.generate(
+        st.session_state.resume_text,
+        enhanced_prompt
+    )
+
+    response = f"""
+    
 ✍️ **Cover Letter Agent**
 
 Generated cover letter:
@@ -421,9 +455,9 @@ Generated cover letter:
 {response}
 """
 
-        elif selected_agent == "RESUME_TAILOR_AGENT":
+elif selected_agent == "RESUME_TAILOR_AGENT":
 
-            enhanced_prompt = f"""
+    enhanced_prompt = f"""
 User Request:
 {user_request}
 
@@ -434,12 +468,12 @@ Relevant Resume Memory:
 {memory_context}
 """
 
-            response = resume_tailor_agent.generate(
-                st.session_state.resume_text,
-                enhanced_prompt
-            )
+    response = resume_tailor_agent.generate(
+        st.session_state.resume_text,
+        enhanced_prompt
+    )
 
-            response = f"""
+    response = f"""
 📄 **Resume Tailor Agent**
 
 {response}
