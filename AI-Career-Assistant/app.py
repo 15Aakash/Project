@@ -301,32 +301,44 @@ st.caption(
     "Your intelligent AI career copilot for resume optimization, interview preparation, recruiter outreach, and job application workflows."
 )
 
+if "ai_assistant_chat" not in st.session_state:
+    st.session_state.ai_assistant_chat = []
+
 if st.button("🧹 Clear Chat"):
     st.session_state.ai_assistant_chat = []
     st.rerun()
 
-user_request = st.text_input(
-    "Ask your AI Career Assistant",
-    placeholder="Tailor my resume, prepare interview questions, write a cover letter..."
+for chat in st.session_state.ai_assistant_chat:
+
+    with st.chat_message("user"):
+        st.markdown(chat["user"])
+
+    with st.chat_message("assistant"):
+        st.markdown(chat["assistant"])
+
+user_request = st.chat_input(
+    "Ask your AI Career Assistant..."
 )
 
 if user_request:
 
     with st.chat_message("user"):
-        st.write(user_request)
+        st.markdown(user_request)
 
-    selected_agent = run_langchain_tool_agent(
-        user_request
-    )
+    with st.spinner("AI Assistant is thinking..."):
 
-    memory_context = retrieve_memory_context(
-        st.session_state.username,
-        user_request
-    )
+        selected_agent = run_langchain_tool_agent(
+            user_request
+        )
 
-    if selected_agent == "INTERVIEW_COACH_AGENT":
+        memory_context = retrieve_memory_context(
+            st.session_state.username,
+            user_request
+        )
 
-        enhanced_prompt = f"""
+        if selected_agent == "INTERVIEW_COACH_AGENT":
+
+            enhanced_prompt = f"""
 User Request:
 {user_request}
 
@@ -337,18 +349,147 @@ Relevant Resume Memory:
 {memory_context}
 """
 
-        response = interview_agent.generate(
-            st.session_state.resume_text,
-            enhanced_prompt
-        )
+            response = interview_agent.generate(
+                st.session_state.resume_text,
+                enhanced_prompt
+            )
 
-        response = f"""
-I selected the Interview Coach Agent using your resume, job description, and memory.
+            response = f"""
+🎤 **Interview Coach Agent**
 
 Here are interview questions:
 
 {response}
 """
+
+        elif selected_agent == "RECRUITER_AGENT":
+
+            enhanced_prompt = f"""
+User Request:
+{user_request}
+
+Job Description:
+{job_description}
+
+Relevant Resume Memory:
+{memory_context}
+"""
+
+            response = recruiter_agent.generate(
+                st.session_state.resume_text,
+                enhanced_prompt
+            )
+
+            response = f"""
+💬 **Recruiter Outreach Agent**
+
+Generated recruiter message:
+
+{response}
+"""
+
+        elif selected_agent == "COVER_LETTER_AGENT":
+
+            enhanced_prompt = f"""
+User Request:
+{user_request}
+
+Job Description:
+{job_description}
+
+Relevant Resume Memory:
+{memory_context}
+
+Important rules:
+- Use the company name only if it is explicitly present in the job description.
+- If no company name is found, write "your organization" instead.
+- Do not guess the company name.
+- Do not reuse company names from previous chats or memory.
+"""
+
+            response = cover_letter_agent.generate(
+                st.session_state.resume_text,
+                enhanced_prompt
+            )
+
+            response = f"""
+✍️ **Cover Letter Agent**
+
+Generated cover letter:
+
+{response}
+"""
+
+        elif selected_agent == "RESUME_TAILOR_AGENT":
+
+            enhanced_prompt = f"""
+User Request:
+{user_request}
+
+Job Description:
+{job_description}
+
+Relevant Resume Memory:
+{memory_context}
+"""
+
+            response = resume_tailor_agent.generate(
+                st.session_state.resume_text,
+                enhanced_prompt
+            )
+
+            response = f"""
+📄 **Resume Tailor Agent**
+
+{response}
+"""
+
+        elif selected_agent == "CAREER_COACH_AGENT":
+
+            enhanced_request = f"""
+User Question:
+{user_request}
+
+Job Description:
+{job_description}
+
+Relevant Memory:
+{memory_context}
+"""
+
+            response = career_coach_agent.chat(
+                st.session_state.resume_text,
+                st.session_state.coach_history,
+                enhanced_request
+            )
+
+            response = f"""
+🧠 **Career Coach Agent**
+
+{response}
+"""
+
+        else:
+
+            response = f"""
+🤖 **AI Assistant**
+
+I routed your request to: **{selected_agent}**
+
+Please open the matching tool below if needed.
+"""
+
+    with st.chat_message("assistant"):
+        st.markdown(response)
+
+    st.session_state.ai_assistant_chat.append(
+        {
+            "user": user_request,
+            "assistant": response
+        }
+    )
+
+    st.rerun()
 
     elif selected_agent == "RECRUITER_AGENT":
 
