@@ -293,28 +293,37 @@ page = st.session_state.selected_page
     
 # 🧠 AI Assistant
 
+from datetime import datetime
+import streamlit as st
+
 st.markdown("<br>", unsafe_allow_html=True)
 
 st.header("🧠 Conversational AI Assistant")
 
 st.caption(
-    "Your intelligent AI career copilot for resume optimization, interview preparation, recruiter outreach, and job application workflows."
+    "Your intelligent AI career copilot for resume optimization, interview preparation, "
+    "recruiter outreach, and job application workflows."
 )
 
+# Initialize chat history
 if "ai_assistant_chat" not in st.session_state:
     st.session_state.ai_assistant_chat = []
 
+# Clear chat button
 if st.button("🧹 Clear Chat"):
     st.session_state.ai_assistant_chat = []
     st.rerun()
 
+# Display previous chat history
 for chat in st.session_state.ai_assistant_chat:
+
     with st.chat_message("user"):
         st.markdown(chat["user"])
 
     with st.chat_message("assistant"):
         st.markdown(chat["assistant"])
 
+# Chat input
 user_request = st.chat_input("Ask your AI Career Assistant...")
 
 if user_request:
@@ -324,13 +333,16 @@ if user_request:
 
     with st.spinner("AI Assistant is thinking..."):
 
+        # Select the correct agent
         selected_agent = run_langchain_tool_agent(user_request)
 
+        # Retrieve memory context
         memory_context = retrieve_memory_context(
             st.session_state.username,
             user_request
         )
 
+        # Interview Coach Agent
         if selected_agent == "INTERVIEW_COACH_AGENT":
 
             enhanced_prompt = f"""
@@ -344,7 +356,7 @@ Relevant Resume Memory:
 {memory_context}
 """
 
-            response = interview_agent.generate(
+            agent_response = interview_agent.generate(
                 st.session_state.resume_text,
                 enhanced_prompt
             )
@@ -354,9 +366,10 @@ Relevant Resume Memory:
 
 Here are interview questions:
 
-{response}
+{agent_response}
 """
 
+        # Recruiter Outreach Agent
         elif selected_agent == "RECRUITER_AGENT":
 
             enhanced_prompt = f"""
@@ -370,7 +383,7 @@ Relevant Resume Memory:
 {memory_context}
 """
 
-            response = recruiter_agent.generate(
+            agent_response = recruiter_agent.generate(
                 st.session_state.resume_text,
                 enhanced_prompt
             )
@@ -380,12 +393,11 @@ Relevant Resume Memory:
 
 Generated recruiter message:
 
-{response}
+{agent_response}
 """
 
+        # Cover Letter Agent
         elif selected_agent == "COVER_LETTER_AGENT":
-
-            from datetime import datetime
 
             today_date = datetime.today().strftime("%m/%d/%Y")
 
@@ -411,7 +423,7 @@ Important Rules:
 - Generate a professional ATS-friendly cover letter.
 """
 
-            response = cover_letter_agent.generate(
+            agent_response = cover_letter_agent.generate(
                 st.session_state.resume_text,
                 enhanced_prompt
             )
@@ -421,9 +433,10 @@ Important Rules:
 
 Generated cover letter:
 
-{response}
+{agent_response}
 """
 
+        # Resume Tailor Agent
         elif selected_agent == "RESUME_TAILOR_AGENT":
 
             enhanced_prompt = f"""
@@ -437,7 +450,7 @@ Relevant Resume Memory:
 {memory_context}
 """
 
-            response = resume_tailor_agent.generate(
+            agent_response = resume_tailor_agent.generate(
                 st.session_state.resume_text,
                 enhanced_prompt
             )
@@ -445,9 +458,10 @@ Relevant Resume Memory:
             response = f"""
 📄 **Resume Tailor Agent**
 
-{response}
+{agent_response}
 """
 
+        # Career Coach Agent
         elif selected_agent == "CAREER_COACH_AGENT":
 
             enhanced_request = f"""
@@ -461,7 +475,7 @@ Relevant Memory:
 {memory_context}
 """
 
-            response = career_coach_agent.chat(
+            agent_response = career_coach_agent.chat(
                 st.session_state.resume_text,
                 st.session_state.coach_history,
                 enhanced_request
@@ -470,9 +484,10 @@ Relevant Memory:
             response = f"""
 🧠 **Career Coach Agent**
 
-{response}
+{agent_response}
 """
 
+        # Default fallback
         else:
 
             response = f"""
@@ -483,9 +498,11 @@ I routed your request to: **{selected_agent}**
 Please open the matching tool below if needed.
 """
 
+    # Show assistant response
     with st.chat_message("assistant"):
         st.markdown(response)
 
+    # Save chat history
     st.session_state.ai_assistant_chat.append(
         {
             "user": user_request,
@@ -496,11 +513,8 @@ Please open the matching tool below if needed.
     st.rerun()
 
 st.markdown("<br>", unsafe_allow_html=True)
-
 st.divider()
-
 st.markdown("### Advanced Tools")
-
 pages = [
     "📊 Match Dashboard",
     "🎯 Job Recommendations",
