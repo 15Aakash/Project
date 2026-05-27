@@ -50,12 +50,17 @@ st.set_page_config(
     page_icon="🤖"
 )
 
+# -----------------------------
+# LOGIN / SIGNUP PAGE
+# -----------------------------
+
 if not st.session_state.get("logged_in", False):
 
     st.title("🧠 Welcome to AI Career Assistant")
-    
+
     st.markdown(
-        "Your AI-powered career copilot for resume optimization, ATS matching, interview preparation, and recruiter outreach."
+        "Your AI-powered career copilot for resume optimization, ATS matching, "
+        "interview preparation, and recruiter outreach."
     )
 
     st.markdown("---")
@@ -79,7 +84,7 @@ if not st.session_state.get("logged_in", False):
                 st.warning("Please enter username and password.")
 
             else:
-                created = signup_user(username, password)
+                created = signup_user(username.strip(), password)
 
                 if created:
                     st.success("Account created successfully. Please login.")
@@ -88,11 +93,41 @@ if not st.session_state.get("logged_in", False):
 
     else:
 
-       if st.button("🚀 Continue to Dashboard", use_container_width=True):
+        if st.button("🚀 Continue to Dashboard", use_container_width=True):
 
-            if login_user(username, password):
+            if username.strip() == "" or password.strip() == "":
+                st.warning("Please enter username and password.")
+
+            elif login_user(username.strip(), password):
+
+                # Save login details
                 st.session_state.logged_in = True
-                st.session_state.username = username
+                st.session_state.username = username.strip()
+
+                # Clear old generated content immediately after login
+                old_keys_to_clear = [
+                    "resume_text",
+                    "job_description",
+                    "cover_letter",
+                    "resume_tailor_result",
+                    "recruiter_message",
+                    "interview_questions",
+                    "career_coach_response",
+                    "ai_assistant_chat",
+                    "coach_history",
+                    "match_result",
+                    "job_recommendations",
+                    "mock_interview_result",
+                    "tracker_data",
+                    "selected_job",
+                    "uploaded_resume",
+                    "uploaded_job_description"
+                ]
+
+                for key in old_keys_to_clear:
+                    if key in st.session_state:
+                        del st.session_state[key]
+
                 st.success("Login successful.")
                 st.rerun()
 
@@ -100,6 +135,73 @@ if not st.session_state.get("logged_in", False):
                 st.error("Invalid username or password.")
 
     st.stop()
+
+
+# -----------------------------
+# USER-SPECIFIC SESSION SETUP
+# -----------------------------
+
+current_user = st.session_state.username
+
+# Create user-specific keys
+resume_text_key = f"resume_text_{current_user}"
+job_description_key = f"job_description_{current_user}"
+cover_letter_key = f"cover_letter_{current_user}"
+resume_tailor_key = f"resume_tailor_result_{current_user}"
+recruiter_key = f"recruiter_message_{current_user}"
+interview_key = f"interview_questions_{current_user}"
+career_key = f"career_coach_response_{current_user}"
+chat_key = f"ai_assistant_chat_{current_user}"
+coach_history_key = f"coach_history_{current_user}"
+match_result_key = f"match_result_{current_user}"
+job_recommendations_key = f"job_recommendations_{current_user}"
+mock_interview_key = f"mock_interview_result_{current_user}"
+tracker_key = f"tracker_data_{current_user}"
+
+# Initialize user-specific values
+if resume_text_key not in st.session_state:
+    st.session_state[resume_text_key] = ""
+
+if job_description_key not in st.session_state:
+    st.session_state[job_description_key] = ""
+
+if cover_letter_key not in st.session_state:
+    st.session_state[cover_letter_key] = ""
+
+if resume_tailor_key not in st.session_state:
+    st.session_state[resume_tailor_key] = ""
+
+if recruiter_key not in st.session_state:
+    st.session_state[recruiter_key] = ""
+
+if interview_key not in st.session_state:
+    st.session_state[interview_key] = ""
+
+if career_key not in st.session_state:
+    st.session_state[career_key] = ""
+
+if chat_key not in st.session_state:
+    st.session_state[chat_key] = []
+
+if coach_history_key not in st.session_state:
+    st.session_state[coach_history_key] = []
+
+if match_result_key not in st.session_state:
+    st.session_state[match_result_key] = ""
+
+if job_recommendations_key not in st.session_state:
+    st.session_state[job_recommendations_key] = ""
+
+if mock_interview_key not in st.session_state:
+    st.session_state[mock_interview_key] = ""
+
+if tracker_key not in st.session_state:
+    st.session_state[tracker_key] = []
+
+
+# -----------------------------
+# SIDEBAR
+# -----------------------------
 
 st.sidebar.title("🧠 AI Career Assistant")
 
@@ -120,14 +222,22 @@ st.sidebar.markdown("""
 
 st.sidebar.divider()
 
+
+# -----------------------------
+# LOGOUT
+# -----------------------------
+
 if st.sidebar.button("Logout"):
-    
-    st.session_state.logged_in = False
-    st.session_state.username = ""
-    
+
+    # Clear everything from current browser session
+    for key in list(st.session_state.keys()):
+        del st.session_state[key]
+
     st.rerun()
 
+
 st.markdown("""
+
 <h1 style='font-size:48px;'>
 🤖 AI Career Assistant
 </h1>
@@ -1645,3 +1755,4 @@ elif page == "📌 Tracker":
             file_name=f"{st.session_state.username}_applications.csv",
             mime="text/csv"
         )
+
